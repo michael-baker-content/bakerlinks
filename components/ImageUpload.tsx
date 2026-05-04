@@ -5,6 +5,8 @@ import { createClient } from '@/lib/supabase/client'
 import { Upload, X, Loader2 } from 'lucide-react'
 import UnsplashPicker from '@/components/UnsplashPicker'
 
+
+
 interface Attribution {
   photographer_name: string
   photographer_url: string
@@ -91,7 +93,40 @@ export default function ImageUpload({ bucket, userId, currentUrl, onUpload, labe
     <div>
       <label className="text-white/50 text-xs uppercase tracking-wider mb-2 block">{label}</label>
       {aspectHint && <p className="text-white/30 text-xs mb-2">{aspectHint}</p>}
-
+{preview && (
+  <div className="relative rounded-xl overflow-visible border border-white/10">
+    <img
+      src={preview}
+      alt={label}
+      className={`w-full object-cover ${bucket === 'avatars' ? 'h-24 w-24 rounded-full' : 'h-32'}`}
+    />
+    <div className="absolute top-2 right-2 flex gap-1">
+      <button
+        onClick={() => inputRef.current?.click()}
+        disabled={uploading}
+        className="px-2 py-1 rounded-lg bg-black/60 hover:bg-purple-600/80 text-white text-xs transition-colors"
+      >
+        Replace
+      </button>
+      {bucket === 'backgrounds' && (
+        <button
+          onClick={() => setShowUnsplash(true)}
+          disabled={uploading}
+          className="px-2 py-1 rounded-lg bg-black/60 hover:bg-purple-600/80 text-white text-xs transition-colors"
+        >
+          Unsplash
+        </button>
+      )}
+      <button
+        onClick={handleRemove}
+        disabled={uploading}
+        className="p-1.5 rounded-lg bg-black/60 hover:bg-red-500/80 text-white transition-colors"
+      >
+        <X size={14} />
+      </button>
+    </div>
+  </div>
+)}
       {!preview && (
         <div className="flex flex-col gap-2">
             <button
