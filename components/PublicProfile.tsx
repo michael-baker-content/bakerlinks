@@ -16,7 +16,6 @@ export default function PublicProfile({
   const supabase = createClient()
 
   async function handleLinkClick(link: LinkType) {
-    // Fire-and-forget click tracking
     await supabase.rpc('increment_link_clicks', { link_id: link.id })
     window.open(link.url, '_blank', 'noopener,noreferrer')
   }
@@ -29,18 +28,36 @@ export default function PublicProfile({
     .slice(0, 2)
 
   return (
-    <main className={`min-h-screen ${theme.bg} noise flex flex-col items-center justify-start py-16 px-4`}>
-      {/* Ambient glow */}
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full opacity-20 blur-[120px] pointer-events-none"
-        style={{ background: 'radial-gradient(circle, #7c3aed 0%, transparent 70%)' }}
-      />
+    <main className={`min-h-screen ${theme.bg} noise`}>
+      {/* Background image or ambient glow */}
+      {profile.background_url ? (
+        <div className="relative w-full h-48 sm:h-64 overflow-hidden">
+          <img
+            src={profile.background_url}
+            alt="Profile background"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60" />
+        </div>
+      ) : (
+        <div className="h-24" />
+      )}
 
-      <div className="relative w-full max-w-sm">
+      <div className="relative max-w-sm mx-auto px-4">
         {/* Avatar */}
-        <div className="flex flex-col items-center mb-8">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center text-white font-display font-bold text-2xl mb-4 ring-4 ring-white/5">
-            {initials}
-          </div>
+        <div className={`flex flex-col items-center ${profile.background_url ? '-mt-12' : 'mt-8'} mb-6`}>
+          {profile.avatar_url ? (
+            <img
+              src={profile.avatar_url}
+              alt={profile.display_name || profile.username}
+              className="w-24 h-24 rounded-full object-cover ring-4 ring-black/40 mb-4"
+            />
+          ) : (
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center text-white font-display font-bold text-2xl mb-4 ring-4 ring-black/40">
+              {initials}
+            </div>
+          )}
+
           <h1 className="font-display text-2xl font-bold text-white mb-1">
             {profile.display_name || profile.username}
           </h1>
@@ -53,7 +70,7 @@ export default function PublicProfile({
         </div>
 
         {/* Links */}
-        <div className="space-y-3">
+        <div className="space-y-3 pb-16">
           {links.length === 0 && (
             <p className="text-center text-white/20 text-sm py-8">No links yet.</p>
           )}
@@ -81,7 +98,7 @@ export default function PublicProfile({
         </div>
 
         {/* Footer */}
-        <div className="mt-12 text-center">
+        <div className="pb-8 text-center">
           <a
             href="/"
             className="text-white/20 text-xs hover:text-white/40 transition-colors"

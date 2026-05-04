@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Profile, Link as LinkType } from '@/lib/types'
+import ImageUpload from '@/components/ImageUpload'
 import { themes } from '@/lib/themes'
 import {
   DndContext,
@@ -306,14 +307,16 @@ async function changePassword() {
   async function saveProfile() {
     setSavingProfile(true)
     const { data: updated } = await supabase
-      .from('profiles')
-      .update({
-        username: profile.username,
-        display_name: profile.display_name,
-        bio: profile.bio,
-        theme: profile.theme,
-        updated_at: new Date().toISOString(),
-      })
+  .from('profiles')
+  .update({
+    username: profile.username,
+    display_name: profile.display_name,
+    bio: profile.bio,
+    theme: profile.theme,
+    avatar_url: profile.avatar_url,
+    background_url: profile.background_url,
+    updated_at: new Date().toISOString(),
+  })
       .eq('id', userId)
       .select()
       .single()
@@ -321,6 +324,14 @@ async function changePassword() {
     if (updated) setProfile(updated)
     setSavingProfile(false)
   }
+
+  function handleAvatarUpload(url: string) {
+  setProfile(p => ({ ...p, avatar_url: url || null }))
+}
+
+function handleBackgroundUpload(url: string) {
+  setProfile(p => ({ ...p, background_url: url || null }))
+}
 
   const theme = themes[profile.theme] ?? themes.electric
 
@@ -468,6 +479,24 @@ async function changePassword() {
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/60 text-sm resize-none"
                 />
               </div>
+              <div className="grid grid-cols-1 gap-4">
+              <ImageUpload
+                bucket="avatars"
+                userId={userId}
+                currentUrl={profile.avatar_url}
+                onUpload={handleAvatarUpload}
+                label="Profile picture"
+                aspectHint="Square image recommended. Max 2MB."
+              />
+              <ImageUpload
+                bucket="backgrounds"
+                userId={userId}
+                currentUrl={profile.background_url}
+                onUpload={handleBackgroundUpload}
+                label="Background image"
+                aspectHint="Wide image recommended (1500×500px). Max 5MB."
+              />
+            </div>
 
               {/* Theme picker */}
               <div>
