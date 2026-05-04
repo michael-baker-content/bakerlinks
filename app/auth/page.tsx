@@ -17,6 +17,20 @@ function AuthPageInner() {
   const [success, setSuccess] = useState('')
   const router = useRouter()
   const supabase = createClient()
+  const [showForgot, setShowForgot] = useState(false)
+  const [forgotEmail, setForgotEmail] = useState('')
+  const [forgotSent, setForgotSent] = useState(false)
+
+  async function handleForgotPassword(e: React.FormEvent) {
+  e.preventDefault()
+  setLoading(true)
+  const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
+    redirectTo: `${window.location.origin}/auth/reset`,
+  })
+  if (error) setError(error.message)
+  else setForgotSent(true)
+  setLoading(false)
+}
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -137,6 +151,15 @@ function AuthPageInner() {
                 className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/60 transition-colors text-sm"
               />
             </div>
+            <div className="text-right">
+            <button
+              type="button"
+              onClick={() => setShowForgot(true)}
+              className="text-white/40 text-xs hover:text-white/70 transition-colors"
+            >
+              Forgot password?
+            </button>
+          </div>
 
             {error && (
               <p className="text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">{error}</p>
@@ -153,6 +176,32 @@ function AuthPageInner() {
               {loading ? 'Loading…' : mode === 'signin' ? 'Sign in' : 'Create account'}
             </button>
           </form>
+          {showForgot && (
+            <div className="mt-4 pt-4 border-t border-white/10">
+              {forgotSent ? (
+                <p className="text-green-400 text-sm text-center">Check your email for a reset link!</p>
+              ) : (
+                <form onSubmit={handleForgotPassword} className="space-y-3">
+                  <p className="text-white/50 text-xs">Enter your email and we'll send a reset link.</p>
+                  <input
+                    type="email"
+                    value={forgotEmail}
+                    onChange={e => setForgotEmail(e.target.value)}
+                    required
+                    placeholder="you@example.com"
+                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/60 text-sm"
+                  />
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-2.5 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white rounded-xl text-sm font-semibold transition-all"
+                  >
+                    {loading ? 'Sending…' : 'Send reset link'}
+                  </button>
+                </form>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </main>
