@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Upload, X, Loader2 } from 'lucide-react'
 import UnsplashPicker from '@/components/UnsplashPicker'
@@ -28,6 +28,9 @@ export default function ImageUpload({ bucket, userId, currentUrl, onUpload, labe
   const [preview, setPreview] = useState<string | null>(currentUrl)
   const inputRef = useRef<HTMLInputElement>(null)
   const supabase = createClient()
+  useEffect(() => {
+  setPreview(currentUrl)
+}, [currentUrl])
 
   const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
   const MAX_SIZE = bucket === 'avatars' ? 2 * 1024 * 1024 : 5 * 1024 * 1024

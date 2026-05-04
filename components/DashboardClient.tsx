@@ -214,6 +214,7 @@ export default function DashboardClient({
   const [passwordSuccess, setPasswordSuccess] = useState('')
   const [savingPassword, setSavingPassword] = useState(false)
 
+
   const profileUrl = typeof window !== 'undefined'
     ? `${window.location.origin}/${profile.username}`
     : `/${profile.username}`
