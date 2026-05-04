@@ -25,6 +25,13 @@ import {
   Eye, EyeOff, LogOut, Copy, Check, BarChart2, X
 } from 'lucide-react'
 
+interface Attribution {
+  photographer_name: string
+  photographer_url: string
+  unsplash_url: string
+  download_url: string
+}
+
 // ── Sortable Link Row ──────────────────────────────────────────
 function SortableLink({
   link,
@@ -316,6 +323,7 @@ async function changePassword() {
     avatar_url: profile.avatar_url,
     background_url: profile.background_url,
     updated_at: new Date().toISOString(),
+    background_attribution: profile.background_attribution,
   })
       .eq('id', userId)
       .select()
@@ -329,8 +337,12 @@ async function changePassword() {
   setProfile(p => ({ ...p, avatar_url: url || null }))
 }
 
-function handleBackgroundUpload(url: string) {
-  setProfile(p => ({ ...p, background_url: url || null }))
+function handleBackgroundUpload(url: string, attribution?: Attribution | null) {
+  setProfile(p => ({
+    ...p,
+    background_url: url || null,
+    background_attribution: attribution ?? null,
+  }))
 }
 
   const theme = themes[profile.theme] ?? themes.electric

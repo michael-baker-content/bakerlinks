@@ -5,6 +5,12 @@ export interface Profile {
   bio: string | null
   avatar_url: string | null
   background_url: string | null
+  background_attribution: {
+    photographer_name: string
+    photographer_url: string
+    unsplash_url: string
+    download_url: string
+  } | null
   theme: string
   created_at: string
   updated_at: string

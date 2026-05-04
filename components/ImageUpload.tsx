@@ -3,12 +3,20 @@
 import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Upload, X, Loader2 } from 'lucide-react'
+import UnsplashPicker from '@/components/UnsplashPicker'
+
+interface Attribution {
+  photographer_name: string
+  photographer_url: string
+  unsplash_url: string
+  download_url: string
+}
 
 interface Props {
   bucket: 'avatars' | 'backgrounds'
   userId: string
   currentUrl: string | null
-  onUpload: (url: string) => void
+  onUpload: (url: string, attribution?: Attribution | null) => void
   label: string
   aspectHint?: string
 }
@@ -16,6 +24,7 @@ interface Props {
 export default function ImageUpload({ bucket, userId, currentUrl, onUpload, label, aspectHint }: Props) {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
+  const [showUnsplash, setShowUnsplash] = useState(false)
   const [preview, setPreview] = useState<string | null>(currentUrl)
   const inputRef = useRef<HTMLInputElement>(null)
   const supabase = createClient()
@@ -80,35 +89,40 @@ export default function ImageUpload({ bucket, userId, currentUrl, onUpload, labe
       <label className="text-white/50 text-xs uppercase tracking-wider mb-2 block">{label}</label>
       {aspectHint && <p className="text-white/30 text-xs mb-2">{aspectHint}</p>}
 
-      {preview ? (
-        <div className="relative rounded-xl overflow-hidden border border-white/10">
-          <img
-            src={preview}
-            alt={label}
-            className={`w-full object-cover ${bucket === 'avatars' ? 'h-24 w-24 rounded-full' : 'h-32'}`}
-          />
-          <button
-            onClick={handleRemove}
+      {!preview && (
+        <div className="flex flex-col gap-2">
+            <button
+            onClick={() => inputRef.current?.click()}
             disabled={uploading}
-            className="absolute top-2 right-2 p-1 rounded-full bg-black/60 hover:bg-red-500/80 text-white transition-colors"
-          >
-            <X size={14} />
-          </button>
+            className="w-full flex flex-col items-center justify-center gap-2 py-6 rounded-xl border border-dashed border-white/20 hover:border-purple-500/50 hover:bg-white/5 transition-all text-white/40 hover:text-white/70"
+            >
+            {uploading ? (
+                <Loader2 size={20} className="animate-spin" />
+            ) : (
+                <Upload size={20} />
+            )}
+            <span className="text-xs">{uploading ? 'Uploading…' : `Upload ${label.toLowerCase()}`}</span>
+            </button>
+            {bucket === 'backgrounds' && (
+            <button
+                onClick={() => setShowUnsplash(true)}
+                className="w-full py-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-white/50 hover:text-white text-xs transition-all"
+            >
+                Search Unsplash
+            </button>
+            )}
         </div>
-      ) : (
-        <button
-          onClick={() => inputRef.current?.click()}
-          disabled={uploading}
-          className="w-full flex flex-col items-center justify-center gap-2 py-6 rounded-xl border border-dashed border-white/20 hover:border-purple-500/50 hover:bg-white/5 transition-all text-white/40 hover:text-white/70"
-        >
-          {uploading ? (
-            <Loader2 size={20} className="animate-spin" />
-          ) : (
-            <Upload size={20} />
-          )}
-          <span className="text-xs">{uploading ? 'Uploading…' : `Upload ${label.toLowerCase()}`}</span>
-        </button>
-      )}
+        )}
+
+        {showUnsplash && (
+        <UnsplashPicker
+            onSelect={(url, attribution) => {
+            setPreview(url)
+            onUpload(url, attribution)
+            }}
+            onClose={() => setShowUnsplash(false)}
+        />
+        )}
 
       <input
         ref={inputRef}

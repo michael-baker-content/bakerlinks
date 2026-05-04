@@ -37,6 +37,28 @@ export default function PublicProfile({
             alt="Profile background"
             className="w-full h-full object-cover"
           />
+          {profile.background_attribution && (
+  <div className="absolute bottom-2 right-3 text-white/40 text-xs">
+    Photo by{' '}
+    
+    <a  href={profile.background_attribution.photographer_url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="underline hover:text-white/70"
+    >
+      {profile.background_attribution.photographer_name}
+    </a>
+    {' '}on{' '}
+    
+    <a  href={profile.background_attribution.unsplash_url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="underline hover:text-white/70"
+    >
+      Unsplash
+    </a>
+  </div>
+)}
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60" />
         </div>
       ) : (
