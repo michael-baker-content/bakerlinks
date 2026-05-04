@@ -185,10 +185,12 @@ export default function DashboardClient({
   initialProfile,
   initialLinks,
   userId,
+  provider,
 }: {
   initialProfile: Profile
   initialLinks: LinkType[]
   userId: string
+  provider: string
 }) {
   const [profile, setProfile] = useState(initialProfile)
   const [links, setLinks] = useState(initialLinks)
@@ -197,6 +199,12 @@ export default function DashboardClient({
   const [savingProfile, setSavingProfile] = useState(false)
   const [tab, setTab] = useState<'links' | 'profile'>('links')
   const supabase = createClient()
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [passwordError, setPasswordError] = useState('')
+  const [passwordSuccess, setPasswordSuccess] = useState('')
+  const [savingPassword, setSavingPassword] = useState(false)
 
   const profileUrl = typeof window !== 'undefined'
     ? `${window.location.origin}/${profile.username}`
@@ -269,6 +277,30 @@ export default function DashboardClient({
       )
     )
   }
+
+async function changePassword() {
+  if (newPassword !== confirmPassword) {
+    setPasswordError('Passwords do not match')
+    return
+  }
+  if (newPassword.length < 6) {
+    setPasswordError('Password must be at least 6 characters')
+    return
+  }
+  setSavingPassword(true)
+  setPasswordError('')
+  setPasswordSuccess('')
+
+  const { error } = await supabase.auth.updateUser({ password: newPassword })
+  if (error) setPasswordError(error.message)
+  else {
+    setPasswordSuccess('Password updated successfully!')
+    setCurrentPassword('')
+    setNewPassword('')
+    setConfirmPassword('')
+  }
+  setSavingPassword(false)
+}
 
   // ── Profile save ──
   async function saveProfile() {
@@ -456,6 +488,47 @@ export default function DashboardClient({
                   ))}
                 </div>
               </div>
+            </div>
+            {/* Password change */}
+            <div className="pt-4 border-t border-white/10">
+              <h3 className="text-white/50 text-xs uppercase tracking-wider mb-4">Password</h3>
+              {provider === 'email' ? (
+                <div className="space-y-3">
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={e => setNewPassword(e.target.value)}
+                    placeholder="New password"
+                    minLength={6}
+                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/60 text-sm"
+                  />
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={e => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm new password"
+                    minLength={6}
+                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/60 text-sm"
+                  />
+                  {passwordError && (
+                    <p className="text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">{passwordError}</p>
+                  )}
+                  {passwordSuccess && (
+                    <p className="text-green-400 text-sm bg-green-500/10 border border-green-500/20 rounded-xl px-4 py-3">{passwordSuccess}</p>
+                  )}
+                  <button
+                    onClick={changePassword}
+                    disabled={savingPassword || !newPassword || !confirmPassword}
+                    className="w-full py-3 bg-white/10 hover:bg-white/15 disabled:opacity-50 text-white rounded-xl font-semibold transition-all text-sm"
+                  >
+                    {savingPassword ? 'Updating…' : 'Update password'}
+                  </button>
+                </div>
+              ) : (
+                <p className="text-white/30 text-sm">
+                  You signed in with {provider.charAt(0).toUpperCase() + provider.slice(1)} — password changes are managed through your {provider.charAt(0).toUpperCase() + provider.slice(1)} account.
+                </p>
+              )}
             </div>
 
             <button

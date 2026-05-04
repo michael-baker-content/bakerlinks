@@ -26,6 +26,7 @@ export default async function DashboardPage() {
       initialProfile={profile}
       initialLinks={links ?? []}
       userId={user.id}
+      provider={user.app_metadata.provider ?? 'email'}
     />
   )
 }
