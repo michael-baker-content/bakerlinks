@@ -63,11 +63,11 @@ function AuthPageInner() {
   }
 
   async function handleOAuth(provider: 'google' | 'github') {
-    await supabase.auth.signInWithOAuth({
-      provider,
-      options: { redirectTo: `${window.location.origin}/dashboard` },
-    })
-  }
+  await supabase.auth.signInWithOAuth({
+    provider,
+    options: { redirectTo: `${window.location.origin}/auth/callback` },
+  })
+}
 
   return (
     <main className="min-h-screen bg-[#05050a] noise flex flex-col items-center justify-center px-4 relative">
