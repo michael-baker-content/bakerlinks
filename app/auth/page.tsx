@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 
-export default function AuthPage() {
+function AuthPageInner() {
   const searchParams = useSearchParams()
   const [mode, setMode] = useState<'signin' | 'signup'>(
     searchParams.get('mode') === 'signup' ? 'signup' : 'signin'
@@ -24,26 +24,26 @@ export default function AuthPage() {
     setError('')
     setSuccess('')
 
-if (mode === 'signup') {
-  const { error, data } = await supabase.auth.signUp({
-    email,
-    password,
-    options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
-  })
-  if (error) setError(error.message)
-  else if (data.session) {
-    window.location.href = '/dashboard'
-  } else {
-    setSuccess('Check your email to confirm your account!')
-  }
-} else {
-  const { error, data } = await supabase.auth.signInWithPassword({ email, password })
-  if (error) setError(error.message)
-  else if (data.session) {
-    console.log('has session, redirecting')
-    window.location.href = '/dashboard'
-  }
-}
+    if (mode === 'signup') {
+      const { error, data } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+      })
+      if (error) setError(error.message)
+      else if (data.session) {
+        window.location.href = '/dashboard'
+      } else {
+        setSuccess('Check your email to confirm your account!')
+      }
+    } else {
+      const { error, data } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) setError(error.message)
+      else if (data.session) {
+        console.log('has session, redirecting')
+        window.location.href = '/dashboard'
+      }
+    }
 
     setLoading(false)
   }
@@ -156,5 +156,13 @@ if (mode === 'signup') {
         </div>
       </div>
     </main>
+  )
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense>
+      <AuthPageInner />
+    </Suspense>
   )
 }
