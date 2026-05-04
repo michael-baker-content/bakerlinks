@@ -14,7 +14,8 @@ const syne = Syne({
 
 export const metadata: Metadata = {
   title: 'BakerLinks – Your Links, Your Identity',
-  description: 'A bold link-in-bio platform. Forge your digital identity.',
+  description: 'A Bakerific link-in-bio platform.',
+  icons: { icon: '/bakerlinks-logo-A.svg' }
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -1,0 +1,41 @@
+<svg width="160" height="160" viewBox="0 0 160 160" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>BakerLinks logo - Option A</title>
+  <desc>Pixel art BL monogram on purple background</desc>
+  <style>.px { shape-rendering: crispEdges; }</style>
+
+  <rect x="0" y="0" width="160" height="160" rx="24" fill="#7c3aed" class="px"/>
+
+  <!-- B -->
+  <rect x="25" y="35" width="10" height="10" fill="#fff" class="px"/>
+  <rect x="25" y="45" width="10" height="10" fill="#fff" class="px"/>
+  <rect x="25" y="55" width="10" height="10" fill="#fff" class="px"/>
+  <rect x="25" y="65" width="10" height="10" fill="#fff" class="px"/>
+  <rect x="25" y="75" width="10" height="10" fill="#fff" class="px"/>
+  <rect x="25" y="85" width="10" height="10" fill="#fff" class="px"/>
+  <rect x="25" y="95" width="10" height="10" fill="#fff" class="px"/>
+  <rect x="35" y="35" width="10" height="10" fill="#fff" class="px"/>
+  <rect x="45" y="35" width="10" height="10" fill="#fff" class="px"/>
+  <rect x="55" y="35" width="10" height="10" fill="#fff" class="px"/>
+  <rect x="35" y="65" width="10" height="10" fill="#fff" class="px"/>
+  <rect x="45" y="65" width="10" height="10" fill="#fff" class="px"/>
+  <rect x="55" y="65" width="10" height="10" fill="#fff" class="px"/>
+  <rect x="35" y="95" width="10" height="10" fill="#fff" class="px"/>
+  <rect x="45" y="95" width="10" height="10" fill="#fff" class="px"/>
+  <rect x="55" y="95" width="10" height="10" fill="#fff" class="px"/>
+  <rect x="65" y="45" width="10" height="10" fill="#fff" class="px"/>
+  <rect x="65" y="55" width="10" height="10" fill="#fff" class="px"/>
+  <rect x="65" y="75" width="10" height="10" fill="#fff" class="px"/>
+  <rect x="65" y="85" width="10" height="10" fill="#fff" class="px"/>
+
+  <!-- L -->
+  <rect x="85" y="35" width="10" height="10" fill="#fff" class="px"/>
+  <rect x="85" y="45" width="10" height="10" fill="#fff" class="px"/>
+  <rect x="85" y="55" width="10" height="10" fill="#fff" class="px"/>
+  <rect x="85" y="65" width="10" height="10" fill="#fff" class="px"/>
+  <rect x="85" y="75" width="10" height="10" fill="#fff" class="px"/>
+  <rect x="85" y="85" width="10" height="10" fill="#fff" class="px"/>
+  <rect x="85" y="95" width="10" height="10" fill="#fff" class="px"/>
+  <rect x="95" y="95" width="10" height="10" fill="#fff" class="px"/>
+  <rect x="105" y="95" width="10" height="10" fill="#fff" class="px"/>
+  <rect x="115" y="95" width="10" height="10" fill="#fff" class="px"/>
+</svg>
