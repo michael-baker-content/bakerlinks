@@ -4,6 +4,7 @@ import { Profile, Link as LinkType } from '@/lib/types'
 import { themes } from '@/lib/themes'
 import { createClient } from '@/lib/supabase/client'
 import { ExternalLink } from 'lucide-react'
+import SocialLinksDisplay from '@/components/SocialLinksDisplay'
 
 export default function PublicProfile({
   profile,
@@ -38,7 +39,7 @@ export default function PublicProfile({
             className="w-full h-full object-cover"
           />
           {profile.background_attribution && (
-  <div className="absolute bottom-2 right-3 text-white/40 text-xs">
+  <div className="absolute top-2 right-3 text-white/40 text-xs">
     Photo by{' '}
     
     <a  href={profile.background_attribution.photographer_url}
@@ -90,7 +91,10 @@ export default function PublicProfile({
             </p>
           )}
         </div>
-
+{/* Social links - top position */}
+{profile.social_links_position === 'top' && (
+  <SocialLinksDisplay links={profile.social_links} theme={profile.theme} />
+)}
         {/* Links */}
         <div className="space-y-3 pb-16">
           {links.length === 0 && (
@@ -118,6 +122,11 @@ export default function PublicProfile({
             </button>
           ))}
         </div>
+
+        {/* Social links - bottom position */}
+{profile.social_links_position === 'bottom' && (
+  <SocialLinksDisplay links={profile.social_links} theme={profile.theme} />
+)}
 
         {/* Footer */}
         <div className="pb-8 text-center">

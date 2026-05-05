@@ -1,3 +1,8 @@
+export interface SocialLink {
+  platform: string
+  username: string
+}
+
 export interface Profile {
   id: string
   username: string
@@ -11,6 +16,8 @@ export interface Profile {
     unsplash_url: string
     download_url: string
   } | null
+  social_links: SocialLink[]
+  social_links_position: 'top' | 'bottom'
   theme: string
   created_at: string
   updated_at: string

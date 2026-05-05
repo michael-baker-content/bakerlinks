@@ -2,8 +2,9 @@
 
 import { useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Profile, Link as LinkType } from '@/lib/types'
+import { Profile, Link as LinkType, SocialLink } from '@/lib/types'
 import ImageUpload from '@/components/ImageUpload'
+import SocialLinksEditor from '@/components/SocialLinksEditor'
 import { themes } from '@/lib/themes'
 import {
   DndContext,
@@ -325,6 +326,8 @@ async function changePassword() {
     background_url: profile.background_url,
     updated_at: new Date().toISOString(),
     background_attribution: profile.background_attribution,
+    social_links: profile.social_links,
+    social_links_position: profile.social_links_position,
   })
       .eq('id', userId)
       .select()
@@ -344,6 +347,10 @@ function handleBackgroundUpload(url: string, attribution?: Attribution | null) {
     background_url: url || null,
     background_attribution: attribution ?? null,
   }))
+}
+
+function handleSocialLinksChange(links: SocialLink[], position: 'top' | 'bottom') {
+  setProfile(p => ({ ...p, social_links: links, social_links_position: position }))
 }
 
   const theme = themes[profile.theme] ?? themes.electric
@@ -510,6 +517,11 @@ function handleBackgroundUpload(url: string, attribution?: Attribution | null) {
                 aspectHint="Wide image recommended (1500×500px). Max 5MB."
               />
             </div>
+            <SocialLinksEditor
+              value={profile.social_links ?? []}
+              position={profile.social_links_position ?? 'bottom'}
+              onChange={handleSocialLinksChange}
+            />
 
               {/* Theme picker */}
               <div>

@@ -80,12 +80,15 @@ export default function ImageUpload({ bucket, userId, currentUrl, onUpload, labe
     if (!preview) return
     setUploading(true)
 
-    const ext = preview.split('.').pop()?.split('?')[0]
-    const path = `${userId}/${bucket === 'avatars' ? 'avatar' : 'background'}.${ext}`
+    // Only delete from storage if it's not an Unsplash URL
+    if (!preview.includes('unsplash.com')) {
+        const ext = preview.split('.').pop()?.split('?')[0]
+        const path = `${userId}/${bucket === 'avatars' ? 'avatar' : 'background'}.${ext}`
+        await supabase.storage.from(bucket).remove([path])
+    }
 
-    await supabase.storage.from(bucket).remove([path])
-    setPreview(null)
-    onUpload('')
+  setPreview(null)
+  onUpload('', null)
     setUploading(false)
   }
 
@@ -98,7 +101,7 @@ export default function ImageUpload({ bucket, userId, currentUrl, onUpload, labe
     <img
       src={preview}
       alt={label}
-      className={`w-full object-cover ${bucket === 'avatars' ? 'h-24 w-24 rounded-full' : 'h-32'}`}
+      className={`w-full object-contain ${bucket === 'avatars' ? 'h-24 w-24 rounded-full' : 'h-32'}`}
     />
     <div className="absolute top-2 right-2 flex gap-1">
       <button
