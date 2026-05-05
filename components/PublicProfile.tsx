@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import { Profile, Link as LinkType } from '@/lib/types'
 import { themes } from '@/lib/themes'
 import { createClient } from '@/lib/supabase/client'
@@ -22,6 +23,25 @@ export default function PublicProfile({
     .join('')
     .toUpperCase()
     .slice(0, 2)
+
+    useEffect(() => {
+  const themeMap: Record<string, { bg: string; scheme: string; scrollClass: string }> = {
+    electric: { bg: '#0a0a0f', scheme: 'dark',  scrollClass: '' },
+    neon:     { bg: '#050510', scheme: 'dark',  scrollClass: '' },
+    earthy:   { bg: '#0d1f0f', scheme: 'dark',  scrollClass: '' },
+    light:    { bg: '#f8f5f0', scheme: 'light', scrollClass: 'light-scrollbar' },
+    pastel:   { bg: '#ddeeff', scheme: 'light', scrollClass: 'light-scrollbar' },
+  }
+  const t = themeMap[profile.theme] ?? themeMap.electric
+  document.documentElement.style.backgroundColor = t.bg
+  document.documentElement.style.colorScheme = t.scheme
+  if (t.scrollClass) document.documentElement.classList.add(t.scrollClass)
+  return () => {
+    document.documentElement.style.backgroundColor = ''
+    document.documentElement.style.colorScheme = ''
+    document.documentElement.classList.remove('light-scrollbar')
+  }
+}, [profile.theme])
 
   return (
     <main id="main-content"  className={`min-h-screen ${theme.bg} ${theme.isDark ? 'noise' : ''}`}>
