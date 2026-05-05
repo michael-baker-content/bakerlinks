@@ -40,14 +40,17 @@ export default function DeleteAccountSection({ username }: Props) {
       ) : (
         <div className="space-y-3 p-4 rounded-xl border border-red-500/30 bg-red-500/5">
           <p className="text-red-400 text-sm font-medium">This will permanently delete your account and all your links. This cannot be undone.</p>
-          <p className="text-white/40 text-xs">Type your username <span className="text-white font-mono">{username}</span> to confirm:</p>
-          <input
-            type="text"
-            value={confirmText}
-            onChange={e => setConfirmText(e.target.value)}
-            placeholder={username}
-            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-red-500/30 text-white placeholder-white/20 focus:outline-none focus:border-red-500/60 text-sm font-mono"
-          />
+          <label htmlFor="delete-confirm" className="text-white/40 text-xs">
+  Type your username <span className="text-white font-mono">{username}</span> to confirm:
+</label>
+<input
+  id="delete-confirm"
+  type="text"
+  value={confirmText}
+  onChange={e => setConfirmText(e.target.value)}
+  placeholder={username}
+  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-red-500/30 text-white placeholder-white/20 focus:outline-none focus:border-red-500/60 text-sm font-mono"
+/>
           <div className="flex gap-2">
             <button
               onClick={() => { setShowConfirm(false); setConfirmText('') }}

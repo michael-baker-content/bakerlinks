@@ -42,13 +42,19 @@ export default function EmailSection({ provider }: Props) {
       <h3 className="text-white/50 text-xs uppercase tracking-wider mb-4">Email address</h3>
       {provider === 'email' ? (
         <div className="space-y-3">
-          <input
-            type="email"
-            value={newEmail}
-            onChange={e => setNewEmail(e.target.value)}
-            placeholder="New email address"
-            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/60 text-sm"
-          />
+  <div>
+    <label htmlFor="new-email" className="text-white/50 text-xs uppercase tracking-wider mb-1.5 block">
+      New email address
+    </label>
+    <input
+      id="new-email"
+      type="email"
+      value={newEmail}
+      onChange={e => setNewEmail(e.target.value)}
+      placeholder="you@example.com"
+      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/60 text-sm"
+    />
+  </div>
           {error && (
             <p className="text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">{error}</p>
           )}

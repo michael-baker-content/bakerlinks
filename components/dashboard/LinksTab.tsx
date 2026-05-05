@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import dynamic from 'next/dynamic'
 import { Link as LinkType } from '@/lib/types'
@@ -112,6 +112,39 @@ function LinkModal({
   const [title, setTitle] = useState(link?.title ?? '')
   const [url, setUrl] = useState(link?.url ?? '')
   const [description, setDescription] = useState(link?.description ?? '')
+  const titleInputRef = useRef<HTMLInputElement>(null)
+
+useEffect(() => {
+  titleInputRef.current?.focus()
+}, [])
+useEffect(() => {
+  const modal = document.querySelector('[role="dialog"]') as HTMLElement
+  if (!modal) return
+
+  const focusable = modal.querySelectorAll<HTMLElement>(
+    'button, input, textarea, select, [tabindex]:not([tabindex="-1"])'
+  )
+  const first = focusable[0]
+  const last = focusable[focusable.length - 1]
+
+  function handleTab(e: KeyboardEvent) {
+    if (e.key !== 'Tab') return
+    if (e.shiftKey) {
+      if (document.activeElement === first) {
+        e.preventDefault()
+        last.focus()
+      }
+    } else {
+      if (document.activeElement === last) {
+        e.preventDefault()
+        first.focus()
+      }
+    }
+  }
+
+  document.addEventListener('keydown', handleTab)
+  return () => document.removeEventListener('keydown', handleTab)
+}, [])
   const [favicon, setFavicon] = useState<string | null>(() => {
     if (link?.url) {
       try {
@@ -140,26 +173,33 @@ function LinkModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-[#0e0e1a] border border-white/10 rounded-2xl p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="font-display text-lg font-bold text-white">
-            {link?.id ? 'Edit link' : 'Add link'}
-          </h2>
-          <button onClick={onClose} className="text-white/40 hover:text-white">
-            <X size={18} />
-          </button>
-        </div>
+  <div
+    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="link-modal-title"
+    onKeyDown={e => e.key === 'Escape' && onClose()}
+  >
+    <div className="w-full max-w-md bg-[#0e0e1a] border border-white/10 rounded-2xl p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h2 id="link-modal-title" className="font-display text-lg font-bold text-white">
+          {link?.id ? 'Edit link' : 'Add link'}
+        </h2>
+        <button onClick={onClose} className="text-white/40 hover:text-white" aria-label="Close dialog">
+          <X size={18} />
+        </button>
+      </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="text-white/50 text-xs uppercase tracking-wider mb-1.5 block">Title</label>
             <input
-              value={title}
-              onChange={e => setTitle(e.target.value)}
-              required
-              placeholder="My Portfolio"
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/60 text-sm"
-            />
+  ref={titleInputRef}
+  value={title}
+  onChange={e => setTitle(e.target.value)}
+  required
+  placeholder="My Portfolio"
+  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/60 text-sm"
+/>
           </div>
           <div>
             <label className="text-white/50 text-xs uppercase tracking-wider mb-1.5 block">URL</label>
@@ -221,6 +261,7 @@ interface Props {
 export default function LinksTab({ initialLinks, userId }: Props) {
   const [links, setLinks] = useState(initialLinks)
   const [editingLink, setEditingLink] = useState<Partial<LinkType> | null | false>(false)
+  const addLinkButtonRef = useRef<HTMLButtonElement>(null)
   const supabase = createClient()
   const sensors = useSensors(useSensor(PointerSensor))
 
@@ -263,6 +304,7 @@ export default function LinksTab({ initialLinks, userId }: Props) {
     const oldIndex = links.findIndex(l => l.id === active.id)
     const newIndex = links.findIndex(l => l.id === over.id)
     const reordered = arrayMove(links, oldIndex, newIndex)
+    
     setLinks(reordered)
     await Promise.all(
       reordered.map((link, i) =>
@@ -276,17 +318,24 @@ export default function LinksTab({ initialLinks, userId }: Props) {
       {editingLink !== false && (
         <LinkModal
           link={editingLink}
-          onSave={saveLink}
-          onClose={() => setEditingLink(false)}
+          onSave={async (data) => {
+  await saveLink(data)
+  setTimeout(() => addLinkButtonRef.current?.focus(), 0)
+}}
+          onClose={() => {
+  setEditingLink(false)
+  setTimeout(() => addLinkButtonRef.current?.focus(), 0)
+}}
         />
       )}
 
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-display text-lg font-bold text-white">Your links</h2>
         <button
-          onClick={() => setEditingLink({})}
-          className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-sm font-medium transition-all hover:scale-105 active:scale-95"
-        >
+  ref={addLinkButtonRef}
+  onClick={() => setEditingLink({})}
+  className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-sm font-medium transition-all hover:scale-105 active:scale-95"
+>
           <Plus size={16} />
           Add link
         </button>
