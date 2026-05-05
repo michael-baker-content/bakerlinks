@@ -413,7 +413,7 @@ export default function DashboardClient({
 
   return (
     
-    <div className={`min-h-screen ${theme.bg} noise`}>
+    <div className="min-h-screen bg-[#0a0a0f] noise">
       {editingLink !== false && (
         <LinkModal
           link={editingLink}

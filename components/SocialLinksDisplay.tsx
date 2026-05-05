@@ -1,5 +1,6 @@
 import { SocialLink } from '@/lib/types'
-import { getPlatform, buildUrl, themeIconColors } from '@/lib/social-platforms'
+import { getPlatform, buildUrl } from '@/lib/social-platforms'
+import { themes } from '@/lib/themes'
 import SocialIcon from '@/components/SocialIcon'
 
 interface Props {
@@ -7,10 +8,11 @@ interface Props {
   theme: string
 }
 
-export default function SocialLinksDisplay({ links, theme }: Props) {
+export default function SocialLinksDisplay({ links, theme: themeName }: Props) {
   if (!links || links.length === 0) return null
 
-  const color = themeIconColors[theme] ?? '#a78bfa'
+  const theme = themes[themeName] ?? themes.electric
+  const color = theme.accentHex
 
   return (
     <div className="flex justify-center gap-4 my-4">
@@ -25,7 +27,7 @@ export default function SocialLinksDisplay({ links, theme }: Props) {
             target="_blank"
             rel="noopener noreferrer"
             title={`${platform.name}: ${link.username}`}
-            className="p-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all hover:scale-110"
+            className={`p-2.5 rounded-xl border ${theme.border} ${theme.isDark ? 'bg-white/5 hover:bg-white/10' : 'bg-white/60 hover:bg-white'} transition-all hover:scale-110`}
           >
             <SocialIcon iconName={platform.icon} size={22} color={color} />
           </a>

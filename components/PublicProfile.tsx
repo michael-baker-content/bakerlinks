@@ -24,7 +24,7 @@ export default function PublicProfile({
     .slice(0, 2)
 
   return (
-    <main className={`min-h-screen ${theme.bg} noise`}>
+    <main className={`min-h-screen ${theme.bg} ${theme.isDark ? 'noise' : ''}`}>
       {/* Background image or spacer */}
       {profile.background_url ? (
         <div className="relative w-full h-48 sm:h-64 overflow-hidden">
@@ -68,26 +68,26 @@ export default function PublicProfile({
             <img
               src={profile.avatar_url}
               alt={profile.display_name || profile.username}
-              className="w-24 h-24 rounded-full object-cover ring-4 ring-black/40 mb-4"
+              className={`w-24 h-24 rounded-full object-cover ring-4 ${theme.avatarRing} mb-4`}
             />
           ) : (
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center text-white font-display font-bold text-2xl mb-4 ring-4 ring-black/40">
+            <div className={`w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center text-white font-display font-bold text-2xl mb-4 ring-4 ${theme.avatarRing}`}>
               {initials}
             </div>
           )}
 
-          <h1 className="font-display text-2xl font-bold text-white mb-1">
+          <h1 className={`font-display text-2xl font-bold ${theme.text} mb-1`}>
             {profile.display_name || profile.username}
           </h1>
-          <p className="text-white/40 text-sm">@{profile.username}</p>
+          <p className={`${theme.textMuted} text-sm`}>@{profile.username}</p>
           {profile.bio && (
-            <p className="text-white/60 text-sm text-center mt-3 max-w-xs leading-relaxed">
+            <p className={`${theme.textMuted} text-sm text-center mt-3 max-w-xs leading-relaxed`}>
               {profile.bio}
             </p>
           )}
         </div>
 
-        {/* Social links - top position */}
+        {/* Social links - top */}
         {profile.social_links_position === 'top' && (
           <SocialLinksDisplay links={profile.social_links} theme={profile.theme} />
         )}
@@ -95,7 +95,7 @@ export default function PublicProfile({
         {/* Links */}
         <div className="space-y-3 pb-4">
           {links.length === 0 && (
-            <p className="text-center text-white/20 text-sm py-8">No links yet.</p>
+            <p className={`text-center ${theme.textFaint} text-sm py-8`}>No links yet.</p>
           )}
           {links.map((link, i) => (
             <a
@@ -104,26 +104,26 @@ export default function PublicProfile({
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => supabase.rpc('increment_link_clicks', { link_id: link.id })}
-              className={`block w-full text-left px-5 py-4 rounded-2xl border link-card glow-hover ${theme.card} transition-all group`}
+              className={`block w-full text-left px-5 py-4 rounded-2xl border link-card ${theme.card} transition-all group`}
               style={{ animationDelay: `${i * 60}ms` }}
             >
               <div className="flex items-center justify-between">
                 <div className="flex-1 min-w-0">
-                  <p className="text-white font-semibold text-sm truncate">{link.title}</p>
+                  <p className={`${theme.text} font-semibold text-sm truncate`}>{link.title}</p>
                   {link.description && (
-                    <p className="text-white/40 text-xs mt-0.5 truncate">{link.description}</p>
+                    <p className={`${theme.textMuted} text-xs mt-0.5 truncate`}>{link.description}</p>
                   )}
                 </div>
                 <ExternalLink
                   size={14}
-                  className="text-white/20 group-hover:text-white/60 transition-colors ml-3 flex-shrink-0"
+                  className={`${theme.textFaint} group-hover:${theme.textMuted} transition-colors ml-3 flex-shrink-0`}
                 />
               </div>
             </a>
           ))}
         </div>
 
-        {/* Social links - bottom position */}
+        {/* Social links - bottom */}
         {profile.social_links_position === 'bottom' && (
           <SocialLinksDisplay links={profile.social_links} theme={profile.theme} />
         )}
@@ -132,7 +132,7 @@ export default function PublicProfile({
         <div className="pb-8 text-center">
           <a
             href="/"
-            className="text-white/20 text-xs hover:text-white/40 transition-colors"
+            className={`${theme.footerText} text-xs hover:${theme.textMuted} transition-colors`}
           >
             Powered by <span className="font-display font-semibold">BakerLinks</span>
           </a>

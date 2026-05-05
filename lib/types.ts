@@ -1,8 +1,3 @@
-export interface SocialLink {
-  platform: string
-  username: string
-}
-
 export interface Profile {
   id: string
   username: string
@@ -37,13 +32,7 @@ export interface Link {
   updated_at: string
 }
 
-export type Theme = 'electric' | 'lava' | 'forest' | 'ocean' | 'void'
-
-export interface ThemeConfig {
-  name: string
-  bg: string
-  card: string
-  text: string
-  accent: string
-  border: string
+export interface SocialLink {
+  platform: string
+  username: string
 }
