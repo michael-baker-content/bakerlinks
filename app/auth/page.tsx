@@ -39,25 +39,24 @@ function AuthPageInner() {
     setSuccess('')
 
     if (mode === 'signup') {
-      const { error, data } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
-      })
-      if (error) setError(error.message)
-      else if (data.session) {
-        window.location.href = '/dashboard'
-      } else {
-        setSuccess('Check your email to confirm your account!')
-      }
+  const { error, data } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+  })
+  if (error) setError(error.message)
+  else if (data.session) {
+    window.location.href = '/dashboard'
+  } else if (data.user && !data.session) {
+    const createdAt = new Date(data.user.created_at).getTime()
+    const isExisting = Date.now() - createdAt > 60 * 1000
+    if (isExisting) {
+      setError('An account with this email already exists. Please sign in instead.')
     } else {
-      const { error, data } = await supabase.auth.signInWithPassword({ email, password })
-      if (error) setError(error.message)
-      else if (data.session) {
-        console.log('has session, redirecting')
-        window.location.href = '/dashboard'
-      }
+      setSuccess('Check your email to confirm your account!')
     }
+  }
+}
 
     setLoading(false)
   }
