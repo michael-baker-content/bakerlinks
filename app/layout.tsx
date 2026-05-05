@@ -14,8 +14,21 @@ const syne = Syne({
 
 export const metadata: Metadata = {
   title: 'BakerLinks – Your Links, Your Identity',
-  description: 'A Bakerific link-in-bio platform.',
-  icons: { icon: '/bakerlinks-logo-A.svg' }
+  description: 'Create your free link-in-bio page in minutes. Share one link everywhere.',
+  openGraph: {
+    title: 'BakerLinks – Your Links, Your Identity',
+    description: 'Create your free link-in-bio page in minutes. Share one link everywhere.',
+    url: 'https://bakerlinks.com',
+    siteName: 'BakerLinks',
+    images: [{ url: 'https://bakerlinks.com/bakerlinks-logo-A.svg', width: 400, height: 400 }],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'BakerLinks',
+    description: 'Create your free link-in-bio page in minutes. Share one link everywhere.',
+    images: ['https://bakerlinks.com/bakerlinks-logo-A.svg'],
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
