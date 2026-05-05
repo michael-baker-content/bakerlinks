@@ -127,21 +127,20 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Content */}
-        <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-4">
+        {/* Content — centered, with bottom padding to clear Safari nav */}
+        <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4" style={{ paddingBottom: 'env(safe-area-inset-bottom, 80px)' }}>
           <p className="text-white/30 text-xs uppercase tracking-widest mb-4">Example profile</p>
 
           {/* Phone frame */}
           <div className="relative w-full max-w-[300px] rounded-[2.5rem] border-2 border-white/10 overflow-hidden shadow-2xl shadow-purple-500/10">
 
-            {/* Background gradient — full color layer */}
+            {/* Background gradient */}
             <div
               className="absolute top-0 left-0 right-0 h-32"
               style={{
                 background: 'linear-gradient(135deg, #4c1d95 0%, #7c3aed 40%, #db2777 70%, #ea580c 100%)',
               }}
             />
-            {/* Fade to dark at bottom of gradient */}
             <div
               className="absolute top-0 left-0 right-0 h-32"
               style={{
@@ -149,15 +148,15 @@ export default function Home() {
               }}
             />
 
-            {/* Notch superimposed over gradient */}
+            {/* Notch */}
             <div className="relative z-10 flex justify-center pt-3">
               <div className="w-20 h-1.5 rounded-full bg-white/20" />
             </div>
 
-            {/* Spacer behind gradient */}
+            {/* Spacer */}
             <div className="h-20" />
 
-            {/* Avatar — transparent background so gradient shows through */}
+            {/* Avatar — no background so gradient shows through */}
             <div className="relative z-10 flex flex-col items-center -mt-7 px-5">
               <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center text-white font-display font-bold text-lg mb-3 ring-2 ring-[#0e0e1a]">
                 AR
@@ -169,7 +168,7 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Rest of content with solid background */}
+            {/* Links and socials */}
             <div className="relative z-10 px-5 pb-6 bg-[#0e0e1a]">
               <div className="flex justify-center gap-3 my-4">
                 {demoSocials.map(s => (
@@ -194,16 +193,6 @@ export default function Home() {
                 Powered by <span className="font-display font-semibold">BakerLinks</span>
               </p>
             </div>
-          </div>
-
-          <div className="mt-8 text-center">
-            <p className="text-white/40 text-sm mb-6">Ready to create yours?</p>
-            <Link
-              href="/auth?mode=signup"
-              className="px-8 py-4 bg-purple-600 hover:bg-purple-500 text-white rounded-full font-semibold transition-all hover:scale-105 active:scale-95 text-base"
-            >
-              Get started
-            </Link>
           </div>
         </div>
       </section>

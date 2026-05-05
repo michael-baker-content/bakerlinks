@@ -16,11 +16,6 @@ export default function PublicProfile({
   const theme = themes[profile.theme] ?? themes.electric
   const supabase = createClient()
 
-  async function handleLinkClick(link: LinkType) {
-    await supabase.rpc('increment_link_clicks', { link_id: link.id })
-    window.open(link.url, '_blank', 'noopener,noreferrer')
-  }
-
   const initials = (profile.display_name || profile.username)
     .split(' ')
     .map(w => w[0])
@@ -30,7 +25,7 @@ export default function PublicProfile({
 
   return (
     <main className={`min-h-screen ${theme.bg} noise`}>
-      {/* Background image or ambient glow */}
+      {/* Background image or spacer */}
       {profile.background_url ? (
         <div className="relative w-full h-48 sm:h-64 overflow-hidden">
           <img
@@ -38,29 +33,29 @@ export default function PublicProfile({
             alt="Profile background"
             className="w-full h-full object-cover"
           />
-          {profile.background_attribution && (
-  <div className="absolute top-2 right-3 text-white/40 text-xs">
-    Photo by{' '}
-    
-    <a  href={profile.background_attribution.photographer_url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="underline hover:text-white/70"
-    >
-      {profile.background_attribution.photographer_name}
-    </a>
-    {' '}on{' '}
-    
-    <a  href={profile.background_attribution.unsplash_url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="underline hover:text-white/70"
-    >
-      Unsplash
-    </a>
-  </div>
-)}
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60" />
+          {profile.background_attribution && (
+            <div className="absolute top-2 right-3 text-white/40 text-xs">
+              Photo by{' '}
+              <a
+                href={profile.background_attribution.photographer_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-white/70"
+              >
+                {profile.background_attribution.photographer_name}
+              </a>
+              {' '}on{' '}
+              <a
+                href={profile.background_attribution.unsplash_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-white/70"
+              >
+                Unsplash
+              </a>
+            </div>
+          )}
         </div>
       ) : (
         <div className="h-24" />
@@ -91,20 +86,25 @@ export default function PublicProfile({
             </p>
           )}
         </div>
-{/* Social links - top position */}
-{profile.social_links_position === 'top' && (
-  <SocialLinksDisplay links={profile.social_links} theme={profile.theme} />
-)}
+
+        {/* Social links - top position */}
+        {profile.social_links_position === 'top' && (
+          <SocialLinksDisplay links={profile.social_links} theme={profile.theme} />
+        )}
+
         {/* Links */}
-        <div className="space-y-3 pb-16">
+        <div className="space-y-3 pb-4">
           {links.length === 0 && (
             <p className="text-center text-white/20 text-sm py-8">No links yet.</p>
           )}
           {links.map((link, i) => (
-            <button
+            <a
               key={link.id}
-              onClick={() => handleLinkClick(link)}
-              className={`w-full text-left px-5 py-4 rounded-2xl border link-card glow-hover ${theme.card} transition-all group`}
+              href={link.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => supabase.rpc('increment_link_clicks', { link_id: link.id })}
+              className={`block w-full text-left px-5 py-4 rounded-2xl border link-card glow-hover ${theme.card} transition-all group`}
               style={{ animationDelay: `${i * 60}ms` }}
             >
               <div className="flex items-center justify-between">
@@ -119,14 +119,14 @@ export default function PublicProfile({
                   className="text-white/20 group-hover:text-white/60 transition-colors ml-3 flex-shrink-0"
                 />
               </div>
-            </button>
+            </a>
           ))}
         </div>
 
         {/* Social links - bottom position */}
-{profile.social_links_position === 'bottom' && (
-  <SocialLinksDisplay links={profile.social_links} theme={profile.theme} />
-)}
+        {profile.social_links_position === 'bottom' && (
+          <SocialLinksDisplay links={profile.social_links} theme={profile.theme} />
+        )}
 
         {/* Footer */}
         <div className="pb-8 text-center">
