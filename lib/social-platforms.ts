@@ -4,15 +4,6 @@ export interface SocialPlatform {
     urlTemplate: string
     icon: string
 }
-
-export const themeIconColors: Record<string, string> = {
-    electric: '#a78bfa',
-    lava: '#fb923c',
-    forest: '#4ade80',
-    ocean: '#38bdf8',
-    void: '#f472b6',
-}
-
 export const socialPlatforms: SocialPlatform[] = [
     { id: 'twitter', name: 'X / Twitter', urlTemplate: 'https://x.com/{username}', icon: 'FaXTwitter' },
     { id: 'instagram', name: 'Instagram', urlTemplate: 'https://instagram.com/{username}', icon: 'FaInstagram' },

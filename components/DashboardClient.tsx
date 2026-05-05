@@ -34,6 +34,15 @@ interface Attribution {
 }
 
 // ── Sortable Link Row ──────────────────────────────────────────
+function OAuthProviderMessage({ provider, feature }: { provider: string; feature: string }) {
+  const name = provider.charAt(0).toUpperCase() + provider.slice(1)
+  return (
+    <p className="text-white/30 text-sm">
+      You signed in with {name} — {feature} changes are managed through your {name} account.
+    </p>
+  )
+}
+
 function SortableLink({
   link,
   onEdit,
@@ -715,9 +724,7 @@ export default function DashboardClient({
                   </button>
                 </div>
               ) : (
-                <p className="text-white/30 text-sm">
-                  You signed in with {provider.charAt(0).toUpperCase() + provider.slice(1)} — email changes are managed through your {provider.charAt(0).toUpperCase() + provider.slice(1)} account.
-                </p>
+                <OAuthProviderMessage provider={provider} feature="email" />
               )}
             </div>
 
@@ -757,9 +764,7 @@ export default function DashboardClient({
                   </button>
                 </div>
               ) : (
-                <p className="text-white/30 text-sm">
-                  You signed in with {provider.charAt(0).toUpperCase() + provider.slice(1)} — password changes are managed through your {provider.charAt(0).toUpperCase() + provider.slice(1)} account.
-                </p>
+                <OAuthProviderMessage provider={provider} feature="password" />
               )}
             </div>
 
