@@ -67,7 +67,7 @@ function SortableLink({
 
       <div className="flex-1 min-w-0">
         <p className="text-white font-medium text-sm truncate">{link.title}</p>
-        <p className="text-white/40 text-xs truncate">{link.url}</p>
+        <p className="text-white/50 text-xs truncate">{link.url}</p>
       </div>
 
       <div className="flex items-center gap-1 text-white/30 text-xs">

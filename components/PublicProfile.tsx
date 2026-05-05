@@ -24,7 +24,7 @@ export default function PublicProfile({
     .slice(0, 2)
 
   return (
-    <main className={`min-h-screen ${theme.bg} ${theme.isDark ? 'noise' : ''}`}>
+    <main id="main-content"  className={`min-h-screen ${theme.bg} ${theme.isDark ? 'noise' : ''}`}>
       {/* Background image or spacer */}
       {profile.background_url ? (
         <div className="relative w-full h-48 sm:h-64 overflow-hidden">

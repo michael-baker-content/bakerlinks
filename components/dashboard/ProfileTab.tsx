@@ -84,7 +84,7 @@ export default function ProfileTab({ initialProfile, userId, provider }: Props) 
             />
           </div>
           {profile.username !== initialProfile.username && (
-            <p className="text-yellow-400/80 text-xs mt-2 flex items-center gap-1.5">
+            <p className="text-yellow-400 text-xs mt-2 flex items-center gap-1.5">
               <span>⚠️</span>
               Changing your username will break your existing link. Anyone using your old URL will get a 404.
             </p>

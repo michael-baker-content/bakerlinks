@@ -41,7 +41,7 @@ export default function DashboardClient({
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] noise">
+    <div id="main-content"  className="min-h-screen bg-[#0a0a0f] noise">
       {welcomeVisible && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-5 py-3 rounded-2xl bg-purple-600 text-white shadow-2xl shadow-purple-500/30">
           <span className="text-lg">🎉</span>

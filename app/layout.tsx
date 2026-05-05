@@ -35,8 +35,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={`${spaceGrotesk.variable} ${syne.variable} font-body antialiased`}>
-        {children}
-      </body>
+  
+    <a href="#main-content"
+    className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-purple-600 focus:text-white focus:rounded-xl focus:text-sm focus:font-semibold"
+  >
+    Skip to main content
+  </a>
+  {children}
+</body>
     </html>
   )
 }

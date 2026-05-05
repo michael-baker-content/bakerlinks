@@ -40,7 +40,7 @@ export default function DeleteAccountSection({ username }: Props) {
       ) : (
         <div className="space-y-3 p-4 rounded-xl border border-red-500/30 bg-red-500/5">
           <p className="text-red-400 text-sm font-medium">This will permanently delete your account and all your links. This cannot be undone.</p>
-          <label htmlFor="delete-confirm" className="text-white/40 text-xs">
+          <label htmlFor="delete-confirm" className="text-white/60 text-xs">
   Type your username <span className="text-white font-mono">{username}</span> to confirm:
 </label>
 <input

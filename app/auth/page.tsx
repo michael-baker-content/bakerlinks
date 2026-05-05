@@ -98,7 +98,7 @@ function AuthPageInner() {
           <h1 className="font-display text-2xl font-bold text-white mb-2">
             {mode === 'signin' ? 'Welcome back' : 'Create your page'}
           </h1>
-          <p className="text-white/40 text-sm mb-6">
+          <p className="text-white/60 text-sm mb-6">
             {mode === 'signin' ? 'Sign in to manage your links' : 'Start forging your digital identity'}
           </p>
 

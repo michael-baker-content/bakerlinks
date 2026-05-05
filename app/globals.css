@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --font-body: 'Space Grotesk', sans-serif;
-  --font-display: 'Syne', sans-serif;
+  --font-body: "Space Grotesk", sans-serif;
+  --font-display: "Syne", sans-serif;
 }
 
 * {
@@ -21,7 +21,7 @@ body {
 
 /* Noise texture overlay for depth */
 .noise::after {
-  content: '';
+  content: "";
   position: fixed;
   inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
@@ -31,8 +31,13 @@ body {
 
 /* Glowing border animation */
 @keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0); }
-  50% { box-shadow: 0 0 20px 2px rgba(124, 58, 237, 0.3); }
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(124, 58, 237, 0);
+  }
+  50% {
+    box-shadow: 0 0 20px 2px rgba(124, 58, 237, 0.3);
+  }
 }
 
 .glow-hover:hover {
@@ -60,6 +65,22 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-bounce {
+    animation: none;
+  }
+  .animate-pulse {
+    animation: none;
+  }
+  .animate-spin {
+    animation: none;
+  }
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
