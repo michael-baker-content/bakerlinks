@@ -7,6 +7,7 @@ import { X } from 'lucide-react'
 import DashboardHeader from '@/components/dashboard/DashboardHeader'
 import LinksTab from '@/components/dashboard/LinksTab'
 import ProfileTab from '@/components/dashboard/ProfileTab'
+import AnalyticsTab from '@/components/dashboard/AnalyticsTab'
 
 interface Props {
   initialProfile: Profile
@@ -23,7 +24,7 @@ export default function DashboardClient({
   provider,
   showWelcome,
 }: Props) {
-  const [tab, setTab] = useState<'links' | 'profile'>('links')
+  const [tab, setTab] = useState<'links' | 'profile' | 'analytics'>('links')
   const [copied, setCopied] = useState(false)
   const [welcomeVisible, setWelcomeVisible] = useState(showWelcome ?? false)
   const supabase = createClient()
@@ -65,17 +66,17 @@ export default function DashboardClient({
       <div className="max-w-2xl mx-auto px-4 py-8">
         {/* Tabs */}
         <div className="flex gap-1 mb-8 rounded-xl bg-white/5 p-1 w-fit">
-          {(['links', 'profile'] as const).map(t => (
-            <button
-              key={t}
-              onClick={() => setTab(t)}
-              className={`px-5 py-2 rounded-lg text-sm font-medium capitalize transition-all ${
-                tab === t ? 'bg-purple-600 text-white' : 'text-white/40 hover:text-white'
-              }`}
-            >
-              {t}
-            </button>
-          ))}
+          {(['links', 'profile', 'analytics'] as const).map(t => (
+  <button
+    key={t}
+    onClick={() => setTab(t)}
+    className={`px-5 py-2 rounded-lg text-sm font-medium capitalize transition-all ${
+      tab === t ? 'bg-purple-600 text-white' : 'text-white/40 hover:text-white'
+    }`}
+  >
+    {t}
+  </button>
+))}
         </div>
 
         {tab === 'links' && (
@@ -89,6 +90,9 @@ export default function DashboardClient({
             provider={provider}
           />
         )}
+        {tab === 'analytics' && (
+  <AnalyticsTab userId={userId} />
+)}
       </div>
     </div>
   )

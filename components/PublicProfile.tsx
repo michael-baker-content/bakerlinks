@@ -123,7 +123,13 @@ export default function PublicProfile({
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => supabase.rpc('increment_link_clicks', { link_id: link.id })}
+              onClick={() => {
+  supabase.rpc('increment_link_clicks', { link_id: link.id })
+  supabase.from('link_click_events').insert({
+    link_id: link.id,
+    user_id: profile.id,
+  })
+}}
               className={`block w-full text-left px-5 py-4 rounded-2xl border link-card ${theme.card} transition-all group`}
               style={{ animationDelay: `${i * 60}ms` }}
             >
