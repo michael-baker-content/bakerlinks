@@ -59,7 +59,8 @@ function SortableSocialLink({
         {...listeners}
         suppressHydrationWarning
         className="text-white/20 hover:text-white/50 cursor-grab drag-handle"
-      >
+      aria-label="Drag to reorder"
+>
         <GripVertical size={14} />
       </button>
       <SocialIcon iconName={platform.icon} size={16} color="#a78bfa" />
@@ -68,7 +69,8 @@ function SortableSocialLink({
       <button
         onClick={() => onRemove(link.platform)}
         className="p-1 rounded-lg hover:bg-red-500/20 text-white/30 hover:text-red-400 transition-colors"
-      >
+      aria-label={`Remove ${platform.name}`}
+>
         <Trash2 size={14} />
       </button>
     </div>

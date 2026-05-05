@@ -56,11 +56,12 @@ function SortableLink({
       }`}
     >
       <button
-        {...attributes}
-        {...listeners}
-        suppressHydrationWarning
-        className="text-white/20 hover:text-white/50 cursor-grab drag-handle"
-      >
+  {...attributes}
+  {...listeners}
+  suppressHydrationWarning
+  className="text-white/20 hover:text-white/50 cursor-grab drag-handle"
+  aria-label="Drag to reorder"
+>
         <GripVertical size={16} />
       </button>
 
@@ -76,23 +77,25 @@ function SortableLink({
 
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity">
         <button
-          onClick={() => onToggle(link.id, !link.active)}
-          className="p-1.5 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors"
-          title={link.active ? 'Hide link' : 'Show link'}
-        >
-          {link.active ? <Eye size={14} /> : <EyeOff size={14} />}
-        </button>
+  onClick={() => onToggle(link.id, !link.active)}
+  className="p-1.5 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors"
+  aria-label={link.active ? 'Hide link' : 'Show link'}
+>
+  {link.active ? <Eye size={14} /> : <EyeOff size={14} />}
+</button>
         <button
-          onClick={() => onEdit(link)}
-          className="p-1.5 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors"
-        >
-          <Pencil size={14} />
-        </button>
+  onClick={() => onEdit(link)}
+  className="p-1.5 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors"
+  aria-label="Edit link"
+>
+  <Pencil size={14} />
+</button>
         <button
-          onClick={() => onDelete(link.id)}
-          className="p-1.5 rounded-lg hover:bg-red-500/20 text-white/50 hover:text-red-400 transition-colors"
-        >
-          <Trash2 size={14} />
+  onClick={() => onDelete(link.id)}
+  className="p-1.5 rounded-lg hover:bg-red-500/20 text-white/50 hover:text-red-400 transition-colors"
+  aria-label="Delete link"
+>
+  <Trash2 size={14} />
         </button>
       </div>
     </div>

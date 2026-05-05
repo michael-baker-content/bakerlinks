@@ -124,7 +124,8 @@ export default function ImageUpload({ bucket, userId, currentUrl, onUpload, labe
         onClick={handleRemove}
         disabled={uploading}
         className="p-1.5 rounded-lg bg-black/60 hover:bg-red-500/80 text-white transition-colors"
-      >
+      aria-label="Remove image"
+>
         <X size={14} />
       </button>
     </div>

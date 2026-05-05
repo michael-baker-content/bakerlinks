@@ -80,9 +80,9 @@ export default function UnsplashPicker({ onSelect, onClose }: Props) {
       <div className="w-full max-w-2xl bg-[#0e0e1a] border border-white/10 rounded-2xl p-6 max-h-[80vh] flex flex-col">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-display text-lg font-bold text-white">Search Unsplash</h2>
-          <button onClick={onClose} className="text-white/40 hover:text-white">
-            <X size={18} />
-          </button>
+          <button onClick={onClose} className="text-white/40 hover:text-white" aria-label="Close Unsplash picker">
+  <X size={18} />
+</button>
         </div>
 
         <form onSubmit={search} className="flex gap-2 mb-4">

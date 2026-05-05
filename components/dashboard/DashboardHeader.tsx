@@ -14,10 +14,11 @@ export default function DashboardHeader({ username, onCopy, onSignOut, copied }:
   const [showMenu, setShowMenu] = useState(false)
 
   return (
-    <header className="border-b border-white/5 px-6 py-4 flex items-center justify-between">
-      <span className="font-display text-xl font-bold text-white">
-        Baker<span className="text-purple-400">Links</span>
-      </span>
+    <header className="border-b border-white/5 px-6 py-4">
+  <div className="max-w-2xl mx-auto flex items-center justify-between">
+    <span className="font-display text-xl font-bold text-white">
+      Baker<span className="text-purple-400">Links</span>
+    </span>
 
       {/* Desktop buttons */}
       <div className="hidden sm:flex items-center gap-3">
@@ -89,6 +90,7 @@ export default function DashboardHeader({ username, onCopy, onSignOut, copied }:
             </div>
           </>
         )}
+      </div>
       </div>
     </header>
   )
