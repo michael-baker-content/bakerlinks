@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Profile, SocialLink } from '@/lib/types'
-import { themes } from '@/lib/themes'
 import ImageUpload from '@/components/ImageUpload'
 import SocialLinksEditor from '@/components/SocialLinksEditor'
 import EmailSection from '@/components/dashboard/EmailSection'
@@ -37,7 +36,6 @@ export default function ProfileTab({ initialProfile, profile, onProfileChange, u
         username: profile.username,
         display_name: profile.display_name,
         bio: profile.bio,
-        theme: profile.theme,
         avatar_url: profile.avatar_url,
         background_url: profile.background_url,
         background_attribution: profile.background_attribution,
@@ -53,24 +51,24 @@ export default function ProfileTab({ initialProfile, profile, onProfileChange, u
   }
 
   function handleAvatarUpload(url: string) {
-  onProfileChange({ ...profile, avatar_url: url || null })
-}
+    onProfileChange({ ...profile, avatar_url: url || null })
+  }
 
   function handleBackgroundUpload(url: string, attribution?: Attribution | null) {
     onProfileChange({
-    ...profile,
-    background_url: url || null,
-    background_attribution: attribution ?? null,
-  })
-}
+      ...profile,
+      background_url: url || null,
+      background_attribution: attribution ?? null,
+    })
+  }
 
   function handleSocialLinksChange(links: SocialLink[], position: 'top' | 'bottom') {
-  onProfileChange({ ...profile, social_links: links, social_links_position: position })
-}
+    onProfileChange({ ...profile, social_links: links, social_links_position: position })
+  }
 
   return (
     <div className="space-y-6">
-      <h2 className="font-display text-lg font-bold text-white">Profile settings</h2>
+      <h2 className="font-display text-lg font-bold text-white">Profile</h2>
 
       <div className="space-y-4">
         {/* Username */}
@@ -85,7 +83,7 @@ export default function ProfileTab({ initialProfile, profile, onProfileChange, u
             />
           </div>
           {profile.username !== initialProfile.username && (
-            <p className="text-yellow-400 text-xs mt-2 flex items-center gap-1.5">
+            <p className="text-yellow-400/80 text-xs mt-2 flex items-center gap-1.5">
               <span>⚠️</span>
               Changing your username will break your existing link. Anyone using your old URL will get a 404.
             </p>
@@ -97,7 +95,7 @@ export default function ProfileTab({ initialProfile, profile, onProfileChange, u
           <label className="text-white/50 text-xs uppercase tracking-wider mb-1.5 block">Display name</label>
           <input
             value={profile.display_name ?? ''}
-            onChange={e => onProfileChange(({ ...profile, display_name: e.target.value }))}
+            onChange={e => onProfileChange({ ...profile, display_name: e.target.value })}
             placeholder="Your Name"
             className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/60 text-sm"
           />
@@ -108,7 +106,7 @@ export default function ProfileTab({ initialProfile, profile, onProfileChange, u
           <label className="text-white/50 text-xs uppercase tracking-wider mb-1.5 block">Bio</label>
           <textarea
             value={profile.bio ?? ''}
-            onChange={e => onProfileChange(({ ...profile, bio: e.target.value }))}
+            onChange={e => onProfileChange({ ...profile, bio: e.target.value })}
             placeholder="A short bio…"
             rows={3}
             className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/60 text-sm resize-none"
@@ -141,26 +139,6 @@ export default function ProfileTab({ initialProfile, profile, onProfileChange, u
           position={profile.social_links_position ?? 'bottom'}
           onChange={handleSocialLinksChange}
         />
-
-        {/* Theme */}
-        <div>
-          <label className="text-white/50 text-xs uppercase tracking-wider mb-3 block">Theme</label>
-          <div className="grid grid-cols-5 gap-2">
-            {Object.entries(themes).map(([key, t]) => (
-              <button
-                key={key}
-                onClick={() => onProfileChange(({ ...profile, theme: key }))}
-                className={`p-3 rounded-xl border text-xs font-medium transition-all ${
-                  profile.theme === key
-                    ? 'border-purple-500 bg-purple-500/20 text-white'
-                    : 'border-white/10 bg-white/5 text-white/50 hover:text-white hover:border-white/20'
-                }`}
-              >
-                {t.name}
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
 
       {/* Save profile */}

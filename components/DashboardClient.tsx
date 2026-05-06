@@ -5,8 +5,9 @@ import { createClient } from '@/lib/supabase/client'
 import { Profile, Link as LinkType } from '@/lib/types'
 import { X, ExternalLink } from 'lucide-react'
 import DashboardHeader from '@/components/dashboard/DashboardHeader'
-import LinksTab from '@/components/dashboard/LinksTab'
+import ContentTab from '@/components/dashboard/ContentTab'
 import ProfileTab from '@/components/dashboard/ProfileTab'
+import StyleTab from '@/components/dashboard/StyleTab'
 import AnalyticsTab from '@/components/dashboard/AnalyticsTab'
 import ProfilePreview from '@/components/dashboard/ProfilePreview'
 
@@ -18,6 +19,8 @@ interface Props {
   showWelcome?: boolean
 }
 
+type Tab = 'content' | 'profile' | 'style' | 'analytics'
+
 export default function DashboardClient({
   initialProfile,
   initialLinks,
@@ -25,7 +28,7 @@ export default function DashboardClient({
   provider,
   showWelcome,
 }: Props) {
-  const [tab, setTab] = useState<'links' | 'profile' | 'analytics'>('links')
+  const [tab, setTab] = useState<Tab>('content')
   const [copied, setCopied] = useState(false)
   const [welcomeVisible, setWelcomeVisible] = useState(showWelcome ?? false)
   const [profile, setProfile] = useState(initialProfile)
@@ -44,6 +47,15 @@ export default function DashboardClient({
     window.location.href = '/'
   }
 
+  const tabs: { id: Tab; label: string }[] = [
+    { id: 'content', label: 'Content' },
+    { id: 'profile', label: 'Profile' },
+    { id: 'style', label: 'Style' },
+    { id: 'analytics', label: 'Analytics' },
+  ]
+
+  const showPreview = tab === 'profile' || tab === 'style'
+
   return (
     <div id="main-content" className="min-h-screen bg-[#0a0a0f] noise flex flex-col">
       {welcomeVisible && (
@@ -60,82 +72,100 @@ export default function DashboardClient({
       )}
 
       <DashboardHeader
-        username={initialProfile.username}
+        username={profile.username}
         onCopy={copyLink}
         onSignOut={signOut}
         copied={copied}
       />
 
-      <div className={`flex-1 mx-auto w-full px-4 py-8 ${tab === 'profile' ? 'max-w-5xl' : 'max-w-2xl'}`}>
+      <div className={`flex-1 mx-auto w-full px-4 py-8 ${showPreview ? 'max-w-5xl' : 'max-w-2xl'}`}>
         {/* Tabs */}
         <div className="flex gap-1 mb-8 rounded-xl bg-white/5 p-1 w-fit">
-          {(['links', 'profile', 'analytics'] as const).map(t => (
-  <button
-    key={t}
-    onClick={() => setTab(t)}
-    className={`px-5 py-2 rounded-lg text-sm font-medium capitalize transition-all ${
-      tab === t ? 'bg-purple-600 text-white' : 'text-white/40 hover:text-white'
-    }`}
-  >
-    {t}
-  </button>
-))}
+          {tabs.map(t => (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              className={`px-5 py-2 rounded-lg text-sm font-medium transition-all ${
+                tab === t.id ? 'bg-purple-600 text-white' : 'text-white/40 hover:text-white'
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
         </div>
 
-        {tab === 'links' && (
-          <LinksTab initialLinks={initialLinks} userId={userId} />
+        {/* Content */}
+        {tab === 'content' && (
+          <ContentTab
+            initialLinks={initialLinks}
+            userId={userId}
+            profile={profile}
+            onProfileChange={setProfile}
+          />
         )}
 
-        {tab === 'profile' && (
-  <>
-    {/* Mobile/narrow preview modal */}
-    {showPreviewModal && (
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div className="w-full max-w-sm">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-white font-semibold">Profile preview</span>
-            <button
-              onClick={() => setShowPreviewModal(false)}
-              className="text-white/40 hover:text-white"
-            >
-              <X size={20} />
-            </button>
-          </div>
-          <ProfilePreview profile={profile} />
-        </div>
-      </div>
-    )}
+        {(tab === 'profile' || tab === 'style') && (
+          <>
+            {/* Mobile preview modal */}
+            {showPreviewModal && (
+              <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                <div className="w-full max-w-sm">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-white font-semibold">Profile preview</span>
+                    <button onClick={() => setShowPreviewModal(false)} className="text-white/40 hover:text-white">
+                      <X size={20} />
+                    </button>
+                  </div>
+                  <ProfilePreview profile={profile} />
+                </div>
+              </div>
+            )}
 
-    <div className="flex gap-8 items-start">
-      <div className="flex-1 min-w-0">
-        <div className="lg:hidden flex justify-end mb-4">
-  <button
-    onClick={() => setShowPreviewModal(true)}
-    className="flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white text-sm transition-all"
-  >
-    <ExternalLink size={14} />
-    Preview
-  </button>
-</div>
-        <ProfileTab
-          initialProfile={initialProfile}
-          profile={profile}
-          onProfileChange={setProfile}
-          userId={userId}
-          provider={provider}
-        />
-      </div>
-      <div className="hidden lg:block w-72 flex-shrink-0 relative">
-  <div className="fixed" style={{ width: '288px' }}>
-    <ProfilePreview profile={profile} />
-  </div>
-</div>
-    </div>
-  </>
-)}
+            <div className="flex gap-8 items-start">
+              <div className="flex-1 min-w-0">
+                {/* Preview button for narrow screens */}
+                <div className="lg:hidden flex justify-end mb-4">
+                  <button
+                    onClick={() => setShowPreviewModal(true)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white text-sm transition-all"
+                  >
+                    <ExternalLink size={14} />
+                    Preview
+                  </button>
+                </div>
+
+                {tab === 'profile' && (
+                  <ProfileTab
+                    initialProfile={initialProfile}
+                    profile={profile}
+                    onProfileChange={setProfile}
+                    userId={userId}
+                    provider={provider}
+                  />
+                )}
+
+                {tab === 'style' && (
+                  <StyleTab
+                    profile={profile}
+                    onProfileChange={setProfile}
+                    userId={userId}
+                  />
+                )}
+              </div>
+
+              {/* Desktop preview */}
+              <div className="hidden lg:block w-72 flex-shrink-0 relative">
+                <div className="fixed" style={{ width: '288px' }}>
+                  <ProfilePreview profile={profile} />
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
         {tab === 'analytics' && (
-  <AnalyticsTab userId={userId} />
-)}
+          <AnalyticsTab userId={userId} />
+        )}
       </div>
     </div>
   )

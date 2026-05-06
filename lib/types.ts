@@ -14,8 +14,13 @@ export interface Profile {
   social_links: SocialLink[]
   social_links_position: 'top' | 'bottom'
   theme: string
+  layout: string
+  about_enabled: boolean
+  about_title: string | null
+  about_content: string | null
   created_at: string
   updated_at: string
+  about_markdown: string | null
 }
 
 export interface Link {
