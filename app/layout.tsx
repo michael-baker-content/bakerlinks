@@ -14,7 +14,12 @@ const syne = Syne({
 
 export const metadata: Metadata = {
   title: 'BakerLinks – Your Links, Your Identity',
-  description: 'Create your free link-in-bio page in minutes. Share one link everywhere.',
+  description: 'Create your free link in bio page in minutes. Share one link everywhere.',
+  icons: {
+    icon: '/bakerlinks-logo-A.svg',
+    shortcut: '/bakerlinks-logo-A.svg',
+    apple: '/bakerlinks-logo-A.svg',
+  },
   openGraph: {
     title: 'BakerLinks – Your Links, Your Identity',
     description: 'Create your free link-in-bio page in minutes. Share one link everywhere.',

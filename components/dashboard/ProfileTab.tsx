@@ -19,12 +19,13 @@ interface Attribution {
 
 interface Props {
   initialProfile: Profile
+  profile: Profile
+  onProfileChange: (profile: Profile) => void
   userId: string
   provider: string
 }
 
-export default function ProfileTab({ initialProfile, userId, provider }: Props) {
-  const [profile, setProfile] = useState(initialProfile)
+export default function ProfileTab({ initialProfile, profile, onProfileChange, userId, provider }: Props) {
   const [saving, setSaving] = useState(false)
   const supabase = createClient()
 
@@ -47,25 +48,25 @@ export default function ProfileTab({ initialProfile, userId, provider }: Props) 
       .eq('id', userId)
       .select()
       .single()
-    if (updated) setProfile(updated)
+    if (updated) onProfileChange(updated)
     setSaving(false)
   }
 
   function handleAvatarUpload(url: string) {
-    setProfile(p => ({ ...p, avatar_url: url || null }))
-  }
+  onProfileChange({ ...profile, avatar_url: url || null })
+}
 
   function handleBackgroundUpload(url: string, attribution?: Attribution | null) {
-    setProfile(p => ({
-      ...p,
-      background_url: url || null,
-      background_attribution: attribution ?? null,
-    }))
-  }
+    onProfileChange({
+    ...profile,
+    background_url: url || null,
+    background_attribution: attribution ?? null,
+  })
+}
 
   function handleSocialLinksChange(links: SocialLink[], position: 'top' | 'bottom') {
-    setProfile(p => ({ ...p, social_links: links, social_links_position: position }))
-  }
+  onProfileChange({ ...profile, social_links: links, social_links_position: position })
+}
 
   return (
     <div className="space-y-6">
@@ -79,7 +80,7 @@ export default function ProfileTab({ initialProfile, userId, provider }: Props) 
             <span className="px-4 py-3 text-white/30 text-sm border-r border-white/10">bakerlinks.com/</span>
             <input
               value={profile.username}
-              onChange={e => setProfile(p => ({ ...p, username: e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '') }))}
+              onChange={e => onProfileChange({ ...profile, username: e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '') })}
               className="flex-1 px-4 py-3 bg-transparent text-white text-sm focus:outline-none placeholder-white/20"
             />
           </div>
@@ -96,7 +97,7 @@ export default function ProfileTab({ initialProfile, userId, provider }: Props) 
           <label className="text-white/50 text-xs uppercase tracking-wider mb-1.5 block">Display name</label>
           <input
             value={profile.display_name ?? ''}
-            onChange={e => setProfile(p => ({ ...p, display_name: e.target.value }))}
+            onChange={e => onProfileChange(({ ...profile, display_name: e.target.value }))}
             placeholder="Your Name"
             className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/60 text-sm"
           />
@@ -107,7 +108,7 @@ export default function ProfileTab({ initialProfile, userId, provider }: Props) 
           <label className="text-white/50 text-xs uppercase tracking-wider mb-1.5 block">Bio</label>
           <textarea
             value={profile.bio ?? ''}
-            onChange={e => setProfile(p => ({ ...p, bio: e.target.value }))}
+            onChange={e => onProfileChange(({ ...profile, bio: e.target.value }))}
             placeholder="A short bio…"
             rows={3}
             className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/60 text-sm resize-none"
@@ -148,7 +149,7 @@ export default function ProfileTab({ initialProfile, userId, provider }: Props) 
             {Object.entries(themes).map(([key, t]) => (
               <button
                 key={key}
-                onClick={() => setProfile(p => ({ ...p, theme: key }))}
+                onClick={() => onProfileChange(({ ...profile, theme: key }))}
                 className={`p-3 rounded-xl border text-xs font-medium transition-all ${
                   profile.theme === key
                     ? 'border-purple-500 bg-purple-500/20 text-white'

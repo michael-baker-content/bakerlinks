@@ -6,6 +6,7 @@ export interface ThemeConfig {
   text: string
   textMuted: string
   textFaint: string
+  textHeading: string
   accent: string
   accentHex: string
   border: string
@@ -25,6 +26,7 @@ export const themes: Record<string, ThemeConfig> = {
     text: 'text-white',
     textMuted: 'text-white/50',
     textFaint: 'text-white/20',
+    textHeading: 'text-white',
     accent: 'text-[#a78bfa]',
     accentHex: '#a78bfa',
     border: 'border-[#7c3aed]/20',
@@ -39,9 +41,10 @@ export const themes: Record<string, ThemeConfig> = {
     isDark: true,
     bg: 'bg-[#050510]',
     card: 'border-[#00f5ff]/30 hover:border-[#00f5ff] bg-[#0a0a1f] hover:bg-[#0d0d25]',
-    text: 'text-[#ff006e]',
+    text: 'text-white',
     textMuted: 'text-white/50',
     textFaint: 'text-white/20',
+    textHeading: 'text-[#ff006e]',
     accent: 'text-[#00f5ff]',
     accentHex: '#00f5ff',
     border: 'border-[#00f5ff]/20',
@@ -59,6 +62,7 @@ export const themes: Record<string, ThemeConfig> = {
     text: 'text-[#f5e6d0]',
     textMuted: 'text-[#f5e6d0]/60',
     textFaint: 'text-[#f5e6d0]/20',
+    textHeading: 'text-[#f5e6d0]',
     accent: 'text-[#e8a265]',
     accentHex: '#e8a265',
     border: 'border-[#c2855a]/20',
@@ -76,6 +80,7 @@ export const themes: Record<string, ThemeConfig> = {
     text: 'text-[#1c1917]',
     textMuted: 'text-gray-600',
     textFaint: 'text-[#1c1917]/25',
+    textHeading: 'text-[#1c1917]',
     accent: 'text-[#d97706]',
     accentHex: '#d97706',
     border: 'border-[#f59e0b]',
@@ -93,6 +98,7 @@ export const themes: Record<string, ThemeConfig> = {
     text: 'text-[#1e3a5f]',
     textMuted: 'text-[#3d3558]/80',
     textFaint: 'text-[#1e3a5f]/30',
+    textHeading: 'text-[#1e3a5f]',
     accent: 'text-[#f472b6]',
     accentHex: '#f472b6',
     border: 'border-[#f9a8d4]/40',
