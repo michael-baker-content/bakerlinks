@@ -21,7 +21,7 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import {
   Plus, Pencil, Trash2, GripVertical,
-  Eye, EyeOff, BarChart2, X,
+  Eye, EyeOff, BarChart2, X, ArrowUp, ArrowDown,
 } from 'lucide-react'
 
 // ── Sortable Link Row ──────────────────────────────────────────
@@ -30,11 +30,19 @@ function SortableLink({
   onEdit,
   onDelete,
   onToggle,
+  onMoveUp,
+  onMoveDown,
+  isFirst,
+  isLast,
 }: {
   link: LinkType
   onEdit: (l: LinkType) => void
   onDelete: (id: string) => void
   onToggle: (id: string, active: boolean) => void
+  onMoveUp: (id: string) => void
+  onMoveDown: (id: string) => void
+  isFirst: boolean
+  isLast: boolean
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: link.id })
@@ -65,9 +73,28 @@ function SortableLink({
         <GripVertical size={16} />
       </button>
 
+      <div className="flex flex-col gap-0.5 [@media(hover:hover)]:hidden">
+        <button
+          onClick={() => onMoveUp(link.id)}
+          disabled={isFirst}
+          className="p-1 rounded text-white/30 hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+          aria-label="Move link up"
+        >
+          <ArrowUp size={12} />
+        </button>
+        <button
+          onClick={() => onMoveDown(link.id)}
+          disabled={isLast}
+          className="p-1 rounded text-white/30 hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+          aria-label="Move link down"
+        >
+          <ArrowDown size={12} />
+        </button>
+      </div>
+
       <div className="flex-1 min-w-0">
         <p className="text-white font-medium text-sm truncate">{link.title}</p>
-        <p className="text-white/40 text-xs line-clamp-2">{link.url}</p>
+        <p className="text-white/40 text-xs truncate">{link.url}</p>
       </div>
 
       <div className="flex items-center gap-1 text-white/30 text-xs">
@@ -314,6 +341,22 @@ async function saveLink(data: { title: string; url: string; description: string;
     setLinks(ls => ls.map(l => l.id === id ? { ...l, active } : l))
   }
 
+  async function moveLink(id: string, direction: 'up' | 'down') {
+    const index = links.findIndex(l => l.id === id)
+    if (direction === 'up' && index === 0) return
+    if (direction === 'down' && index === links.length - 1) return
+
+    const newIndex = direction === 'up' ? index - 1 : index + 1
+    const reordered = arrayMove(links, index, newIndex)
+    setLinks(reordered)
+
+    await Promise.all(
+      reordered.map((link, i) =>
+        supabase.from('links').update({ position: i }).eq('id', link.id)
+      )
+    )
+  }
+
   async function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event
     if (!over || active.id === over.id) return
@@ -380,13 +423,17 @@ async function saveLink(data: { title: string; url: string; description: string;
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={links.map(l => l.id)} strategy={verticalListSortingStrategy}>
             <div className="space-y-2">
-              {links.map(link => (
+              {links.map((link, index) => (
                 <SortableLink
                   key={link.id}
                   link={link}
                   onEdit={l => setEditingLink(l)}
                   onDelete={deleteLink}
                   onToggle={toggleLink}
+                  onMoveUp={(id) => moveLink(id, 'up')}
+                  onMoveDown={(id) => moveLink(id, 'down')}
+                  isFirst={index === 0}
+                  isLast={index === links.length - 1}
                 />
               ))}
             </div>
