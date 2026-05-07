@@ -16,12 +16,37 @@ function ResetPageInner() {
   const supabase = createClient()
 
   useEffect(() => {
-    // Supabase puts the session in the URL hash after clicking the reset link
-    supabase.auth.onAuthStateChange((event) => {
+    // Handle hash fragment from Supabase reset email
+    const hashParams = new URLSearchParams(window.location.hash.substring(1))
+    const accessToken = hashParams.get('access_token')
+    const type = hashParams.get('type')
+    const errorCode = hashParams.get('error')
+    const errorDescription = hashParams.get('error_description')
+
+    if (errorCode) {
+      setError(errorDescription?.replace(/\+/g, ' ') ?? 'Link is invalid or has expired.')
+      return
+    }
+
+    if (accessToken && type === 'recovery') {
+      supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: hashParams.get('refresh_token') ?? '',
+      }).then(({ error }) => {
+        if (error) setError(error.message)
+        else setReady(true)
+      })
+      return
+    }
+
+    // Fall back to auth state change for PKCE flow
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'PASSWORD_RECOVERY') {
         setReady(true)
       }
     })
+
+    return () => subscription.unsubscribe()
   }, [])
 
   async function handleSubmit(e: React.FormEvent) {
@@ -53,10 +78,24 @@ function ResetPageInner() {
       <div className="w-full max-w-md">
         <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-8">
           <h1 className="font-display text-2xl font-bold text-white mb-2">Set new password</h1>
-          <p className="text-white/40 text-sm mb-6">Enter your new password below.</p>
+          <p className="text-white/60 text-sm mb-6">Enter your new password below.</p>
 
-          {!ready && !success && (
+          {!ready && !success && !error && (
             <p className="text-white/40 text-sm text-center py-4">Verifying your reset link…</p>
+          )}
+
+          {error && (
+            <div className="space-y-4">
+              <p className="text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">{error}</p>
+              <p className="text-white/40 text-sm text-center">
+                <button
+                  onClick={() => window.location.href = '/auth'}
+                  className="text-purple-400 hover:text-purple-300 transition-colors"
+                >
+                  Request a new reset link
+                </button>
+              </p>
+            </div>
           )}
 
           {success && (
@@ -68,8 +107,11 @@ function ResetPageInner() {
           {ready && !success && (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="text-white/50 text-xs font-medium mb-1.5 block uppercase tracking-wider">New password</label>
+                <label htmlFor="new-password" className="text-white/50 text-xs font-medium mb-1.5 block uppercase tracking-wider">
+                  New password
+                </label>
                 <input
+                  id="new-password"
                   type="password"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
@@ -80,8 +122,11 @@ function ResetPageInner() {
                 />
               </div>
               <div>
-                <label className="text-white/50 text-xs font-medium mb-1.5 block uppercase tracking-wider">Confirm password</label>
+                <label htmlFor="confirm-password" className="text-white/50 text-xs font-medium mb-1.5 block uppercase tracking-wider">
+                  Confirm password
+                </label>
                 <input
+                  id="confirm-password"
                   type="password"
                   value={confirm}
                   onChange={e => setConfirm(e.target.value)}
@@ -91,10 +136,6 @@ function ResetPageInner() {
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/60 transition-colors text-sm"
                 />
               </div>
-
-              {error && (
-                <p className="text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">{error}</p>
-              )}
 
               <button
                 type="submit"

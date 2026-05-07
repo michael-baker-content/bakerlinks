@@ -25,7 +25,7 @@ function AuthPageInner() {
   e.preventDefault()
   setLoading(true)
   const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
-    redirectTo: `${window.location.origin}/auth/callback?type=recovery`,
+    redirectTo: `${window.location.origin}/auth/reset`,
   })
   if (error) setError(error.message)
   else setForgotSent(true)
