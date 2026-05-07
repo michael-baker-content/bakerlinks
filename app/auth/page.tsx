@@ -25,7 +25,7 @@ function AuthPageInner() {
   e.preventDefault()
   setLoading(true)
   const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
-    redirectTo: `${window.location.origin}/auth/reset`,
+    redirectTo: `${window.location.origin}/auth/callback?type=recovery`,
   })
   if (error) setError(error.message)
   else setForgotSent(true)
@@ -55,6 +55,13 @@ function AuthPageInner() {
     } else {
       setSuccess('Check your email to confirm your account!')
     }
+  }
+} else {
+  const { error, data } = await supabase.auth.signInWithPassword({ email, password })
+  console.log('sign in result:', JSON.stringify(data), error)
+  if (error) setError(error.message)
+  else if (data.session) {
+    window.location.href = '/dashboard'
   }
 }
 
