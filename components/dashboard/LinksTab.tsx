@@ -201,12 +201,12 @@ useEffect(() => {
       value={title}
       onChange={e => setTitle(e.target.value)}
       required
-      maxLength={40}
+      maxLength={34}
       placeholder="My Portfolio"
       className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/60 text-sm pr-16"
     />
     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 text-xs">
-      {title.length}/40
+      {title.length}/34
     </span>
   </div>
 </div>
@@ -238,12 +238,12 @@ useEffect(() => {
       value={description}
       onChange={e => setDescription(e.target.value)}
       placeholder="A short description"
-      maxLength={80}
+      maxLength={96}
       rows={2}
       className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/60 text-sm resize-none"
     />
     <span className="absolute right-3 bottom-3 text-white/20 text-xs">
-      {description.length}/80
+      {description.length}/96
     </span>
   </div>
 </div>
