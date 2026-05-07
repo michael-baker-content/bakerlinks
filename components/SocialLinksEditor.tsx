@@ -19,7 +19,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { socialPlatforms, getPlatform } from '@/lib/social-platforms'
 import { SocialLink } from '@/lib/types'
 import SocialIcon from '@/components/SocialIcon'
-import { Plus, Trash2, GripVertical } from 'lucide-react'
+import { Plus, Trash2, GripVertical, ArrowUp, ArrowDown } from 'lucide-react'
 
 interface Props {
   value: SocialLink[]
@@ -32,9 +32,17 @@ const MAX_SOCIAL_LINKS = 6
 function SortableSocialLink({
   link,
   onRemove,
+  onMoveUp,
+  onMoveDown,
+  isFirst,
+  isLast,
 }: {
   link: SocialLink
   onRemove: (platform: string) => void
+  onMoveUp: (platform: string) => void
+  onMoveDown: (platform: string) => void
+  isFirst: boolean
+  isLast: boolean
 }) {
   const platform = getPlatform(link.platform)
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
@@ -59,18 +67,38 @@ function SortableSocialLink({
         {...listeners}
         suppressHydrationWarning
         className="text-white/20 hover:text-white/50 cursor-grab drag-handle"
-      aria-label="Drag to reorder"
->
+        aria-label="Drag to reorder"
+      >
         <GripVertical size={14} />
       </button>
+
+      <div className="flex flex-col gap-0.5 [@media(hover:hover)]:hidden">
+        <button
+          onClick={() => onMoveUp(link.platform)}
+          disabled={isFirst}
+          className="p-1 rounded text-white/30 hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+          aria-label="Move up"
+        >
+          <ArrowUp size={12} />
+        </button>
+        <button
+          onClick={() => onMoveDown(link.platform)}
+          disabled={isLast}
+          className="p-1 rounded text-white/30 hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+          aria-label="Move down"
+        >
+          <ArrowDown size={12} />
+        </button>
+      </div>
+
       <SocialIcon iconName={platform.icon} size={16} color="#a78bfa" />
       <span className="text-white text-sm flex-1">{platform.name}</span>
       <span className="text-white/40 text-xs">@{link.username}</span>
       <button
         onClick={() => onRemove(link.platform)}
         className="p-1 rounded-lg hover:bg-red-500/20 text-white/30 hover:text-red-400 transition-colors"
-      aria-label={`Remove ${platform.name}`}
->
+        aria-label={`Remove ${platform.name}`}
+      >
         <Trash2 size={14} />
       </button>
     </div>
@@ -100,6 +128,14 @@ export default function SocialLinksEditor({ value, position, onChange }: Props) 
 
   function removeLink(platform: string) {
     onChange(value.filter(l => l.platform !== platform), position)
+  }
+
+  function moveSocialLink(platform: string, direction: 'up' | 'down') {
+    const index = value.findIndex(l => l.platform === platform)
+    if (direction === 'up' && index === 0) return
+    if (direction === 'down' && index === value.length - 1) return
+    const newIndex = direction === 'up' ? index - 1 : index + 1
+    onChange(arrayMove(value, index, newIndex), position)
   }
 
   function handleDragEnd(event: DragEndEvent) {
@@ -137,11 +173,15 @@ export default function SocialLinksEditor({ value, position, onChange }: Props) 
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={value.map(l => l.platform)} strategy={verticalListSortingStrategy}>
             <div className="space-y-2">
-              {value.map(link => (
+              {value.map((link, index) => (
                 <SortableSocialLink
                   key={link.platform}
                   link={link}
                   onRemove={removeLink}
+                  onMoveUp={(p) => moveSocialLink(p, 'up')}
+                  onMoveDown={(p) => moveSocialLink(p, 'down')}
+                  isFirst={index === 0}
+                  isLast={index === value.length - 1}
                 />
               ))}
             </div>
