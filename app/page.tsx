@@ -20,49 +20,42 @@ const demoSocials = [
 
 export default function Home() {
   const heroRef = useRef<HTMLDivElement>(null)
+  const featuresRef = useRef<HTMLDivElement>(null)
   const demoRef = useRef<HTMLDivElement>(null)
 
-  function scrollToDemo() {
-    demoRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
-
-  function scrollToHero() {
-    heroRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
+  function scrollToFeatures() { featuresRef.current?.scrollIntoView({ behavior: 'smooth' }) }
+  function scrollToDemo() { demoRef.current?.scrollIntoView({ behavior: 'smooth' }) }
+  function scrollToHero() { heroRef.current?.scrollIntoView({ behavior: 'smooth' }) }
+  function scrollToFeaturesFromDemo() { featuresRef.current?.scrollIntoView({ behavior: 'smooth' }) }
 
   return (
     <main
-      className="bg-[#05050a] text-white overflow-x-hidden"
-      style={{
-        height: '100dvh',
-        overflowY: 'scroll',
-        scrollSnapType: 'y mandatory',
-        scrollBehavior: 'smooth',
-      }}
-    >
-      {/* Screen 1 */}
+  className="bg-[#05050a] text-white overflow-x-hidden min-w-[320px]"
+  style={{ height: '100dvh', overflowY: 'scroll', scrollSnapType: 'y mandatory', scrollBehavior: 'smooth' }}
+>
+      {/* Screen 1 — Hero */}
       <section
         ref={heroRef}
-        className="relative flex flex-col noise"
+        className="relative flex flex-col wave-bg"
         style={{ height: '100dvh', scrollSnapAlign: 'start', scrollSnapStop: 'always' }}
       >
         <div className="absolute top-[-15%] left-[-10%] w-[500px] h-[500px] rounded-full bg-purple-600/10 blur-[120px] pointer-events-none" />
         <div className="absolute bottom-[-15%] right-[-10%] w-[400px] h-[400px] rounded-full bg-pink-600/8 blur-[120px] pointer-events-none" />
 
-        <nav className="relative z-10 flex items-center justify-between px-6 py-5 max-w-5xl mx-auto w-full">
-          <span className="font-display text-2xl font-bold tracking-tight">
+        <nav className="relative z-10 flex items-center justify-between px-4 py-4 max-w-5xl mx-auto w-full">
+          <span className="font-display text-lg font-bold tracking-tight flex-shrink-0">
             Baker<span className="text-purple-400">Links</span>
           </span>
-          <div className="flex gap-3">
+          <div className="flex items-center gap-2">
             <Link
               href="/auth"
-              className="px-4 py-2 text-sm text-white/60 hover:text-white transition-colors"
+              className="px-3 py-1.5 text-sm text-white/60 hover:text-white transition-colors"
             >
               Sign in
             </Link>
             <Link
               href="/auth?mode=signup"
-              className="px-4 py-2 text-sm bg-purple-600 hover:bg-purple-500 text-white rounded-full transition-colors font-medium"
+              className="hidden min-[350px]:block px-3 py-1.5 text-sm bg-purple-600 hover:bg-purple-500 text-white rounded-full transition-colors font-medium"
             >
               Get started
             </Link>
@@ -74,102 +67,184 @@ export default function Home() {
             <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
             Your link in bio
           </div>
-
           <h1 className="font-display text-5xl md:text-7xl font-bold leading-[1.0] tracking-tight mb-5 max-w-xl">
             All your links.{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400">
               One beautiful page.
             </span>
           </h1>
-
           <p className="text-white/50 text-lg max-w-xs mx-auto mb-10 leading-relaxed">
             Create your page in minutes. Share one link everywhere.
           </p>
-
-          <Link
-            href="/auth?mode=signup"
-            className="px-8 py-4 bg-white text-black rounded-full font-semibold hover:bg-purple-100 transition-all text-base hover:scale-105 active:scale-95"
-          >
+          <Link href="/auth?mode=signup" className="px-8 py-4 bg-white text-black rounded-full font-semibold hover:bg-purple-100 transition-all text-base hover:scale-105 active:scale-95">
             Create your page
           </Link>
         </div>
 
         <div className="relative z-10 flex justify-center pb-8">
-          <button
-            onClick={scrollToDemo}
-            className="text-white/20 hover:text-white/50 transition-colors animate-bounce"
-            aria-label="Scroll down"
-          >
+          <button onClick={scrollToFeatures} className="text-white/20 hover:text-white/50 transition-colors animate-bounce" aria-label="Scroll down">
             <ChevronDown size={28} />
           </button>
         </div>
       </section>
 
-      {/* Screen 2 */}
+      {/* Screen 2 — Features */}
       <section
-        ref={demoRef}
-        className="relative flex flex-col noise"
+        ref={featuresRef}
+        className="relative flex flex-col wave-bg"
         style={{ height: '100dvh', scrollSnapAlign: 'start', scrollSnapStop: 'always' }}
       >
-        <div
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full opacity-15 blur-[120px] pointer-events-none"
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full opacity-10 blur-[120px] pointer-events-none"
           style={{ background: 'radial-gradient(circle, #7c3aed 0%, transparent 70%)' }}
         />
 
-        {/* Up arrow */}
         <div className="relative z-10 flex justify-center pt-6">
-          <button
-            onClick={scrollToHero}
-            className="text-white/20 hover:text-white/50 transition-colors"
-            aria-label="Scroll up"
-          >
+          <button onClick={scrollToHero} className="text-white/20 hover:text-white/50 transition-colors" aria-label="Scroll up">
             <ChevronUp size={28} />
           </button>
         </div>
 
-        {/* Content — centered, with bottom padding to clear Safari nav */}
-        <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4" style={{ paddingBottom: 'env(safe-area-inset-bottom, 80px)' }}>
-          <p className="text-white/30 text-xs uppercase tracking-widest mb-4">Example profile</p>
+        <div
+          className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-4"
+          style={{ paddingBottom: 'env(safe-area-inset-bottom, 40px)' }}
+        >
+          <p className="text-white/30 text-xs uppercase tracking-widest mb-6">Built for you</p>
 
-          {/* Phone frame */}
-          <div className="relative w-full max-w-[300px] rounded-[2.5rem] border-2 border-white/10 overflow-hidden shadow-2xl shadow-purple-500/10">
+          <div className="w-full max-w-2xl flex flex-col md:flex-row gap-4 md:gap-6">
 
-            {/* Background gradient */}
-            <div
-              className="absolute top-0 left-0 right-0 h-32"
-              style={{
-                background: 'linear-gradient(135deg, #4c1d95 0%, #7c3aed 40%, #db2777 70%, #ea580c 100%)',
-              }}
-            />
-            <div
-              className="absolute top-0 left-0 right-0 h-32"
-              style={{
-                background: 'linear-gradient(to bottom, transparent 50%, #0e0e1a 100%)',
-              }}
-            />
-
-            {/* Notch */}
-            <div className="relative z-10 flex justify-center pt-3">
-              <div className="w-20 h-1.5 rounded-full bg-white/20" />
-            </div>
-
-            {/* Spacer */}
-            <div className="h-20" />
-
-            {/* Avatar — no background so gradient shows through */}
-            <div className="relative z-10 flex flex-col items-center -mt-7 px-5">
-              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center text-white font-display font-bold text-lg mb-3 ring-2 ring-[#0e0e1a]">
-                AR
+            {/* Themes */}
+            <div className="flex-1 flex flex-row md:flex-col items-center gap-4 md:gap-3 p-4 rounded-2xl border border-white/10 bg-white/5">
+              <div className="flex flex-col sm:flex-row gap-1.5 flex-shrink-0">
+                <div className="w-12 rounded-xl border border-white/10 overflow-hidden bg-[#0a0a0f]">
+                  <div className="flex justify-center py-1"><div className="w-6 h-0.5 rounded-full bg-white/20" /></div>
+                  <div className="px-1 pb-1.5">
+                    <div className="w-4 h-4 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 mx-auto mb-0.5" />
+                    <div className="h-2 rounded bg-[#13131f] border border-purple-500/30 mb-0.5" />
+                    <div className="h-2 rounded bg-[#13131f] border border-purple-500/30 mb-0.5" />
+                    <div className="h-2 rounded bg-[#13131f] border border-purple-500/30" />
+                  </div>
+                </div>
+                <div className="w-12 rounded-xl border border-white/10 overflow-hidden bg-[#fffbf0]">
+                  <div className="flex justify-center py-1 bg-[#fffbf0]"><div className="w-6 h-0.5 rounded-full bg-black/15" /></div>
+                  <div className="px-1 pb-1.5">
+                    <div className="w-4 h-4 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 mx-auto mb-0.5" />
+                    <div className="h-2 rounded bg-white border border-amber-400 mb-0.5" />
+                    <div className="h-2 rounded bg-white border border-amber-400 mb-0.5" />
+                    <div className="h-2 rounded bg-white border border-amber-400" />
+                  </div>
+                </div>
               </div>
-              <h2 className="font-display text-base font-bold text-white">Alex Rivera</h2>
-              <p className="text-white/40 text-xs mt-0.5">@alexrivera</p>
-              <p className="text-white/50 text-xs text-center mt-1.5 leading-relaxed">
-                Designer & maker. Building things that matter.
-              </p>
+              <div className="flex-1 md:text-center">
+                <p className="text-white font-semibold text-sm mb-1">In living color</p>
+                <p className="text-white/50 text-xs leading-relaxed">Choose from dark, light, and pastel themes. Your page can feel minimal and clean, bold and dramatic, or warm and approachable.</p>
+              </div>
             </div>
 
-            {/* Links and socials */}
-            <div className="relative z-10 px-5 pb-6 bg-[#0e0e1a]">
+            {/* Layouts */}
+            <div className="flex-1 flex flex-row md:flex-col items-center gap-4 md:gap-3 p-4 rounded-2xl border border-white/10 bg-white/5">
+              <div className="flex flex-col sm:flex-row gap-1.5 flex-shrink-0">
+                <div className="w-12 rounded-xl border border-white/10 overflow-hidden bg-[#0a0a0f]">
+                  <div className="h-6 bg-gradient-to-b from-purple-900/60 to-[#0a0a0f] relative">
+                    <div className="absolute top-1 left-0 right-0 flex justify-center"><div className="w-6 h-0.5 rounded-full bg-white/20" /></div>
+                  </div>
+                  <div className="px-1 pb-1.5 -mt-1.5">
+                    <div className="w-4 h-4 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 mx-auto mb-0.5 ring-1 ring-[#0a0a0f]" />
+                    <div className="h-2 rounded bg-[#13131f] border border-purple-500/30 mb-0.5" />
+                    <div className="h-2 rounded bg-[#13131f] border border-purple-500/30" />
+                  </div>
+                </div>
+                <div className="w-12 rounded-xl border border-white/10 overflow-hidden relative" style={{ minHeight: '70px' }}>
+                  <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, #4c1d95, #7c3aed, #db2777)' }} />
+                  <div className="absolute inset-0 bg-black/40" />
+                  <div className="relative z-10">
+                    <div className="flex justify-center py-1"><div className="w-6 h-0.5 rounded-full bg-white/20" /></div>
+                    <div className="mx-1 mb-1 rounded-lg bg-black/30 p-1">
+                      <div className="w-4 h-4 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 mx-auto mb-0.5" />
+                      <div className="h-2 rounded bg-white/10 border border-white/20 mb-0.5" />
+                      <div className="h-2 rounded bg-white/10 border border-white/20" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex-1 md:text-center">
+                <p className="text-white font-semibold text-sm mb-1">New perspectives</p>
+                <p className="text-white/50 text-xs leading-relaxed">Pick a layout that fits your personality. The Card layout is clean and structured. Immersive lets your background image take center stage.</p>
+              </div>
+            </div>
+
+            {/* About page */}
+            <div className="flex-1 flex flex-row md:flex-col items-center gap-4 md:gap-3 p-4 rounded-2xl border border-white/10 bg-white/5">
+              <div className="w-12 rounded-xl border border-white/10 overflow-hidden bg-[#0a0a0f] flex-shrink-0">
+                <div className="flex justify-center py-1"><div className="w-6 h-0.5 rounded-full bg-white/20" /></div>
+                <div className="px-1 pb-1.5">
+                  <div className="w-4 h-4 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 mx-auto mb-0.5" />
+                  <div className="flex gap-0.5 mb-1">
+                    <div className="flex-none px-1 py-0.5 rounded bg-purple-600" style={{ fontSize: '4px', color: 'white' }}>Links</div>
+                    <div className="flex-1 py-0.5 rounded bg-white/10 text-center" style={{ fontSize: '4px', color: 'rgba(255,255,255,0.4)' }}>About</div>
+                  </div>
+                  <div className="space-y-0.5">
+                    <div className="h-1 rounded bg-white/20 w-full" />
+                    <div className="h-1 rounded bg-white/15 w-4/5" />
+                    <div className="h-1 rounded bg-white/10 w-full" />
+                    <div className="h-1 rounded bg-white/10 w-3/5" />
+                    <div className="h-1 rounded bg-white/10 w-4/5" />
+                  </div>
+                </div>
+              </div>
+              <div className="flex-1 md:text-center">
+                <p className="text-white font-semibold text-sm mb-1">Tell your story</p>
+                <p className="text-white/50 text-xs leading-relaxed">Add a second tab to your profile where you can describe your work, share your background, or give context to your links — written in markdown.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8">
+            <Link
+              href="/auth?mode=signup"
+              className="px-8 py-4 bg-purple-600 hover:bg-purple-500 text-white rounded-full font-semibold transition-all hover:scale-105 active:scale-95 text-base"
+            >
+              Get started
+            </Link>
+          </div>
+        </div>
+
+        <div className="relative z-10 flex justify-center pb-6">
+          <button onClick={scrollToDemo} className="text-white/20 hover:text-white/50 transition-colors animate-bounce" aria-label="Scroll down">
+            <ChevronDown size={28} />
+          </button>
+        </div>
+      </section>
+
+      {/* Screen 3 — Demo */}
+      <section
+        ref={demoRef}
+        className="relative flex flex-col wave-bg"
+        style={{ height: '100dvh', scrollSnapAlign: 'start', scrollSnapStop: 'always' }}
+      >
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full opacity-15 blur-[120px] pointer-events-none"
+          style={{ background: 'radial-gradient(circle, #7c3aed 0%, transparent 70%)' }}
+        />
+
+        <div className="relative z-10 flex justify-center pt-6">
+          <button onClick={scrollToFeaturesFromDemo} className="text-white/20 hover:text-white/50 transition-colors" aria-label="Scroll up">
+            <ChevronUp size={28} />
+          </button>
+        </div>
+
+        <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-4" style={{ paddingBottom: 'env(safe-area-inset-bottom, 80px)' }}>
+          <p className="text-white/30 text-xs uppercase tracking-widest mb-4">Example profile</p>
+          <div className="relative w-full max-w-[300px] rounded-[2.5rem] border-2 border-white/10 overflow-hidden shadow-2xl shadow-purple-500/10 bg-[#0a0a0f]">
+            <div className="absolute top-0 left-0 right-0 h-32" style={{ background: 'linear-gradient(135deg, #4c1d95 0%, #7c3aed 40%, #db2777 70%, #ea580c 100%)' }} />
+            <div className="absolute top-0 left-0 right-0 h-32" style={{ background: 'linear-gradient(to bottom, transparent 50%, #0a0a0f 100%)' }} />
+            <div className="relative z-10 flex justify-center pt-3"><div className="w-20 h-1.5 rounded-full bg-white/20" /></div>
+<div className="h-20" />
+<div className="relative z-10 flex flex-col items-center -mt-7 px-5">
+  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center text-white font-display font-bold text-lg mb-3 ring-2 ring-[#0a0a0f]">AR</div>
+  <h2 className="font-display text-base font-bold text-white">Alex Rivera</h2>
+              <p className="text-white/40 text-xs mt-0.5">@alexrivera</p>
+              <p className="text-white/50 text-xs text-center mt-1.5 leading-relaxed">Designer & maker. Building things that matter.</p>
+            </div>
+            <div className="relative z-10 px-5 pb-6 bg-[#0a0a0f]">
               <div className="flex justify-center gap-3 my-4">
                 {demoSocials.map(s => (
                   <div key={s.platform} className="p-2 rounded-xl border border-white/10 bg-white/5">
@@ -177,21 +252,15 @@ export default function Home() {
                   </div>
                 ))}
               </div>
-
-              <div className="space-y-2 w-full">
+              <div className="space-y-2">
                 {demoLinks.map(link => (
                   <div key={link.id} className="px-3 py-2.5 rounded-xl border border-[#7c3aed]/40 bg-[#13131f]">
                     <p className="text-white font-semibold text-xs">{link.title}</p>
-                    {link.description && (
-                      <p className="text-white/40 text-xs mt-0.5">{link.description}</p>
-                    )}
+                    {link.description && <p className="text-white/40 text-xs mt-0.5">{link.description}</p>}
                   </div>
                 ))}
               </div>
-
-              <p className="text-center text-white/20 text-xs mt-4">
-                Powered by <span className="font-display font-semibold">BakerLinks</span>
-              </p>
+              <p className="text-center text-white/20 text-xs mt-4">Powered by <span className="font-display font-semibold">BakerLinks</span></p>
             </div>
           </div>
         </div>

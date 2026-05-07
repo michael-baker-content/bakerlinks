@@ -23,7 +23,7 @@ body {
   font-family: var(--font-display);
 }
 
-/* Noise texture overlay for depth */
+/* Noise texture overlay for depth
 .noise::after {
   content: "";
   position: fixed;
@@ -31,7 +31,7 @@ body {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 9999;
-}
+} */
 
 /* Glowing border animation */
 @keyframes glow-pulse {
@@ -84,23 +84,6 @@ body {
 .light-scrollbar ::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.4);
 }
-
-@media (prefers-reduced-motion: reduce) {
-  .animate-bounce {
-    animation: none;
-  }
-  .animate-pulse {
-    animation: none;
-  }
-  .animate-spin {
-    animation: none;
-  }
-  * {
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
-  }
-}
-
 .prose {
   font-family: var(--font-body);
 }
@@ -122,4 +105,53 @@ body {
 .prose blockquote {
   font-family: var(--font-body);
   font-size: 0.875rem;
+}
+
+/* Gradient wave background for landing page */
+@keyframes wave-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.wave-bg {
+  background: linear-gradient(
+    -45deg,
+    #05050a,
+    #0d0520,
+    #0a0a1a,
+    #150520,
+    #05050a,
+    #0a0520,
+    #050a1a
+  );
+  background-size: 400% 400%;
+  animation: wave-shift 20s ease infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-bounce {
+    animation: none;
+  }
+  .animate-pulse {
+    animation: none;
+  }
+  .animate-spin {
+    animation: none;
+  }
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+  .wave-bg {
+    animation: none;
+    background: #05050a;
+    background-size: unset;
+  }
 }
