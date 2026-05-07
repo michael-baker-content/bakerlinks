@@ -95,20 +95,20 @@ export default function CardLayout({ profile, links, theme, activeTab, onTabChan
         {/* Tabs if about is enabled */}
         {profile.about_enabled && (
           <div className={`flex rounded-xl p-1 mb-4 ${theme.isDark ? 'bg-white/5' : 'bg-black/5'}`}>
-            {(['links', 'about'] as const).map(t => (
-              <button
-                key={t}
-                onClick={() => onTabChange(t)}
-                className={`flex-1 py-2 rounded-lg text-sm font-medium capitalize transition-all ${
-                  activeTab === t
-                    ? `${theme.buttonPrimary}`
-                    : `${theme.textMuted} hover:${theme.text}`
-                }`}
-              >
-                {t === 'links' ? 'Links' : profile.about_title || 'About'}
-              </button>
-            ))}
-          </div>
+  {(['links', 'about'] as const).map(t => (
+    <button
+      key={t}
+      onClick={() => onTabChange(t)}
+      className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
+        activeTab === t
+          ? theme.buttonPrimary
+          : `${theme.textMuted} hover:${theme.text}`
+      }`}
+    >
+      {t === 'links' ? 'Links' : profile.about_title || 'About'}
+    </button>
+  ))}
+</div>
         )}
 
         {/* Links tab */}
@@ -131,11 +131,21 @@ export default function CardLayout({ profile, links, theme, activeTab, onTabChan
                 style={{ animationDelay: `${i * 60}ms` }}
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0">
-                    <p className={`${theme.text} font-semibold text-sm truncate`}>{link.title}</p>
-                    {link.description && (
-                      <p className={`${theme.textMuted} text-xs mt-0.5 truncate`}>{link.description}</p>
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    {link.icon && (
+                      <img
+                        src={link.icon}
+                        alt=""
+                        className="w-4 h-4 rounded-sm flex-shrink-0"
+                        onError={e => (e.currentTarget.style.display = 'none')}
+                      />
                     )}
+                    <div className="flex-1 min-w-0">
+                      <p className={`${theme.text} font-semibold text-sm truncate`}>{link.title}</p>
+                      {link.description && (
+                        <p className={`${theme.textMuted} text-xs mt-0.5 line-clamp-2`}>{link.description}</p>
+                      )}
+                    </div>
                   </div>
                   <ExternalLink size={14} className={`${theme.textFaint} group-hover:${theme.textMuted} transition-colors ml-3 flex-shrink-0`} />
                 </div>
@@ -146,17 +156,17 @@ export default function CardLayout({ profile, links, theme, activeTab, onTabChan
 
         {/* About tab */}
         {activeTab === 'about' && profile.about_enabled && (
-  <div className="pb-4">
-    {profile.about_content ? (
-      <div
-        className={`prose prose-sm max-w-none ${theme.isDark ? 'prose-invert' : ''}`}
-        dangerouslySetInnerHTML={{ __html: profile.about_content }}
-      />
-    ) : (
-      <p className={`${theme.textFaint} text-sm text-center py-8`}>Nothing here yet.</p>
-    )}
-  </div>
-)}
+          <div className="pb-4">
+            {profile.about_content ? (
+              <div
+                className={`prose prose-sm max-w-none ${theme.isDark ? 'prose-invert' : ''}`}
+                dangerouslySetInnerHTML={{ __html: profile.about_content }}
+              />
+            ) : (
+              <p className={`${theme.textFaint} text-sm text-center py-8`}>Nothing here yet.</p>
+            )}
+          </div>
+        )}
 
         {/* Social links - bottom */}
         {profile.social_links_position === 'bottom' && (

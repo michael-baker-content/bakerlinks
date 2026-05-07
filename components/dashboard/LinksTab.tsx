@@ -67,7 +67,7 @@ function SortableLink({
 
       <div className="flex-1 min-w-0">
         <p className="text-white font-medium text-sm truncate">{link.title}</p>
-        <p className="text-white/50 text-xs truncate">{link.url}</p>
+        <p className="text-white/40 text-xs line-clamp-2">{link.url}</p>
       </div>
 
       <div className="flex items-center gap-1 text-white/30 text-xs">
@@ -109,7 +109,7 @@ function LinkModal({
   onClose,
 }: {
   link: Partial<LinkType> | null
-  onSave: (data: { title: string; url: string; description: string }) => void
+  onSave: (data: { title: string; url: string; description: string; icon: string | null }) => void
   onClose: () => void
 }) {
   const [title, setTitle] = useState(link?.title ?? '')
@@ -171,9 +171,9 @@ useEffect(() => {
   }
 
   function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    onSave({ title, url, description })
-  }
+  e.preventDefault()
+  onSave({ title, url, description, icon: favicon })
+}
 
   return (
   <div
@@ -194,16 +194,22 @@ useEffect(() => {
       </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="text-white/50 text-xs uppercase tracking-wider mb-1.5 block">Title</label>
-            <input
-  ref={titleInputRef}
-  value={title}
-  onChange={e => setTitle(e.target.value)}
-  required
-  placeholder="My Portfolio"
-  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/60 text-sm"
-/>
-          </div>
+  <label className="text-white/50 text-xs uppercase tracking-wider mb-1.5 block">Title</label>
+  <div className="relative">
+    <input
+      ref={titleInputRef}
+      value={title}
+      onChange={e => setTitle(e.target.value)}
+      required
+      maxLength={40}
+      placeholder="My Portfolio"
+      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/60 text-sm pr-16"
+    />
+    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 text-xs">
+      {title.length}/40
+    </span>
+  </div>
+</div>
           <div>
             <label className="text-white/50 text-xs uppercase tracking-wider mb-1.5 block">URL</label>
             <div className="flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 focus-within:border-purple-500/60 transition-colors overflow-hidden">
@@ -226,14 +232,21 @@ useEffect(() => {
             </div>
           </div>
           <div>
-            <label className="text-white/50 text-xs uppercase tracking-wider mb-1.5 block">Description (optional)</label>
-            <input
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              placeholder="A short description"
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/60 text-sm"
-            />
-          </div>
+  <label className="text-white/50 text-xs uppercase tracking-wider mb-1.5 block">Description (optional)</label>
+  <div className="relative">
+    <textarea
+      value={description}
+      onChange={e => setDescription(e.target.value)}
+      placeholder="A short description"
+      maxLength={80}
+      rows={2}
+      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/60 text-sm resize-none"
+    />
+    <span className="absolute right-3 bottom-3 text-white/20 text-xs">
+      {description.length}/80
+    </span>
+  </div>
+</div>
           <div className="flex gap-3 pt-2">
             <button
               type="button"
@@ -268,27 +281,27 @@ export default function LinksTab({ initialLinks, userId }: Props) {
   const supabase = createClient()
   const sensors = useSensors(useSensor(PointerSensor))
 
-  async function saveLink(data: { title: string; url: string; description: string }) {
-    if (!editingLink) return
-    if ((editingLink as LinkType).id) {
-      const { data: updated } = await supabase
-        .from('links')
-        .update({ ...data, updated_at: new Date().toISOString() })
-        .eq('id', (editingLink as LinkType).id)
-        .select()
-        .single()
-      if (updated) setLinks(ls => ls.map(l => l.id === updated.id ? updated : l))
-    } else {
-      const position = links.length
-      const { data: inserted } = await supabase
-        .from('links')
-        .insert({ ...data, user_id: userId, position })
-        .select()
-        .single()
-      if (inserted) setLinks(ls => [...ls, inserted])
-    }
-    setEditingLink(false)
+async function saveLink(data: { title: string; url: string; description: string; icon: string | null }) {
+  if (!editingLink) return
+  if ((editingLink as LinkType).id) {
+    const { data: updated } = await supabase
+      .from('links')
+      .update({ ...data, updated_at: new Date().toISOString() })
+      .eq('id', (editingLink as LinkType).id)
+      .select()
+      .single()
+    if (updated) setLinks(ls => ls.map(l => l.id === updated.id ? updated : l))
+  } else {
+    const position = links.length
+    const { data: inserted } = await supabase
+      .from('links')
+      .insert({ ...data, user_id: userId, position })
+      .select()
+      .single()
+    if (inserted) setLinks(ls => [...ls, inserted])
   }
+  setEditingLink(false)
+}
 
   async function deleteLink(id: string) {
     if (!confirm('Delete this link?')) return

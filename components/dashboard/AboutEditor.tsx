@@ -133,13 +133,19 @@ export default function AboutEditor({ userId, initialEnabled, initialTitle, init
           <>
             <div>
               <label className="text-white/50 text-xs uppercase tracking-wider mb-1.5 block">Tab Title</label>
-              <input
-                value={title}
-                onChange={e => setTitle(e.target.value)}
-                placeholder="About"
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/60 text-sm"
-              />
-              <p className="text-white/30 text-xs mt-1">This is the label shown on the tab. Defaults to "About" if left blank.</p>
+              <div className="relative">
+                <input
+                  value={title}
+                  onChange={e => setTitle(e.target.value)}
+                  placeholder="About"
+                  maxLength={12}
+                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/60 text-sm"
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 text-xs">
+                  {title.length}/12
+                </span>
+              </div>
+              <p className="text-white/30 text-xs mt-1">Max 12 characters. Defaults to "About" if left blank.</p>
             </div>
 
             <div>
