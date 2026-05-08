@@ -1,7 +1,7 @@
 'use client'
 
 import { Profile } from '@/lib/types'
-import { themes } from '@/lib/themes'
+import { themes, buildCustomTheme } from '@/lib/themes'
 import SocialIcon from '@/components/SocialIcon'
 import { getPlatform } from '@/lib/social-platforms'
 import { ExternalLink } from 'lucide-react'
@@ -11,8 +11,11 @@ interface Props {
 }
 
 export default function ProfilePreview({ profile }: Props) {
-  const theme = themes[profile.theme] ?? themes.electric
+  const theme = profile.theme === 'custom' && profile.custom_theme
+    ? buildCustomTheme(profile.custom_theme)
+    : themes[profile.theme] ?? themes.electric
   const layout = profile.layout ?? 'card'
+  const c = theme.customColors
 
   const initials = (profile.display_name || profile.username)
     .split(' ')
@@ -28,10 +31,14 @@ export default function ProfilePreview({ profile }: Props) {
     <img
       src={profile.avatar_url}
       alt={profile.display_name || profile.username}
-      className={`w-14 h-14 rounded-full object-cover ring-2 ${theme.avatarRing} mb-2`}
+      className={`w-14 h-14 rounded-full object-cover mb-2`}
+      style={{ boxShadow: `0 0 0 2px ${c ? c.avatarRing : theme.accentHex}` }}
     />
   ) : (
-    <div className={`w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center text-white font-display font-bold text-lg mb-2 ring-2 ${theme.avatarRing}`}>
+    <div
+      className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center text-white font-display font-bold text-lg mb-2"
+      style={{ boxShadow: `0 0 0 2px ${c ? c.avatarRing : theme.accentHex}` }}
+    >
       {initials}
     </div>
   )
@@ -44,9 +51,13 @@ export default function ProfilePreview({ profile }: Props) {
         return (
           <div
             key={link.platform}
-            className={`p-1.5 rounded-lg border ${theme.border} ${theme.isDark ? 'bg-white/5' : 'bg-white/60'}`}
+            className="p-1.5 rounded-lg border"
+            style={{
+              borderColor: c ? `${c.cardBorder}80` : undefined,
+              backgroundColor: c ? `${c.cardBg}40` : undefined,
+            }}
           >
-            <SocialIcon iconName={platform.icon} size={14} color={theme.accentHex} />
+            <SocialIcon iconName={platform.icon} size={14} color={c ? c.accentHex : theme.accentHex} />
           </div>
         )
       })}
@@ -58,10 +69,25 @@ export default function ProfilePreview({ profile }: Props) {
       {[1, 2, 3].map(i => (
         <div
           key={i}
-          className={`px-3 py-2 rounded-xl border ${layout === 'immersive' ? (theme.isDark ? 'border-white/20 bg-white/10' : 'border-black/10 bg-black/5') : theme.card} flex items-center justify-between`}
+          className="px-3 py-2 rounded-xl border flex items-center justify-between"
+          style={c ? {
+            backgroundColor: layout === 'immersive' ? `${c.cardBg}99` : c.cardBg,
+            borderColor: c.cardBorder,
+          } : {
+            backgroundColor: layout === 'immersive' ? (theme.isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)') : undefined,
+          }}
         >
-          <p className={`${theme.text} text-xs font-medium`}>Your link {i}</p>
-          <ExternalLink size={10} className={theme.textFaint} />
+          <p
+            className={`${c ? '' : theme.text} text-xs font-medium`}
+            style={c ? { color: c.text } : {}}
+          >
+            Your link {i}
+          </p>
+          <ExternalLink
+            size={10}
+            style={c ? { color: c.textFaint } : {}}
+            className={c ? '' : theme.textFaint}
+          />
         </div>
       ))}
     </div>
@@ -75,42 +101,59 @@ export default function ProfilePreview({ profile }: Props) {
       <div className="relative w-full max-w-[260px] mx-auto rounded-[2.5rem] border-2 border-white/10 overflow-hidden shadow-2xl shadow-purple-500/10">
 
         {layout === 'immersive' ? (
-          <>
-            {/* Immersive — full background */}
-            <div className="relative">
-              {profile.background_url ? (
-                <div className="absolute inset-0">
-                  <img src={profile.background_url} alt="" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-black/50" />
-                </div>
-              ) : (
-                <div className={`absolute inset-0 ${theme.bg}`} />
-              )}
-              <div className="relative z-10 flex justify-center pt-3">
-                <div className="w-16 h-1.5 rounded-full bg-white/20" />
+          <div className="relative">
+            {profile.background_url ? (
+              <div className="absolute inset-0">
+                <img src={profile.background_url} alt="" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-black/50" />
               </div>
-              <div className={`relative z-10 m-3 mt-4 rounded-2xl p-4 ${theme.isDark ? 'bg-black/30' : 'bg-white/40'} backdrop-blur-md`}>
-                <div className="flex flex-col items-center mb-3">
-                  <Avatar />
-                  <p className={`font-display text-sm font-bold ${theme.textHeading} text-center`}>
-                    {profile.display_name || profile.username || 'Your name'}
-                  </p>
-                  <p className={`${theme.textMuted} text-xs`}>@{profile.username}</p>
-                  {profile.bio && (
-                    <p className={`${theme.textMuted} text-xs text-center mt-1 leading-relaxed line-clamp-2`}>
-                      {profile.bio}
-                    </p>
-                  )}
-                </div>
-                {socialPosition === 'top' && <SocialIcons />}
-                <LinkCards />
-                {socialPosition === 'bottom' && <SocialIcons />}
-                <p className={`text-center ${theme.footerText} text-xs mt-3`}>
-                  Powered by <span className="font-display font-semibold">BakerLinks</span>
-                </p>
-              </div>
+            ) : (
+              <div
+                className={`absolute inset-0 ${c ? '' : theme.bg}`}
+                style={c ? { backgroundColor: c.bg } : {}}
+              />
+            )}
+            <div className="relative z-10 flex justify-center pt-3">
+              <div className="w-16 h-1.5 rounded-full bg-white/20" />
             </div>
-          </>
+            <div
+              className="relative z-10 m-3 mt-4 rounded-2xl p-4 backdrop-blur-md"
+              style={c ? { backgroundColor: `${c.cardBg}cc` } : { backgroundColor: theme.isDark ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.4)' }}
+            >
+              <div className="flex flex-col items-center mb-3">
+                <Avatar />
+                <p
+                  className={`font-display text-sm font-bold text-center ${c ? '' : theme.textHeading}`}
+                  style={c ? { color: c.textHeading } : {}}
+                >
+                  {profile.display_name || profile.username || 'Your name'}
+                </p>
+                <p
+                  className={`text-xs ${c ? '' : theme.textMuted}`}
+                  style={c ? { color: c.textMuted } : {}}
+                >
+                  @{profile.username}
+                </p>
+                {profile.bio && (
+                  <p
+                    className={`text-xs text-center mt-1 leading-relaxed line-clamp-2 ${c ? '' : theme.textMuted}`}
+                    style={c ? { color: c.textMuted } : {}}
+                  >
+                    {profile.bio}
+                  </p>
+                )}
+              </div>
+              {socialPosition === 'top' && <SocialIcons />}
+              <LinkCards />
+              {socialPosition === 'bottom' && <SocialIcons />}
+              <p
+                className={`text-center text-xs mt-3 ${c ? '' : theme.footerText}`}
+                style={c ? { color: c.textFaint } : {}}
+              >
+                Powered by <span className="font-display font-semibold">BakerLinks</span>
+              </p>
+            </div>
+          </div>
         ) : (
           <>
             {/* Card layout */}
@@ -121,22 +164,39 @@ export default function ProfilePreview({ profile }: Props) {
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60" />
                 </div>
               ) : (
-                <div className={`w-full h-20 ${theme.bg}`} />
+                <div
+                  className={`w-full h-20 ${c ? '' : theme.bg}`}
+                  style={c ? { backgroundColor: c.bg } : {}}
+                />
               )}
               <div className="absolute top-3 left-0 right-0 flex justify-center z-10">
                 <div className="w-16 h-1.5 rounded-full bg-white/20" />
               </div>
             </div>
 
-            <div className={`${theme.bg} px-4 pb-4`}>
+            <div
+              className={`${c ? '' : theme.bg} px-4 pb-4`}
+              style={c ? { backgroundColor: c.bg } : {}}
+            >
               <div className="flex flex-col items-center -mt-7 mb-3 relative z-10">
                 <Avatar />
-                <p className={`font-display text-sm font-bold ${theme.textHeading} text-center`}>
+                <p
+                  className={`font-display text-sm font-bold text-center ${c ? '' : theme.textHeading}`}
+                  style={c ? { color: c.textHeading } : {}}
+                >
                   {profile.display_name || profile.username || 'Your name'}
                 </p>
-                <p className={`${theme.textMuted} text-xs`}>@{profile.username}</p>
+                <p
+                  className={`text-xs ${c ? '' : theme.textMuted}`}
+                  style={c ? { color: c.textMuted } : {}}
+                >
+                  @{profile.username}
+                </p>
                 {profile.bio && (
-                  <p className={`${theme.textMuted} text-xs text-center mt-1 leading-relaxed line-clamp-2`}>
+                  <p
+                    className={`text-xs text-center mt-1 leading-relaxed line-clamp-2 ${c ? '' : theme.textMuted}`}
+                    style={c ? { color: c.textMuted } : {}}
+                  >
                     {profile.bio}
                   </p>
                 )}
@@ -144,7 +204,10 @@ export default function ProfilePreview({ profile }: Props) {
               {socialPosition === 'top' && <SocialIcons />}
               <LinkCards />
               {socialPosition === 'bottom' && <SocialIcons />}
-              <p className={`text-center ${theme.footerText} text-xs mt-3`}>
+              <p
+                className={`text-center text-xs mt-3 ${c ? '' : theme.footerText}`}
+                style={c ? { color: c.textFaint } : {}}
+              >
                 Powered by <span className="font-display font-semibold">BakerLinks</span>
               </p>
             </div>

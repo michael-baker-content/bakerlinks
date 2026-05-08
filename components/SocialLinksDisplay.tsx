@@ -6,13 +6,14 @@ import SocialIcon from '@/components/SocialIcon'
 interface Props {
   links: SocialLink[]
   theme: string
+  customAccent?: string
 }
 
-export default function SocialLinksDisplay({ links, theme: themeName }: Props) {
+export default function SocialLinksDisplay({ links, theme: themeName, customAccent }: Props) {
   if (!links || links.length === 0) return null
 
   const theme = themes[themeName] ?? themes.electric
-  const color = theme.accentHex
+  const color = customAccent ?? theme.accentHex
 
   return (
     <div className="flex justify-center gap-4 my-4">

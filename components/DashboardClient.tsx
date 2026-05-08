@@ -80,7 +80,7 @@ export default function DashboardClient({
 
       <div className={`flex-1 mx-auto w-full px-4 py-8 ${showPreview ? 'max-w-5xl' : 'max-w-2xl'}`}>
         {/* Tabs */}
-        <div className="flex gap-1 mb-8 rounded-xl bg-white/5 p-1 w-fit">
+        <div className="flex gap-1 mb-8 rounded-xl bg-white/5 p-1 w-fit mx-auto">
           {tabs.map(t => (
             <button
               key={t.id}

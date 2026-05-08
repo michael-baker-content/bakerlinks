@@ -5,6 +5,8 @@ import { createClient } from '@/lib/supabase/client'
 import { Profile } from '@/lib/types'
 import { themes } from '@/lib/themes'
 import { layouts } from '@/lib/layouts'
+import CustomThemeEditor from '@/components/dashboard/CustomThemeEditor'
+import type { CustomTheme } from '@/lib/types'
 
 interface Props {
   profile: Profile
@@ -17,24 +19,29 @@ export default function StyleTab({ profile, onProfileChange, userId }: Props) {
   const [saved, setSaved] = useState(false)
   const supabase = createClient()
 
-  async function saveStyle(updates: Partial<Profile>) {
-    setSaving(true)
-    const updated = { ...profile, ...updates }
-    onProfileChange(updated)
+async function saveStyle(updates: Partial<Profile>) {
+  setSaving(true)
+  const updated = { ...profile, ...updates }
+  onProfileChange(updated)
 
-    await supabase
-      .from('profiles')
-      .update({
-        theme: updated.theme,
-        layout: updated.layout,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', userId)
+  await supabase
+    .from('profiles')
+    .update({
+      theme: updated.theme,
+      layout: updated.layout,
+      custom_theme: updated.custom_theme,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', userId)
 
-    setSaving(false)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
-  }
+  setSaving(false)
+  setSaved(true)
+  setTimeout(() => setSaved(false), 2000)
+}
+
+function handleCustomThemeChange(customTheme: CustomTheme) {
+  saveStyle({ custom_theme: customTheme })
+}
 
   function handleThemeChange(theme: string) {
     saveStyle({ theme })
@@ -104,7 +111,7 @@ export default function StyleTab({ profile, onProfileChange, userId }: Props) {
       {/* Theme picker */}
       <div>
         <label className="text-white/50 text-xs uppercase tracking-wider mb-4 block">Theme</label>
-        <div className="grid grid-cols-5 gap-2">
+        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
           {Object.entries(themes).map(([key, t]) => (
             <button
               key={key}
@@ -119,6 +126,14 @@ export default function StyleTab({ profile, onProfileChange, userId }: Props) {
             </button>
           ))}
         </div>
+
+        {profile.theme === 'custom' && (
+  <CustomThemeEditor
+  value={profile.custom_theme ?? null}
+  onChange={handleCustomThemeChange}
+  layout={profile.layout ?? 'card'}
+/>
+)}
 
         {/* Theme color preview */}
         <div className="mt-4 p-4 rounded-2xl border border-white/10 overflow-hidden relative">

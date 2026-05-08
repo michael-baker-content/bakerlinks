@@ -107,6 +107,14 @@ body {
   font-size: 0.875rem;
 }
 
+.prose ul > li::marker {
+  color: currentColor;
+}
+
+.prose ol > li::marker {
+  color: currentColor;
+}
+
 /* Gradient wave background for landing page */
 @keyframes wave-shift {
   0% {

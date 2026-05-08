@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { Profile, Link as LinkType } from '@/lib/types'
 import { ThemeConfig } from '@/lib/themes'
 import { ExternalLink } from 'lucide-react'
@@ -14,8 +15,23 @@ interface Props {
   onTabChange: (tab: 'links' | 'about') => void
 }
 
+function adjustColor(hex: string, isDark: boolean): string {
+  const r = parseInt(hex.slice(1, 3), 16)
+  const g = parseInt(hex.slice(3, 5), 16)
+  const b = parseInt(hex.slice(5, 7), 16)
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+  const amount = luminance < 0.3 ? 60 : -60
+  const nr = Math.max(0, Math.min(255, r + amount))
+  const ng = Math.max(0, Math.min(255, g + amount))
+  const nb = Math.max(0, Math.min(255, b + amount))
+  return `#${nr.toString(16).padStart(2, '0')}${ng.toString(16).padStart(2, '0')}${nb.toString(16).padStart(2, '0')}`
+}
+
 export default function CardLayout({ profile, links, theme, activeTab, onTabChange }: Props) {
   const supabase = createClient()
+  const c = theme.customColors
+  const [hoveredTab, setHoveredTab] = useState<'links' | 'about' | null>(null)
+  const [hoveredLink, setHoveredLink] = useState<string | null>(null)
 
   const initials = (profile.display_name || profile.username)
     .split(' ')
@@ -24,42 +40,54 @@ export default function CardLayout({ profile, links, theme, activeTab, onTabChan
     .toUpperCase()
     .slice(0, 2)
 
+  function tabStyle(tab: 'links' | 'about') {
+    if (!c) return undefined
+    const isActive = activeTab === tab
+    const isHovered = hoveredTab === tab
+    if (isActive) {
+      return {
+        backgroundColor: isHovered ? adjustColor(c.buttonBg, theme.isDark) : c.buttonBg,
+        color: c.buttonText,
+      }
+    }
+    return {
+      backgroundColor: isHovered ? adjustColor(c.cardBg, theme.isDark) : 'transparent',
+      color: c.textMuted,
+    }
+  }
+
+  function tabClass(tab: 'links' | 'about', extra: string) {
+    if (c) return `${extra} rounded-lg text-sm font-medium transition-all`
+    const isActive = activeTab === tab
+    return `${extra} rounded-lg text-sm font-medium transition-all ${
+      isActive
+        ? theme.buttonPrimary
+        : `${theme.textMuted} hover:${theme.text} ${theme.isDark ? 'hover:bg-white/10' : 'hover:bg-black/10'}`
+    }`
+  }
+
   return (
-    <>
+    <div style={c ? { backgroundColor: c.bg } : {}}>
       {/* Background image or spacer */}
       {profile.background_url ? (
         <div className="relative w-full h-48 sm:h-64 overflow-hidden">
-          <img
-            src={profile.background_url}
-            alt="Profile background"
-            className="w-full h-full object-cover"
-          />
+          <img src={profile.background_url} alt="Profile background" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60" />
           {profile.background_attribution && (
             <div className="absolute top-2 right-3 text-white/40 text-xs">
               Photo by{' '}
-              <a
-                href={profile.background_attribution.photographer_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline hover:text-white/70"
-              >
+              <a href={profile.background_attribution.photographer_url} target="_blank" rel="noopener noreferrer" className="underline hover:text-white/70">
                 {profile.background_attribution.photographer_name}
               </a>
               {' '}on{' '}
-              <a
-                href={profile.background_attribution.unsplash_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline hover:text-white/70"
-              >
+              <a href={profile.background_attribution.unsplash_url} target="_blank" rel="noopener noreferrer" className="underline hover:text-white/70">
                 Unsplash
               </a>
             </div>
           )}
         </div>
       ) : (
-        <div className="h-24" />
+        <div className="h-24" style={c ? { backgroundColor: c.bg } : {}} />
       )}
 
       <div className="relative max-w-sm mx-auto px-4">
@@ -69,19 +97,28 @@ export default function CardLayout({ profile, links, theme, activeTab, onTabChan
             <img
               src={profile.avatar_url}
               alt={profile.display_name || profile.username}
-              className={`w-24 h-24 rounded-full object-cover ring-4 ${theme.avatarRing} mb-4`}
+              className={`w-24 h-24 rounded-full object-cover mb-4 ${c ? '' : `ring-4 ${theme.avatarRing}`}`}
+              style={c ? { boxShadow: `0 0 0 4px ${c.avatarRing}` } : {}}
             />
           ) : (
-            <div className={`w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center text-white font-display font-bold text-2xl mb-4 ring-4 ${theme.avatarRing}`}>
+            <div
+              className={`w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center text-white font-display font-bold text-2xl mb-4 ${c ? '' : `ring-4 ${theme.avatarRing}`}`}
+              style={c ? { boxShadow: `0 0 0 4px ${c.avatarRing}` } : {}}
+            >
               {initials}
             </div>
           )}
-          <h1 className={`font-display text-2xl font-bold ${theme.textHeading} mb-1`}>
+          <h1
+            className={`font-display text-2xl font-bold mb-1 ${c ? '' : theme.textHeading}`}
+            style={c ? { color: c.textHeading } : {}}
+          >
             {profile.display_name || profile.username}
           </h1>
-          <p className={`${theme.textMuted} text-sm`}>@{profile.username}</p>
+          <p className={c ? 'text-sm' : `${theme.textMuted} text-sm`} style={c ? { color: c.textMuted } : {}}>
+            @{profile.username}
+          </p>
           {profile.bio && (
-            <p className={`${theme.textMuted} text-sm text-center mt-3 max-w-xs leading-relaxed`}>
+            <p className={`text-sm text-center mt-3 max-w-xs leading-relaxed ${c ? '' : theme.textMuted}`} style={c ? { color: c.textMuted } : {}}>
               {profile.bio}
             </p>
           )}
@@ -89,25 +126,33 @@ export default function CardLayout({ profile, links, theme, activeTab, onTabChan
 
         {/* Social links - top */}
         {profile.social_links_position === 'top' && (
-          <SocialLinksDisplay links={profile.social_links} theme={profile.theme} />
+          <SocialLinksDisplay links={profile.social_links} theme={profile.theme} customAccent={c?.accentHex} />
         )}
 
         {/* Tabs if about is enabled */}
         {profile.about_enabled && (
-          <div className={`flex rounded-xl p-1 mb-4 ${theme.isDark ? 'bg-white/5' : 'bg-black/5'}`}>
-  {(['links', 'about'] as const).map(t => (
-    <button
-      key={t}
-      onClick={() => onTabChange(t)}
-      className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
-        activeTab === t
-          ? theme.buttonPrimary
-          : `${theme.textMuted} hover:${theme.text}`
-      }`}
-    >
-      {t === 'links' ? 'Links' : profile.about_title || 'About'}
-    </button>
-  ))}
+          <div
+  className="flex rounded-xl p-1 mb-4"
+  style={{ backgroundColor: c ? `${c.cardBg}80` : theme.isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.08)' }}
+>
+  <button
+    onClick={() => onTabChange('links')}
+    onMouseEnter={() => setHoveredTab('links')}
+    onMouseLeave={() => setHoveredTab(null)}
+    className={tabClass('links', 'w-1/2 py-2 text-center')}
+  style={tabStyle('links')}
+  >
+    Links
+  </button>
+  <button
+    onClick={() => onTabChange('about')}
+    onMouseEnter={() => setHoveredTab('about')}
+    onMouseLeave={() => setHoveredTab(null)}
+    className={tabClass('about', 'w-1/2 py-2 px-2 truncate min-w-0 text-center')}
+  style={tabStyle('about')}
+  >
+    {profile.about_title || 'About'}
+  </button>
 </div>
         )}
 
@@ -115,39 +160,46 @@ export default function CardLayout({ profile, links, theme, activeTab, onTabChan
         {activeTab === 'links' && (
           <div className="space-y-3 pb-4">
             {links.length === 0 && (
-              <p className={`text-center ${theme.textFaint} text-sm py-8`}>No links yet.</p>
+              <p className={`text-center text-sm py-8 ${c ? '' : theme.textFaint}`} style={c ? { color: c.textFaint } : {}}>No links yet.</p>
             )}
             {links.map((link, i) => (
               <a
                 key={link.id}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => {
-                  supabase.rpc('increment_link_clicks', { link_id: link.id })
-                  supabase.from('link_click_events').insert({ link_id: link.id, user_id: profile.id })
-                }}
-                className={`block w-full text-left px-5 py-4 rounded-2xl border link-card ${theme.card} transition-all group`}
-                style={{ animationDelay: `${i * 60}ms` }}
-              >
+  href={link.url}
+  target="_blank"
+  rel="noopener noreferrer"
+  onMouseEnter={() => c && setHoveredLink(link.id)}
+  onMouseLeave={() => c && setHoveredLink(null)}
+  onClick={() => {
+    supabase.rpc('increment_link_clicks', { link_id: link.id })
+    supabase.from('link_click_events').insert({ link_id: link.id, user_id: profile.id })
+  }}
+  className={`block w-full text-left px-5 py-4 rounded-2xl border transition-all group ${
+    c ? '' : theme.card
+  }`}
+  style={c ? {
+    backgroundColor: hoveredLink === link.id
+      ? adjustColor(c.cardBg, theme.isDark)
+      : c.cardBg,
+    borderColor: hoveredLink === link.id
+      ? adjustColor(c.cardBorder, theme.isDark)
+      : c.cardBorder,
+    animationDelay: `${i * 60}ms`,
+  } : { animationDelay: `${i * 60}ms` }}
+>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     {link.icon && (
-                      <img
-                        src={link.icon}
-                        alt=""
-                        className="w-4 h-4 rounded-sm flex-shrink-0"
-                        onError={e => (e.currentTarget.style.display = 'none')}
-                      />
+                      <img src={link.icon} alt="" className="w-4 h-4 rounded-sm flex-shrink-0" onError={e => (e.currentTarget.style.display = 'none')} />
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className={`${theme.text} font-semibold text-sm truncate`}>{link.title}</p>
+                      <p className={`font-semibold text-sm truncate ${c ? '' : theme.text}`} style={c ? { color: c.text } : {}}>{link.title}</p>
                       {link.description && (
-                        <p className={`${theme.textMuted} text-xs mt-0.5 line-clamp-2`}>{link.description}</p>
+                        <p className={`text-xs mt-0.5 line-clamp-2 ${c ? '' : theme.textMuted}`} style={c ? { color: c.textMuted } : {}}>{link.description}</p>
                       )}
                     </div>
                   </div>
-                  <ExternalLink size={14} className={`${theme.textFaint} group-hover:${theme.textMuted} transition-colors ml-3 flex-shrink-0`} />
+                  <ExternalLink size={14} className={`ml-3 flex-shrink-0 ${c ? '' : theme.textFaint}`} style={c ? { color: c.textMuted } : {}} />
                 </div>
               </a>
             ))}
@@ -158,28 +210,41 @@ export default function CardLayout({ profile, links, theme, activeTab, onTabChan
         {activeTab === 'about' && profile.about_enabled && (
           <div className="pb-4">
             {profile.about_content ? (
-              <div
-                className={`prose prose-sm max-w-none ${theme.isDark ? 'prose-invert' : ''}`}
-                dangerouslySetInnerHTML={{ __html: profile.about_content }}
-              />
+              <div style={c ? {
+  '--tw-prose-body': c.text,
+  '--tw-prose-headings': c.textHeading,
+  '--tw-prose-bold': c.text,
+  '--tw-prose-links': c.accentHex,
+  '--tw-prose-bullets': c.text,
+  '--tw-prose-counters': c.text,
+} as React.CSSProperties : {}}>
+                <div
+                  className={`prose prose-sm max-w-none ${theme.isDark ? 'prose-invert' : ''}`}
+                  dangerouslySetInnerHTML={{ __html: profile.about_content }}
+                />
+              </div>
             ) : (
-              <p className={`${theme.textFaint} text-sm text-center py-8`}>Nothing here yet.</p>
+              <p className={`text-sm text-center py-8 ${c ? '' : theme.textFaint}`} style={c ? { color: c.textFaint } : {}}>Nothing here yet.</p>
             )}
           </div>
         )}
 
         {/* Social links - bottom */}
         {profile.social_links_position === 'bottom' && (
-          <SocialLinksDisplay links={profile.social_links} theme={profile.theme} />
+          <SocialLinksDisplay links={profile.social_links} theme={profile.theme} customAccent={c?.accentHex} />
         )}
 
         {/* Footer */}
         <div className="pb-8 text-center">
-          <a href="/" className={`${theme.footerText} text-xs hover:${theme.textMuted} transition-colors`}>
-            Powered by <span className="font-display font-semibold">BakerLinks</span>
-          </a>
+          <a
+            href="/"
+  className={`text-xs transition-colors ${c ? '' : theme.footerText}`}
+  style={c ? { color: c.textMuted } : {}}
+>
+  Powered by <span className="font-display font-semibold">BakerLinks</span>
+</a>
         </div>
       </div>
-    </>
+    </div>
   )
 }

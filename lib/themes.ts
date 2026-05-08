@@ -1,3 +1,5 @@
+import type { CustomTheme } from './types'
+
 export interface ThemeConfig {
   name: string
   isDark: boolean
@@ -15,9 +17,30 @@ export interface ThemeConfig {
   avatarRing: string
   footerText: string
   fontClass: string
+  customColors?: CustomTheme
 }
 
 export const themes: Record<string, ThemeConfig> = {
+  custom: {
+    name: 'Custom',
+    isDark: true,
+    bg: 'bg-[#0a0a0f]',
+    card: 'border-[#7c3aed]/40 hover:border-[#7c3aed] bg-[#13131f] hover:bg-[#1a1a2e]',
+    text: 'text-white',
+    textMuted: 'text-white/50',
+    textFaint: 'text-white/20',
+    textHeading: 'text-white',
+    accent: 'text-[#a78bfa]',
+    accentHex: '#a78bfa',
+    border: 'border-[#7c3aed]/20',
+    buttonPrimary: 'bg-[#7c3aed] hover:bg-[#6d28d9] text-white',
+    buttonSecondary: 'bg-white/5 hover:bg-white/10 border border-white/10 text-white',
+    avatarRing: 'ring-black/40',
+    footerText: 'text-white/20',
+    fontClass: 'font-body',
+
+  },
+
   electric: {
     name: 'Electric',
     isDark: true,
@@ -84,7 +107,7 @@ export const themes: Record<string, ThemeConfig> = {
     accent: 'text-[#d97706]',
     accentHex: '#d97706',
     border: 'border-[#f59e0b]',
-    buttonPrimary: 'bg-[#1c1917] hover:bg-[#292524] text-white',
+    buttonPrimary: 'bg-[#1c1917] hover:bg-[#44403c] text-white',
     buttonSecondary: 'bg-white hover:bg-amber-50 border-2 border-[#f59e0b] text-[#d97706]',
     avatarRing: 'ring-[#f59e0b]',
     footerText: 'text-[#1c1917]/25',
@@ -108,4 +131,36 @@ export const themes: Record<string, ThemeConfig> = {
     footerText: 'text-[#1e3a5f]/30',
     fontClass: 'font-body',
   },
+}
+
+export function buildCustomTheme(custom: CustomTheme): ThemeConfig {
+  const isDark = isColorDark(custom.bg)
+  return {
+    name: 'Custom',
+    isDark,
+    bg: 'bg-[#0a0a0f]',
+    card: 'border-white/20 bg-white/5 hover:bg-white/10',
+    text: 'text-white',
+    textMuted: 'text-white/60',
+    textFaint: 'text-white/20',
+    textHeading: 'text-white',
+    accent: 'text-white',
+    accentHex: custom.accentHex,
+    border: 'border-white/20',
+    buttonPrimary: 'bg-purple-600 text-white',
+    buttonSecondary: 'bg-white/5 border border-white/10 text-white',
+    avatarRing: 'ring-white/20',
+    footerText: 'text-white/20',
+    fontClass: 'font-body',
+    customColors: custom,
+  }
+}
+
+// Helper to determine if a hex color is dark
+function isColorDark(hex: string): boolean {
+  const r = parseInt(hex.slice(1, 3), 16)
+  const g = parseInt(hex.slice(3, 5), 16)
+  const b = parseInt(hex.slice(5, 7), 16)
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+  return luminance < 0.5
 }
