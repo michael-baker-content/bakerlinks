@@ -15,88 +15,77 @@ BakerLinks gives you a single, beautiful page at `bakerlinks.com/username` that 
 ## Features
 
 ### Links
-- Add, edit, delete, and reorder your links
-- Show or hide individual links without deleting them
+- Add, edit, delete, reorder, and toggle visibility without deleting
 - Drag to reorder on desktop, tap up/down buttons on mobile
 - Link descriptions and favicons displayed on your profile
-- Click analytics — see how many times each link has been clicked
+- Click analytics with time-series charts and per-link breakdowns
 
 ### Customization
-- **3 layouts** — Card, Immersive, and Minimal
-- **6 themes** — Electric, Neon, Earthy, Light, Pastel, and a fully Custom theme with a color picker
-- **4 fonts** — Default, Serif, Mono, and Rounded
+- **3 layouts** — Card (background image at top), Immersive (full-screen background with frosted glass panel), and Minimal (clean, no background)
+- **6 themes** — Electric, Neon, Earthy, Light, Pastel, and a fully Custom theme with a color picker and WCAG contrast checking
+- **4 fonts** — Default (Space Grotesk), Serif (Playfair Display), Mono (JetBrains Mono), and Rounded (Nunito)
 - Upload a profile picture and background image, or search Unsplash
-- Social links — 18 platforms, reorderable, positioned above or below your links
+- Social links — 18 platforms, drag-to-reorder, positioned above or below your links
 
 ### About page
-- Optional second tab on your profile
-- Write in markdown — supports headings, bold, italic, lists, and blockquotes
-- Give context to your links, describe your work, or tell your story
+- Optional second tab on your profile with a custom title
+- Write in markdown — headings, bold, italic, lists, blockquotes
+- Stored as both raw markdown and rendered HTML
 
 ### Analytics
-- See total clicks and clicks over the last 7, 30, or 90 days
-- Per-link bar chart to see what's performing best
+- Total clicks per link
+- Time-series line chart for 7, 30, and 90 day ranges
+- Per-link bar chart
 
 ### Account
-- Sign up with email, Google, or GitHub
-- Change your email or password at any time
-- Delete your account with a confirmation gate
+- Email/password, Google OAuth, GitHub OAuth
+- Change email or password in-dashboard
+- Account deletion with username confirmation gate
 
 ---
 
-## Tech Stack
+## Stack
 
-- **Frontend** — Next.js 16, React 19, TypeScript, Tailwind CSS
-- **Backend** — Supabase (Postgres, Auth, Row-Level Security, Storage)
-- **Email** — Resend with custom branded templates
-- **Hosting** — Vercel
-- **Fonts** — Google Fonts via next/font
-- **Drag and drop** — @dnd-kit
-- **Charts** — recharts
-- **Markdown** — @uiw/react-md-editor, marked
-- **Icons** — react-icons
-- **Images** — Unsplash API
+- **Next.js 16** — App Router, React 19, TypeScript
+- **Tailwind CSS** — with @tailwindcss/typography for markdown rendering
+- **Supabase** — Postgres, Auth, Row-Level Security, Storage
+- **Vercel** — hosting
+- **Resend** — transactional email with custom SMTP
+- **Google Fonts** via next/font — Space Grotesk, Syne, Playfair Display, Lora, JetBrains Mono, Nunito
+- **@dnd-kit** — drag-and-drop link and social link reordering
+- **recharts** — analytics charts
+- **@uiw/react-md-editor + marked** — markdown editing and rendering
+- **react-icons** — social platform icons
+- **Unsplash API** — background image search
+- **Playwright** — end-to-end tests
 
 ---
 
 ## Self-hosting
 
-BakerLinks is open source. You can run your own instance.
-
-### Requirements
+### Prerequisites
 
 - Node.js 18+
-- A [Supabase](https://supabase.com) project
-- A [Vercel](https://vercel.com) account (or any Next.js host)
-- A [Resend](https://resend.com) account for transactional email (optional)
-- An [Unsplash](https://unsplash.com/developers) API key for background image search (optional)
+- Supabase project
+- Vercel account (or any Next.js-compatible host)
+- Resend account for transactional email (optional but recommended)
+- Unsplash API key for background image search (optional)
 
-### 1. Clone and install
+### Setup
 
-```
+```bash
 git clone https://github.com/michael-baker-content/bakerlinks.git
 cd bakerlinks
 npm install
 ```
 
-### 2. Set up Supabase
+Run the schema in Supabase SQL Editor:
 
-1. Create a new project at [supabase.com](https://supabase.com)
-2. Open **Database → SQL Editor** and run `supabase-schema.sql`
-3. Go to **Settings → API** and copy your project URL and anon key
+```bash
+# Copy contents of supabase-schema.sql and run in Supabase → Database → SQL Editor
+```
 
-### 3. Configure OAuth (optional)
-
-In Supabase go to **Authentication → Providers**:
-- Enable Google — add your Google Cloud OAuth credentials
-- Enable GitHub — add your GitHub OAuth app credentials
-
-### 4. Configure Resend (optional)
-
-1. Create an account at [resend.com](https://resend.com) and verify your domain
-2. In Supabase go to **Project Settings → Authentication → SMTP Settings** and enter your Resend credentials
-
-### 5. Environment variables
+Set environment variables:
 
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
@@ -105,19 +94,19 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 NEXT_PUBLIC_UNSPLASH_ACCESS_KEY=your-unsplash-access-key
 ```
 
-### 6. Run locally
+Configure Supabase Auth:
+- Site URL: `https://yourdomain.com`
+- Redirect URLs: `https://yourdomain.com/auth/callback`, `https://yourdomain.com/auth/reset`
 
-```
+For OAuth, enable Google and/or GitHub under **Authentication → Providers** and add your credentials.
+
+For email, go to **Project Settings → Authentication → SMTP Settings** and add your Resend credentials.
+
+```bash
 npm run dev
 ```
 
-### 7. Deploy
-
-Push to GitHub, import at [vercel.com](https://vercel.com), add your environment variables, and deploy.
-
-Update Supabase under **Authentication → URL Configuration**:
-- Site URL: `https://yourdomain.com`
-- Redirect URLs: `https://yourdomain.com/auth/callback` and `https://yourdomain.com/auth/reset`
+Deploy by pushing to GitHub and importing on Vercel. All environment variables are set as Sensitive in the Vercel dashboard.
 
 ---
 
