@@ -6,7 +6,8 @@ import { themes, buildCustomTheme } from '@/lib/themes'
 import SocialIcon from '@/components/SocialIcon'
 import { getPlatform } from '@/lib/social-platforms'
 import { ExternalLink } from 'lucide-react'
-import { getFontClasses, getInitials, adjustColor, ProfileHeader, TabBar } from '@/components/layouts/shared'
+import { getFontClasses, ProfileHeader, TabBar } from '@/components/layouts/shared'
+import { adjustColor } from '@/lib/color-utils'
 
 interface Props {
   profile: Profile

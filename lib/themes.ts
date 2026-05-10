@@ -1,5 +1,5 @@
 import type { CustomTheme } from './types'
-import { isColorDark } from '@/components/layouts/shared'
+import { isColorDark } from './color-utils'
 
 export interface ThemeConfig {
   name: string

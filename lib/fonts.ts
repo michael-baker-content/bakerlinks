@@ -35,8 +35,3 @@ export const fonts: FontOption[] = [
         googleFonts: 'Nunito:wght@400;700;800',
     },
 ]
-
-// fallow-ignore-next-line dead-code
-export function getFont(id: string): FontOption {
-    return fonts.find(f => f.id === id) ?? fonts[0]
-}
