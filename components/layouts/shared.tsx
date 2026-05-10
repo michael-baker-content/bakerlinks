@@ -52,44 +52,55 @@ interface HeaderProps {
   profile: Profile
   theme: ThemeConfig
   fontClasses: { heading: string; body: string }
+  size?: 'full' | 'preview'
 }
 
-export function ProfileHeader({ profile, theme, fontClasses }: HeaderProps) {
+export function ProfileHeader({ profile, theme, fontClasses, size = 'full' }: HeaderProps) {
   const c = theme.customColors
   const initials = getInitials(profile)
+  const isPreview = size === 'preview'
+
+  const avatarSize = isPreview ? 'w-14 h-14' : 'w-24 h-24'
+  const avatarText = isPreview ? 'text-lg' : 'text-2xl'
+  const avatarRing = isPreview ? 'ring-2' : 'ring-4'
+  const avatarMb = isPreview ? 'mb-2' : 'mb-4'
+  const nameSize = isPreview ? 'text-sm' : 'text-2xl'
+  const handleSize = isPreview ? 'text-xs' : 'text-sm'
+  const bioSize = isPreview ? 'text-xs mt-1 line-clamp-2' : 'text-sm mt-3'
+  const wrapperMb = isPreview ? 'mb-3' : 'mb-6'
 
   return (
-    <div className="flex flex-col items-center mb-6">
+    <div className={`flex flex-col items-center ${wrapperMb}`}>
       {profile.avatar_url ? (
         <img
           src={profile.avatar_url}
           alt={profile.display_name || profile.username}
-          className={`w-24 h-24 rounded-full object-cover mb-4 ${c ? '' : `ring-4 ${theme.avatarRing}`}`}
-          style={c ? { boxShadow: `0 0 0 4px ${c.avatarRing}` } : {}}
+          className={`${avatarSize} rounded-full object-cover ${avatarMb} ${c ? '' : `${avatarRing} ${theme.avatarRing}`}`}
+          style={c ? { boxShadow: `0 0 0 ${isPreview ? '2px' : '4px'} ${c.avatarRing}` } : {}}
         />
       ) : (
         <div
-          className={`w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center text-white font-display font-bold text-2xl mb-4 ${c ? '' : `ring-4 ${theme.avatarRing}`}`}
-          style={c ? { boxShadow: `0 0 0 4px ${c.avatarRing}` } : {}}
+          className={`${avatarSize} rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center text-white font-display font-bold ${avatarText} ${avatarMb} ${c ? '' : `${avatarRing} ${theme.avatarRing}`}`}
+          style={c ? { boxShadow: `0 0 0 ${isPreview ? '2px' : '4px'} ${c.avatarRing}` } : {}}
         >
           {initials}
         </div>
       )}
-      <h1
-        className={`${fontClasses.heading} text-2xl font-bold mb-1 ${c ? '' : theme.textHeading}`}
+      <p
+        className={`${fontClasses.heading} ${nameSize} font-bold text-center ${isPreview ? '' : 'mb-1'} ${c ? '' : theme.textHeading}`}
         style={c ? { color: c.textHeading } : {}}
       >
-        {profile.display_name || profile.username}
-      </h1>
+        {profile.display_name || profile.username || 'Your name'}
+      </p>
       <p
-        className={`text-sm ${c ? '' : theme.textMuted}`}
+        className={`${handleSize} ${c ? '' : theme.textMuted}`}
         style={c ? { color: c.textMuted } : {}}
       >
         @{profile.username}
       </p>
       {profile.bio && (
         <p
-          className={`text-sm text-center mt-3 max-w-xs leading-relaxed ${c ? '' : theme.textMuted}`}
+          className={`${bioSize} text-center max-w-xs leading-relaxed ${c ? '' : theme.textMuted}`}
           style={c ? { color: c.textMuted } : {}}
         >
           {profile.bio}
@@ -109,10 +120,12 @@ interface TabBarProps {
   hoveredTab: 'links' | 'about' | null
   onHover: (tab: 'links' | 'about' | null) => void
   containerStyle?: React.CSSProperties
+  size?: 'full' | 'preview'
 }
 
-export function TabBar({ profile, theme, activeTab, onTabChange, hoveredTab, onHover, containerStyle }: TabBarProps) {
+export function TabBar({ profile, theme, activeTab, onTabChange, hoveredTab, onHover, containerStyle, size = 'full' }: TabBarProps) {
   const c = theme.customColors
+  const isPreview = size === 'preview'
 
   function tabStyle(tab: 'links' | 'about') {
     if (!c) return undefined
@@ -131,9 +144,9 @@ export function TabBar({ profile, theme, activeTab, onTabChange, hoveredTab, onH
   }
 
   function tabClass(tab: 'links' | 'about', extra: string) {
-    if (c) return `${extra} rounded-lg text-sm font-medium transition-all`
+    if (c) return `${extra} rounded-lg font-medium transition-all ${isPreview ? 'text-xs' : 'text-sm'}`
     const isActive = activeTab === tab
-    return `${extra} rounded-lg text-sm font-medium transition-all ${
+    return `${extra} rounded-lg font-medium transition-all ${isPreview ? 'text-xs' : 'text-sm'} ${
       isActive
         ? theme.buttonPrimary
         : `${theme.textMuted} hover:${theme.text} ${theme.isDark ? 'hover:bg-white/10' : 'hover:bg-black/10'}`
@@ -142,14 +155,14 @@ export function TabBar({ profile, theme, activeTab, onTabChange, hoveredTab, onH
 
   return (
     <div
-      className="flex rounded-xl p-1 mb-4"
+      className={`flex rounded-xl p-1 ${isPreview ? 'mb-2' : 'mb-4'}`}
       style={containerStyle ?? { backgroundColor: c ? `${c.cardBg}80` : theme.isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.08)' }}
     >
       <button
         onClick={() => onTabChange('links')}
         onMouseEnter={() => onHover('links')}
         onMouseLeave={() => onHover(null)}
-        className={tabClass('links', 'w-1/2 py-2 text-center')}
+        className={tabClass('links', `w-1/2 ${isPreview ? 'py-1' : 'py-2'} text-center`)}
         style={tabStyle('links')}
       >
         Links
@@ -158,7 +171,7 @@ export function TabBar({ profile, theme, activeTab, onTabChange, hoveredTab, onH
         onClick={() => onTabChange('about')}
         onMouseEnter={() => onHover('about')}
         onMouseLeave={() => onHover(null)}
-        className={tabClass('about', 'w-1/2 py-2 px-2 truncate min-w-0 text-center')}
+        className={tabClass('about', `w-1/2 ${isPreview ? 'py-1' : 'py-2'} px-2 truncate min-w-0 text-center`)}
         style={tabStyle('about')}
       >
         {profile.about_title || 'About'}
@@ -311,5 +324,5 @@ export function ProfileFooter({ theme }: FooterProps) {
   )
 }
 
-// Need React for useState in LinksList
+// Need React for useState in LinksList and AboutContent
 import React from 'react'

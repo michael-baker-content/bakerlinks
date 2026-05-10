@@ -6,7 +6,7 @@ import { themes, buildCustomTheme } from '@/lib/themes'
 import SocialIcon from '@/components/SocialIcon'
 import { getPlatform } from '@/lib/social-platforms'
 import { ExternalLink } from 'lucide-react'
-import { getFontClasses, getInitials, adjustColor } from '@/components/layouts/shared'
+import { getFontClasses, getInitials, adjustColor, ProfileHeader, TabBar } from '@/components/layouts/shared'
 
 interface Props {
   profile: Profile
@@ -25,28 +25,12 @@ export default function ProfilePreview({ profile }: Props) {
   const layout = profile.layout ?? 'card'
   const c = theme.customColors
   const fontClasses = getFontClasses(profile.font ?? 'default')
-  const initials = getInitials(profile)
   const socialLinks = profile.social_links ?? []
   const socialPosition = profile.social_links_position ?? 'bottom'
   const [previewTab, setPreviewTab] = useState<'links' | 'about'>('links')
+  const [hoveredTab, setHoveredTab] = useState<'links' | 'about' | null>(null)
   const [hoveredLink, setHoveredLink] = useState<string | null>(null)
-const [hoveredAbout, setHoveredAbout] = useState(false)
-
-  const Avatar = () => profile.avatar_url ? (
-    <img
-      src={profile.avatar_url}
-      alt={profile.display_name || profile.username}
-      className="w-14 h-14 rounded-full object-cover mb-2"
-      style={{ boxShadow: `0 0 0 2px ${c ? c.avatarRing : theme.accentHex}` }}
-    />
-  ) : (
-    <div
-      className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center text-white font-display font-bold text-lg mb-2"
-      style={{ boxShadow: `0 0 0 2px ${c ? c.avatarRing : theme.accentHex}` }}
-    >
-      {initials}
-    </div>
-  )
+  const [hoveredAbout, setHoveredAbout] = useState(false)
 
   const SocialIcons = () => socialLinks.length > 0 ? (
     <div className="flex justify-center gap-2 my-2">
@@ -69,132 +53,87 @@ const [hoveredAbout, setHoveredAbout] = useState(false)
     </div>
   ) : null
 
-  const TabBar = () => profile.about_enabled ? (
-    <div
-      className="flex rounded-xl p-1 mb-2"
-      style={{ backgroundColor: c ? `${c.cardBg}80` : theme.isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.08)' }}
-    >
-      <button
-        onClick={() => setPreviewTab('links')}
-        className={`w-1/2 py-1 rounded-lg text-xs font-medium transition-all ${!c ? (previewTab === 'links' ? theme.buttonPrimary : theme.textMuted) : ''}`}
-        style={c ? {
-          backgroundColor: previewTab === 'links' ? c.buttonBg : 'transparent',
-          color: previewTab === 'links' ? c.buttonText : c.textMuted,
-        } : undefined}
-      >
-        Links
-      </button>
-      <button
-        onClick={() => setPreviewTab('about')}
-        className={`w-1/2 py-1 rounded-lg text-xs font-medium transition-all truncate ${!c ? (previewTab === 'about' ? theme.buttonPrimary : theme.textMuted) : ''}`}
-        style={c ? {
-          backgroundColor: previewTab === 'about' ? c.buttonBg : 'transparent',
-          color: previewTab === 'about' ? c.buttonText : c.textMuted,
-        } : undefined}
-      >
-        {profile.about_title || 'About'}
-      </button>
-    </div>
-  ) : null
-
   const LinkCards = () => (
-  <div className="space-y-1.5">
-    {placeholderLinks.map(link => {
-      const isHovered = hoveredLink === link.id
-      const bg = c ? (isHovered ? adjustColor(c.cardBg) : c.cardBg) : undefined
-      const border = c ? (isHovered ? adjustColor(c.cardBorder) : c.cardBorder) : undefined
-      return (
-        <div
-          key={link.id}
-          className={`px-3 py-2 rounded-xl border flex items-center justify-between ${c ? '' : theme.card}`}
-          onMouseEnter={() => setHoveredLink(link.id)}
-          onMouseLeave={() => setHoveredLink(null)}
-          style={c ? {
-            backgroundColor: layout === 'immersive' ? `${bg}99` : bg,
-            borderColor: border,
-          } : {}}
-        >
-          <div className="flex-1 min-w-0">
-            <p className={`${c ? '' : theme.text} text-xs font-medium truncate`} style={c ? { color: c.text } : {}}>
-              {link.title}
-            </p>
-            {link.description && (
-              <p className={`text-xs ${c ? '' : theme.textMuted}`} style={c ? { color: c.textMuted } : {}}>
-                {link.description}
+    <div className="space-y-1.5">
+      {placeholderLinks.map(link => {
+        const isHovered = hoveredLink === link.id
+        const bg = c ? (isHovered ? adjustColor(c.cardBg) : c.cardBg) : undefined
+        const border = c ? (isHovered ? adjustColor(c.cardBorder) : c.cardBorder) : undefined
+        return (
+          <div
+            key={link.id}
+            className={`px-3 py-2 rounded-xl border flex items-center justify-between ${c ? '' : theme.card}`}
+            onMouseEnter={() => setHoveredLink(link.id)}
+            onMouseLeave={() => setHoveredLink(null)}
+            style={c ? {
+              backgroundColor: layout === 'immersive' ? `${bg}99` : bg,
+              borderColor: border,
+            } : {}}
+          >
+            <div className="flex-1 min-w-0">
+              <p className={`${c ? '' : theme.text} text-xs font-medium truncate`} style={c ? { color: c.text } : {}}>
+                {link.title}
               </p>
-            )}
+              {link.description && (
+                <p className={`text-xs ${c ? '' : theme.textMuted}`} style={c ? { color: c.textMuted } : {}}>
+                  {link.description}
+                </p>
+              )}
+            </div>
+            <ExternalLink size={10} className={`ml-2 flex-shrink-0 ${c ? '' : theme.textFaint}`} style={c ? { color: c.textFaint } : {}} />
           </div>
-          <ExternalLink size={10} className={`ml-2 flex-shrink-0 ${c ? '' : theme.textFaint}`} style={c ? { color: c.textFaint } : {}} />
-        </div>
-      )
-    })}
-  </div>
-)
+        )
+      })}
+    </div>
+  )
 
   const AboutPlaceholder = () => (
-  <div
-    className={`px-3 py-3 rounded-xl border mb-2 ${c ? '' : theme.card}`}
-    onMouseEnter={() => c && setHoveredAbout(true)}
-    onMouseLeave={() => c && setHoveredAbout(false)}
-    style={c ? {
-      backgroundColor: layout === 'immersive'
-        ? `${hoveredAbout ? adjustColor(c.cardBg) : c.cardBg}99`
-        : hoveredAbout ? adjustColor(c.cardBg) : c.cardBg,
-      borderColor: hoveredAbout ? adjustColor(c.cardBorder) : c.cardBorder,
-    } : {}}
-  >
-    {profile.about_content ? (
-      <>
-        <div className="h-1.5 rounded w-full mb-1" style={{ backgroundColor: c ? `${c.text}30` : theme.isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)' }} />
-        <div className="h-1.5 rounded w-4/5 mb-1" style={{ backgroundColor: c ? `${c.text}20` : theme.isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)' }} />
-        <div className="h-1.5 rounded w-full mb-1" style={{ backgroundColor: c ? `${c.text}15` : theme.isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.06)' }} />
-        <div className="h-1.5 rounded w-3/5 mb-1" style={{ backgroundColor: c ? `${c.text}15` : theme.isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.06)' }} />
-        <div className="h-1.5 rounded w-4/5" style={{ backgroundColor: c ? `${c.text}10` : theme.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)' }} />
-      </>
-    ) : (
-      <p className={`text-xs text-center py-2 ${c ? '' : theme.textFaint}`} style={c ? { color: c.textFaint } : {}}>
-        No content yet
-      </p>
-    )}
-  </div>
-)
-
-  const ProfileInfo = () => (
-    <div className="flex flex-col items-center mb-3">
-      <Avatar />
-      <p
-        className={`${fontClasses.heading} text-sm font-bold text-center ${c ? '' : theme.textHeading}`}
-        style={c ? { color: c.textHeading } : {}}
-      >
-        {profile.display_name || profile.username || 'Your name'}
-      </p>
-      <p className={`text-xs ${c ? '' : theme.textMuted}`} style={c ? { color: c.textMuted } : {}}>
-        @{profile.username}
-      </p>
-      {profile.bio && (
-        <p
-          className={`text-xs text-center mt-1 leading-relaxed line-clamp-2 ${c ? '' : theme.textMuted}`}
-          style={c ? { color: c.textMuted } : {}}
-        >
-          {profile.bio}
+    <div
+      className={`px-3 py-3 rounded-xl border mb-2 ${c ? '' : theme.card}`}
+      onMouseEnter={() => c && setHoveredAbout(true)}
+      onMouseLeave={() => c && setHoveredAbout(false)}
+      style={c ? {
+        backgroundColor: layout === 'immersive'
+          ? `${hoveredAbout ? adjustColor(c.cardBg) : c.cardBg}99`
+          : hoveredAbout ? adjustColor(c.cardBg) : c.cardBg,
+        borderColor: hoveredAbout ? adjustColor(c.cardBorder) : c.cardBorder,
+      } : {}}
+    >
+      {profile.about_content ? (
+        <div className="space-y-1.5">
+          <div className="h-1.5 rounded w-full" style={{ backgroundColor: c ? `${c.text}30` : theme.isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)' }} />
+          <div className="h-1.5 rounded w-4/5" style={{ backgroundColor: c ? `${c.text}20` : theme.isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)' }} />
+          <div className="h-1.5 rounded w-full" style={{ backgroundColor: c ? `${c.text}15` : theme.isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.06)' }} />
+          <div className="h-1.5 rounded w-3/5" style={{ backgroundColor: c ? `${c.text}15` : theme.isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.06)' }} />
+          <div className="h-1.5 rounded w-4/5" style={{ backgroundColor: c ? `${c.text}10` : theme.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)' }} />
+        </div>
+      ) : (
+        <p className={`text-xs text-center py-2 ${c ? '' : theme.textFaint}`} style={c ? { color: c.textFaint } : {}}>
+          No content yet
         </p>
       )}
     </div>
   )
 
-  const Footer = () => (
-    <p className={`text-center text-xs mt-3 ${c ? '' : theme.footerText}`} style={c ? { color: c.textMuted } : {}}>
-      Powered by <span className="font-display font-semibold">BakerLinks</span>
-    </p>
-  )
-
   const Content = () => (
     <>
       {socialPosition === 'top' && <SocialIcons />}
-      <TabBar />
+      {profile.about_enabled && (
+        <TabBar
+          profile={profile}
+          theme={theme}
+          activeTab={previewTab}
+          onTabChange={setPreviewTab}
+          hoveredTab={hoveredTab}
+          onHover={setHoveredTab}
+          size="preview"
+        />
+      )}
       {previewTab === 'links' ? <LinkCards /> : <AboutPlaceholder />}
       {socialPosition === 'bottom' && <SocialIcons />}
-      <Footer />
+      <p className={`text-center text-xs mt-3 ${c ? '' : theme.footerText}`} style={c ? { color: c.textMuted } : {}}>
+        Powered by <span className="font-display font-semibold">BakerLinks</span>
+      </p>
     </>
   )
 
@@ -208,23 +147,23 @@ const [hoveredAbout, setHoveredAbout] = useState(false)
         style={layout !== 'immersive' && c ? { backgroundColor: c.bg } : {}}
       >
         {layout === 'immersive' ? (
-  <div className="relative min-h-[400px]">
-    {profile.background_url ? (
-      <div className="absolute inset-0">
-        <img src={profile.background_url} alt="" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-black/50" />
-      </div>
-    ) : (
-      <div className={`absolute inset-0 ${c ? '' : theme.bg}`} style={c ? { backgroundColor: c.bg } : {}} />
-    )}
+          <div className="relative min-h-[420px]">
+            {profile.background_url ? (
+              <div className="absolute inset-0">
+                <img src={profile.background_url} alt="" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-black/50" />
+              </div>
+            ) : (
+              <div className={`absolute inset-0 ${c ? '' : theme.bg}`} style={c ? { backgroundColor: c.bg } : {}} />
+            )}
             <div className="relative z-10 flex justify-center pt-3">
               <div className="w-16 h-1.5 rounded-full bg-white/20" />
             </div>
             <div
-  className="relative z-10 m-3 mt-4 rounded-2xl p-4 backdrop-blur-md"
-  style={c ? { backgroundColor: `${c.contentBg || c.cardBg}99` } : { backgroundColor: `${theme.bgHex}cc` }}
->
-              <ProfileInfo />
+              className="relative z-10 m-3 mt-4 rounded-2xl p-4 backdrop-blur-md"
+              style={c ? { backgroundColor: `${c.contentBg || c.cardBg}99` } : { backgroundColor: `${theme.bgHex}99` }}
+            >
+              <ProfileHeader profile={profile} theme={theme} fontClasses={fontClasses} size="preview" />
               <Content />
             </div>
           </div>
@@ -237,7 +176,7 @@ const [hoveredAbout, setHoveredAbout] = useState(false)
             <div className="relative z-10 flex justify-center mb-3">
               <div className="w-16 h-1.5 rounded-full bg-white/20" />
             </div>
-            <ProfileInfo />
+            <ProfileHeader profile={profile} theme={theme} fontClasses={fontClasses} size="preview" />
             <Content />
           </div>
 
@@ -257,8 +196,8 @@ const [hoveredAbout, setHoveredAbout] = useState(false)
               </div>
             </div>
             <div className={`${c ? '' : theme.bg} px-4 pb-4`} style={c ? { backgroundColor: c.bg } : {}}>
-              <div className="flex flex-col items-center -mt-7 mb-3 relative z-10">
-                <ProfileInfo />
+              <div className="-mt-7 relative z-10">
+                <ProfileHeader profile={profile} theme={theme} fontClasses={fontClasses} size="preview" />
               </div>
               <Content />
             </div>

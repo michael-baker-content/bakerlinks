@@ -36,6 +36,7 @@ export const fonts: FontOption[] = [
     },
 ]
 
+// fallow-ignore-next-line dead-code
 export function getFont(id: string): FontOption {
     return fonts.find(f => f.id === id) ?? fonts[0]
 }
