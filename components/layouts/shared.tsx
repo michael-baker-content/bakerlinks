@@ -175,18 +175,21 @@ interface LinksListProps {
   theme: ThemeConfig
   linkCardClass?: string
   linkCardStyle?: (link: LinkType, i: number) => React.CSSProperties
+  immersive?: boolean
 }
 
-export function LinksList({ profile, links, theme, linkCardClass, linkCardStyle }: LinksListProps) {
+export function LinksList({ profile, links, theme, linkCardClass, linkCardStyle, immersive }: LinksListProps) {
   const supabase = createClient()
   const c = theme.customColors
   const [hoveredLink, setHoveredLink] = React.useState<string | null>(null)
 
   const defaultCardStyle = (link: LinkType, i: number): React.CSSProperties => {
     if (!c) return { animationDelay: `${i * 60}ms` }
+    const isHovered = hoveredLink === link.id
+    const bg = isHovered ? adjustColor(c.cardBg) : c.cardBg
     return {
-      backgroundColor: hoveredLink === link.id ? adjustColor(c.cardBg) : c.cardBg,
-      borderColor: hoveredLink === link.id ? adjustColor(c.cardBorder) : c.cardBorder,
+      backgroundColor: immersive ? `${bg}99` : bg,
+      borderColor: isHovered ? adjustColor(c.cardBorder) : c.cardBorder,
       animationDelay: `${i * 60}ms`,
     }
   }
@@ -204,11 +207,15 @@ export function LinksList({ profile, links, theme, linkCardClass, linkCardStyle 
           href={link.url}
           target="_blank"
           rel="noopener noreferrer"
-          onMouseEnter={() => c && setHoveredLink(link.id)}
-          onMouseLeave={() => c && setHoveredLink(null)}
+          onMouseEnter={() => setHoveredLink(link.id)}
+          onMouseLeave={() => setHoveredLink(null)}
           onClick={() => {
-            supabase.rpc('increment_link_clicks', { link_id: link.id })
-            supabase.from('link_click_events').insert({ link_id: link.id, user_id: profile.id })
+            const linkId = link.id
+            const userId = profile.id
+            setTimeout(() => {
+              supabase.rpc('increment_link_clicks', { link_id: linkId })
+              supabase.from('link_click_events').insert({ link_id: linkId, user_id: userId })
+            }, 0)
           }}
           className={`block w-full text-left px-5 py-4 rounded-2xl border link-card transition-all group ${
             c ? '' : (linkCardClass ?? theme.card)
@@ -223,7 +230,7 @@ export function LinksList({ profile, links, theme, linkCardClass, linkCardStyle 
               <div className="flex-1 min-w-0">
                 <p className={`font-semibold text-sm truncate ${c ? '' : theme.text}`} style={c ? { color: c.text } : {}}>{link.title}</p>
                 {link.description && (
-                  <p className={`text-xs mt-0.5 line-clamp-2 ${c ? '' : theme.textMuted}`} style={c ? { color: c.textMuted } : {}}>{link.description}</p>
+                  <p className={`text-xs mt-0.5 ${c ? '' : theme.textMuted}`} style={c ? { color: c.textMuted } : {}}>{link.description}</p>
                 )}
               </div>
             </div>
@@ -246,6 +253,7 @@ interface AboutContentProps {
 export function AboutContent({ profile, theme, contentBgHex }: AboutContentProps) {
   const c = theme.customColors
   const isDark = contentBgHex ? isColorDark(contentBgHex) : theme.isDark
+  const [hovered, setHovered] = React.useState(false)
 
   if (!profile.about_content) {
     return (
@@ -256,18 +264,28 @@ export function AboutContent({ profile, theme, contentBgHex }: AboutContentProps
   }
 
   return (
-    <div style={c ? {
-      '--tw-prose-body': c.text,
-      '--tw-prose-headings': c.textHeading,
-      '--tw-prose-bold': c.text,
-      '--tw-prose-links': c.accentHex,
-      '--tw-prose-bullets': isDark ? '#9ca3af' : '#4b5563',
-      '--tw-prose-counters': isDark ? '#9ca3af' : '#4b5563',
-    } as React.CSSProperties : {}}>
-      <div
-        className={`prose prose-sm max-w-none ${isDark ? 'prose-invert' : ''}`}
-        dangerouslySetInnerHTML={{ __html: profile.about_content }}
-      />
+    <div
+      className={`px-5 py-4 rounded-2xl border mb-4 ${c ? '' : theme.card}`}
+      onMouseEnter={() => c && setHovered(true)}
+      onMouseLeave={() => c && setHovered(false)}
+      style={c ? {
+        backgroundColor: hovered ? adjustColor(c.cardBg) : c.cardBg,
+        borderColor: hovered ? adjustColor(c.cardBorder) : c.cardBorder,
+      } : {}}
+    >
+      <div style={c ? {
+        '--tw-prose-body': c.text,
+        '--tw-prose-headings': c.textHeading,
+        '--tw-prose-bold': c.text,
+        '--tw-prose-links': c.accentHex,
+        '--tw-prose-bullets': isDark ? '#9ca3af' : '#4b5563',
+        '--tw-prose-counters': isDark ? '#9ca3af' : '#4b5563',
+      } as React.CSSProperties : {}}>
+        <div
+          className={`prose prose-sm max-w-none ${isDark ? 'prose-invert' : ''}`}
+          dangerouslySetInnerHTML={{ __html: profile.about_content }}
+        />
+      </div>
     </div>
   )
 }

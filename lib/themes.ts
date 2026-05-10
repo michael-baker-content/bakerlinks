@@ -17,6 +17,7 @@ export interface ThemeConfig {
   avatarRing: string
   footerText: string
   fontClass: string
+  bgHex: string
   customColors?: CustomTheme
 }
 
@@ -37,8 +38,8 @@ export const themes: Record<string, ThemeConfig> = {
     buttonSecondary: 'bg-white/5 hover:bg-white/10 border border-white/10 text-white',
     avatarRing: 'ring-black/40',
     footerText: 'text-white/20',
+    bgHex: '#0a0a0f',
     fontClass: 'font-body',
-
   },
 
   electric: {
@@ -57,6 +58,7 @@ export const themes: Record<string, ThemeConfig> = {
     buttonSecondary: 'bg-white/5 hover:bg-white/10 border border-white/10 text-white',
     avatarRing: 'ring-black/40',
     footerText: 'text-white/20',
+    bgHex: '#0a0a0f',
     fontClass: 'font-body',
   },
   neon: {
@@ -75,6 +77,7 @@ export const themes: Record<string, ThemeConfig> = {
     buttonSecondary: 'bg-white/5 hover:bg-white/10 border border-[#00f5ff]/20 text-[#00f5ff]',
     avatarRing: 'ring-[#1d4efc]',
     footerText: 'text-white/20',
+    bgHex: '#050510',
     fontClass: 'font-body',
   },
   earthy: {
@@ -93,6 +96,7 @@ export const themes: Record<string, ThemeConfig> = {
     buttonSecondary: 'bg-white/5 hover:bg-white/10 border border-[#c2855a]/20 text-[#e8a265]',
     avatarRing: 'ring-[#903929]',
     footerText: 'text-[#f5e6d0]/20',
+    bgHex: '#0d1f0f',
     fontClass: 'font-body',
   },
   light: {
@@ -111,6 +115,7 @@ export const themes: Record<string, ThemeConfig> = {
     buttonSecondary: 'bg-white hover:bg-amber-50 border-2 border-[#f59e0b] text-[#d97706]',
     avatarRing: 'ring-[#f59e0b]',
     footerText: 'text-[#1c1917]/25',
+    bgHex: '#fffbf0',
     fontClass: 'font-body',
   },
   pastel: {
@@ -129,6 +134,7 @@ export const themes: Record<string, ThemeConfig> = {
     buttonSecondary: 'bg-white hover:bg-[#f0f7ff] border border-[#f472b6] text-[#f472b6]',
     avatarRing: 'ring-[#ff9f5a]/60',
     footerText: 'text-[#1e3a5f]/30',
+    bgHex: '#ddeeff',
     fontClass: 'font-body',
   },
 }
@@ -152,6 +158,7 @@ export function buildCustomTheme(custom: CustomTheme): ThemeConfig {
     avatarRing: 'ring-white/20',
     footerText: 'text-white/20',
     fontClass: 'font-body',
+    bgHex: custom.bg,
     customColors: custom,
   }
 }

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Profile, Link as LinkType } from '@/lib/types'
 import { ThemeConfig } from '@/lib/themes'
 import SocialLinksDisplay from '@/components/SocialLinksDisplay'
-import { ProfileHeader, TabBar, LinksList, AboutContent, ProfileFooter, getFontClasses, adjustColor } from './shared'
+import { ProfileHeader, TabBar, LinksList, AboutContent, ProfileFooter, getFontClasses } from './shared'
 
 interface Props {
   profile: Profile
@@ -17,14 +17,12 @@ interface Props {
 export default function ImmersiveLayout({ profile, links, theme, activeTab, onTabChange }: Props) {
   const c = theme.customColors
   const [hoveredTab, setHoveredTab] = useState<'links' | 'about' | null>(null)
-  const [hoveredLink, setHoveredLink] = useState<string | null>(null)
   const fontClasses = getFontClasses(profile.font ?? 'default')
   const hasBg = !!profile.background_url
   const contentBgHex = c?.contentBg || c?.cardBg
 
   return (
-    <div className={`${fontClasses.body} ${c ? '' : theme.bg}`} style={c ? { backgroundColor: c.bg } : {}}>
-
+    <div className="relative min-h-screen flex flex-col">
       {/* Full screen background */}
       {hasBg ? (
         <>
@@ -56,8 +54,8 @@ export default function ImmersiveLayout({ profile, links, theme, activeTab, onTa
             className="backdrop-blur-md rounded-3xl p-6 mb-4"
             style={{
               backgroundColor: c
-                ? `${contentBgHex}99`
-                : theme.isDark ? 'rgba(0,0,0,0.30)' : 'rgba(255,255,255,0.40)'
+                ? `${contentBgHex}80`
+                : `${theme.bgHex}99`
             }}
           >
             <ProfileHeader profile={profile} theme={theme} fontClasses={fontClasses} />
@@ -83,17 +81,13 @@ export default function ImmersiveLayout({ profile, links, theme, activeTab, onTa
                 profile={profile}
                 links={links}
                 theme={theme}
-                linkCardClass={theme.isDark ? 'border-white/20 bg-white/10 hover:bg-white/20' : 'border-black/10 bg-black/5 hover:bg-black/10'}
-                linkCardStyle={c ? (link, i) => ({
-                  backgroundColor: hoveredLink === link.id ? `${adjustColor(c.cardBg)}99` : `${c.cardBg}99`,
-                  borderColor: hoveredLink === link.id ? adjustColor(c.cardBorder) : c.cardBorder,
-                  animationDelay: `${i * 60}ms`,
-                }) : undefined}
+                immersive
+                linkCardClass={theme.card}
               />
             )}
 
             {activeTab === 'about' && profile.about_enabled && (
-              <AboutContent profile={profile} theme={theme} contentBgHex={contentBgHex} />
+              <AboutContent profile={profile} theme={theme} contentBgHex={contentBgHex ?? theme.bgHex} />
             )}
 
             {profile.social_links_position === 'bottom' && (

@@ -6,7 +6,7 @@ import { themes, buildCustomTheme } from '@/lib/themes'
 import SocialIcon from '@/components/SocialIcon'
 import { getPlatform } from '@/lib/social-platforms'
 import { ExternalLink } from 'lucide-react'
-import { getFontClasses, getInitials } from '@/components/layouts/shared'
+import { getFontClasses, getInitials, adjustColor } from '@/components/layouts/shared'
 
 interface Props {
   profile: Profile
@@ -29,6 +29,8 @@ export default function ProfilePreview({ profile }: Props) {
   const socialLinks = profile.social_links ?? []
   const socialPosition = profile.social_links_position ?? 'bottom'
   const [previewTab, setPreviewTab] = useState<'links' | 'about'>('links')
+  const [hoveredLink, setHoveredLink] = useState<string | null>(null)
+const [hoveredAbout, setHoveredAbout] = useState(false)
 
   const Avatar = () => profile.avatar_url ? (
     <img
@@ -96,51 +98,66 @@ export default function ProfilePreview({ profile }: Props) {
   ) : null
 
   const LinkCards = () => (
-    <div className="space-y-1.5">
-      {placeholderLinks.map(link => (
+  <div className="space-y-1.5">
+    {placeholderLinks.map(link => {
+      const isHovered = hoveredLink === link.id
+      const bg = c ? (isHovered ? adjustColor(c.cardBg) : c.cardBg) : undefined
+      const border = c ? (isHovered ? adjustColor(c.cardBorder) : c.cardBorder) : undefined
+      return (
         <div
           key={link.id}
-          className="px-3 py-2 rounded-xl border flex items-center justify-between"
+          className={`px-3 py-2 rounded-xl border flex items-center justify-between ${c ? '' : theme.card}`}
+          onMouseEnter={() => setHoveredLink(link.id)}
+          onMouseLeave={() => setHoveredLink(null)}
           style={c ? {
-            backgroundColor: layout === 'immersive' ? `${c.cardBg}99` : c.cardBg,
-            borderColor: c.cardBorder,
-          } : {
-            backgroundColor: layout === 'immersive' ? (theme.isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)') : undefined,
-          }}
+            backgroundColor: layout === 'immersive' ? `${bg}99` : bg,
+            borderColor: border,
+          } : {}}
         >
           <div className="flex-1 min-w-0">
             <p className={`${c ? '' : theme.text} text-xs font-medium truncate`} style={c ? { color: c.text } : {}}>
               {link.title}
             </p>
             {link.description && (
-              <p className={`text-xs truncate ${c ? '' : theme.textMuted}`} style={c ? { color: c.textMuted } : {}}>
+              <p className={`text-xs ${c ? '' : theme.textMuted}`} style={c ? { color: c.textMuted } : {}}>
                 {link.description}
               </p>
             )}
           </div>
           <ExternalLink size={10} className={`ml-2 flex-shrink-0 ${c ? '' : theme.textFaint}`} style={c ? { color: c.textFaint } : {}} />
         </div>
-      ))}
-    </div>
-  )
+      )
+    })}
+  </div>
+)
 
   const AboutPlaceholder = () => (
-    <div className="space-y-1.5 py-1">
-      {profile.about_content ? (
-        <>
-          <div className="h-1.5 rounded w-full" style={{ backgroundColor: c ? `${c.text}30` : theme.isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)' }} />
-          <div className="h-1.5 rounded w-4/5" style={{ backgroundColor: c ? `${c.text}20` : theme.isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)' }} />
-          <div className="h-1.5 rounded w-full" style={{ backgroundColor: c ? `${c.text}15` : theme.isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.06)' }} />
-          <div className="h-1.5 rounded w-3/5" style={{ backgroundColor: c ? `${c.text}15` : theme.isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.06)' }} />
-          <div className="h-1.5 rounded w-4/5" style={{ backgroundColor: c ? `${c.text}10` : theme.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)' }} />
-        </>
-      ) : (
-        <p className={`text-xs text-center py-2 ${c ? '' : theme.textFaint}`} style={c ? { color: c.textFaint } : {}}>
-          No content yet
-        </p>
-      )}
-    </div>
-  )
+  <div
+    className={`px-3 py-3 rounded-xl border mb-2 ${c ? '' : theme.card}`}
+    onMouseEnter={() => c && setHoveredAbout(true)}
+    onMouseLeave={() => c && setHoveredAbout(false)}
+    style={c ? {
+      backgroundColor: layout === 'immersive'
+        ? `${hoveredAbout ? adjustColor(c.cardBg) : c.cardBg}99`
+        : hoveredAbout ? adjustColor(c.cardBg) : c.cardBg,
+      borderColor: hoveredAbout ? adjustColor(c.cardBorder) : c.cardBorder,
+    } : {}}
+  >
+    {profile.about_content ? (
+      <>
+        <div className="h-1.5 rounded w-full mb-1" style={{ backgroundColor: c ? `${c.text}30` : theme.isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)' }} />
+        <div className="h-1.5 rounded w-4/5 mb-1" style={{ backgroundColor: c ? `${c.text}20` : theme.isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)' }} />
+        <div className="h-1.5 rounded w-full mb-1" style={{ backgroundColor: c ? `${c.text}15` : theme.isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.06)' }} />
+        <div className="h-1.5 rounded w-3/5 mb-1" style={{ backgroundColor: c ? `${c.text}15` : theme.isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.06)' }} />
+        <div className="h-1.5 rounded w-4/5" style={{ backgroundColor: c ? `${c.text}10` : theme.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)' }} />
+      </>
+    ) : (
+      <p className={`text-xs text-center py-2 ${c ? '' : theme.textFaint}`} style={c ? { color: c.textFaint } : {}}>
+        No content yet
+      </p>
+    )}
+  </div>
+)
 
   const ProfileInfo = () => (
     <div className="flex flex-col items-center mb-3">
@@ -191,22 +208,22 @@ export default function ProfilePreview({ profile }: Props) {
         style={layout !== 'immersive' && c ? { backgroundColor: c.bg } : {}}
       >
         {layout === 'immersive' ? (
-          <div className="relative">
-            {profile.background_url ? (
-              <div className="absolute inset-0">
-                <img src={profile.background_url} alt="" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-black/50" />
-              </div>
-            ) : (
-              <div className={`absolute inset-0 ${c ? '' : theme.bg}`} style={c ? { backgroundColor: c.bg } : {}} />
-            )}
+  <div className="relative min-h-[400px]">
+    {profile.background_url ? (
+      <div className="absolute inset-0">
+        <img src={profile.background_url} alt="" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-black/50" />
+      </div>
+    ) : (
+      <div className={`absolute inset-0 ${c ? '' : theme.bg}`} style={c ? { backgroundColor: c.bg } : {}} />
+    )}
             <div className="relative z-10 flex justify-center pt-3">
               <div className="w-16 h-1.5 rounded-full bg-white/20" />
             </div>
             <div
-              className="relative z-10 m-3 mt-4 rounded-2xl p-4 backdrop-blur-md"
-              style={c ? { backgroundColor: `${c.contentBg || c.cardBg}99` } : { backgroundColor: theme.isDark ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.4)' }}
-            >
+  className="relative z-10 m-3 mt-4 rounded-2xl p-4 backdrop-blur-md"
+  style={c ? { backgroundColor: `${c.contentBg || c.cardBg}99` } : { backgroundColor: `${theme.bgHex}cc` }}
+>
               <ProfileInfo />
               <Content />
             </div>

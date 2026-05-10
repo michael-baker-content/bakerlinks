@@ -48,7 +48,7 @@ export default function CardLayout({ profile, links, theme, activeTab, onTabChan
         <div className={`h-24 ${c ? '' : theme.bg}`} style={c ? { backgroundColor: c.bg } : {}} />
       )}
 
-      <div className={`relative max-w-sm mx-auto px-4 ${c ? '' : theme.bg}`} style={c ? { backgroundColor: c.bg } : {}}>
+      <div className="relative max-w-sm mx-auto px-4">
         <div className={`${profile.background_url ? '-mt-12' : 'mt-8'}`}>
           <ProfileHeader profile={profile} theme={theme} fontClasses={fontClasses} />
         </div>
