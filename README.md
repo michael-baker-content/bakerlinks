@@ -4,48 +4,86 @@ A bold, expressive link-in-bio platform. Share one URL. Connect everything.
 
 **Live at [bakerlinks.com](https://bakerlinks.com)**
 
+---
+
+## What is BakerLinks?
+
+BakerLinks gives you a single, beautiful page at `bakerlinks.com/username` that you can share anywhere — your Instagram bio, Twitter profile, email signature, or anywhere else you only get one link. Add all your links once, and anyone who visits your page can find everything you want to share.
+
+---
+
 ## Features
 
-- **Auth** — Email/password, Google OAuth, GitHub OAuth
-- **Email verification** — Transactional email via Resend
-- **Forgot/reset password** — Full reset flow with branded email
-- **Link management** — Add, edit, delete, hide, drag-to-reorder
-- **Click tracking** — See how many times each link was clicked
-- **5 themes** — Electric, Neon, Earthy, Light, Pastel (dark/light mode support)
-- **Public profiles** — `bakerlinks.com/username`
-- **Avatar & background images** — Upload or search Unsplash
-- **Social links** — Platform icons with theme-matched colors
-- **Password & email change** — In-dashboard account management
-- **Delete account** — With username confirmation gate
-- **Onboarding flow** — Guided empty state for new users
-- **Open Graph** — Profile meta tags for rich social sharing
-- **Mobile optimized** — Responsive dashboard with dropdown menu
-- **Pixel art branding** — Custom NES-style logo
+### Links
+- Add, edit, delete, and reorder your links
+- Show or hide individual links without deleting them
+- Drag to reorder on desktop, tap up/down buttons on mobile
+- Link descriptions and favicons displayed on your profile
+- Click analytics — see how many times each link has been clicked
+
+### Customization
+- **3 layouts** — Card, Immersive, and Minimal
+- **6 themes** — Electric, Neon, Earthy, Light, Pastel, and a fully Custom theme with a color picker
+- **4 fonts** — Default, Serif, Mono, and Rounded
+- Upload a profile picture and background image, or search Unsplash
+- Social links — 18 platforms, reorderable, positioned above or below your links
+
+### About page
+- Optional second tab on your profile
+- Write in markdown — supports headings, bold, italic, lists, and blockquotes
+- Give context to your links, describe your work, or tell your story
+
+### Analytics
+- See total clicks and clicks over the last 7, 30, or 90 days
+- Per-link bar chart to see what's performing best
+
+### Account
+- Sign up with email, Google, or GitHub
+- Change your email or password at any time
+- Delete your account with a confirmation gate
+
+---
 
 ## Tech Stack
 
-- **Frontend** — Next.js 16, React 19, Tailwind CSS, TypeScript
-- **Backend** — Supabase (Postgres, Auth, RLS, Storage)
-- **Email** — Resend (custom SMTP, branded templates)
+- **Frontend** — Next.js 16, React 19, TypeScript, Tailwind CSS
+- **Backend** — Supabase (Postgres, Auth, Row-Level Security, Storage)
+- **Email** — Resend with custom branded templates
 - **Hosting** — Vercel
+- **Fonts** — Google Fonts via next/font
 - **Drag and drop** — @dnd-kit
-- **Icons** — react-icons (Simple Icons, Font Awesome 6)
+- **Charts** — recharts
+- **Markdown** — @uiw/react-md-editor, marked
+- **Icons** — react-icons
 - **Images** — Unsplash API
 
-## Setup
+---
 
-### 1. Create a Supabase project
+## Self-hosting
 
-1. Go to [supabase.com](https://supabase.com) and create a new project
-2. Open **Database → SQL Editor** and run the contents of `supabase-schema.sql`
+BakerLinks is open source. You can run your own instance.
+
+### Requirements
+
+- Node.js 18+
+- A [Supabase](https://supabase.com) project
+- A [Vercel](https://vercel.com) account (or any Next.js host)
+- A [Resend](https://resend.com) account for transactional email (optional)
+- An [Unsplash](https://unsplash.com/developers) API key for background image search (optional)
+
+### 1. Clone and install
+
+```
+git clone https://github.com/michael-baker-content/bakerlinks.git
+cd bakerlinks
+npm install
+```
+
+### 2. Set up Supabase
+
+1. Create a new project at [supabase.com](https://supabase.com)
+2. Open **Database → SQL Editor** and run `supabase-schema.sql`
 3. Go to **Settings → API** and copy your project URL and anon key
-
-### 2. Configure Resend
-
-1. Create an account at [resend.com](https://resend.com)
-2. Add and verify your domain
-3. Copy your API key
-4. In Supabase go to **Project Settings → Authentication → SMTP Settings** and enter your Resend credentials
 
 ### 3. Configure OAuth (optional)
 
@@ -53,20 +91,12 @@ In Supabase go to **Authentication → Providers**:
 - Enable Google — add your Google Cloud OAuth credentials
 - Enable GitHub — add your GitHub OAuth app credentials
 
-### 4. Configure Unsplash (optional)
+### 4. Configure Resend (optional)
 
-1. Create an account at [unsplash.com/developers](https://unsplash.com/developers)
-2. Create a new application and copy the Access Key
+1. Create an account at [resend.com](https://resend.com) and verify your domain
+2. In Supabase go to **Project Settings → Authentication → SMTP Settings** and enter your Resend credentials
 
 ### 5. Environment variables
-
-Copy the example file and fill in your values:
-
-```
-cp .env.example .env.local
-```
-
-Required variables:
 
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
@@ -78,71 +108,22 @@ NEXT_PUBLIC_UNSPLASH_ACCESS_KEY=your-unsplash-access-key
 ### 6. Run locally
 
 ```
-npm install
 npm run dev
 ```
 
-Open http://localhost:3000
+### 7. Deploy
 
-## Deploy to Vercel
-
-1. Push to GitHub
-2. Import project at vercel.com
-3. Add environment variables in the Vercel dashboard
-4. Deploy
+Push to GitHub, import at [vercel.com](https://vercel.com), add your environment variables, and deploy.
 
 Update Supabase under **Authentication → URL Configuration**:
-- Site URL: https://yourdomain.com
-- Redirect URLs: https://yourdomain.com/auth/callback and https://yourdomain.com/auth/reset
+- Site URL: `https://yourdomain.com`
+- Redirect URLs: `https://yourdomain.com/auth/callback` and `https://yourdomain.com/auth/reset`
 
-## Project Structure
-
-```
-bakerlinks/
-├── app/
-│   ├── page.tsx                      # Landing page
-│   ├── auth/
-│   │   ├── page.tsx                  # Sign in / sign up
-│   │   ├── callback/route.ts         # OAuth + email callback
-│   │   └── reset/page.tsx            # Password reset
-│   ├── dashboard/page.tsx            # Protected dashboard
-│   ├── [username]/page.tsx           # Public profile page
-│   └── api/
-│       └── delete-account/route.ts   # Account deletion API
-├── components/
-│   ├── dashboard/
-│   │   ├── DashboardHeader.tsx       # Top navigation bar
-│   │   ├── LinksTab.tsx              # Link management tab
-│   │   ├── ProfileTab.tsx            # Profile settings tab
-│   │   ├── EmailSection.tsx          # Email change form
-│   │   ├── PasswordSection.tsx       # Password change form
-│   │   └── DeleteAccountSection.tsx  # Danger zone
-│   ├── DashboardClient.tsx           # Dashboard orchestrator
-│   ├── PublicProfile.tsx             # Public-facing profile
-│   ├── ImageUpload.tsx               # Avatar/background uploader
-│   ├── UnsplashPicker.tsx            # Unsplash search modal
-│   ├── SocialIcon.tsx                # Social platform icon renderer
-│   ├── SocialLinksEditor.tsx         # Social links dashboard editor
-│   └── SocialLinksDisplay.tsx        # Social icons on public profile
-├── lib/
-│   ├── supabase/
-│   │   ├── client.ts                 # Browser Supabase client
-│   │   └── server.ts                 # Server Supabase client
-│   ├── themes.ts                     # Theme configs (5 themes)
-│   ├── social-platforms.ts           # Platform definitions and URL templates
-│   └── types.ts                      # TypeScript types
-├── public/
-│   ├── bakerlinks-logo-A.svg         # Primary logo (purple)
-│   └── bakerlinks-logo-B.svg         # Alternate logo (dark)
-├── proxy.ts                          # Auth session middleware
-└── supabase-schema.sql               # Database schema (run once)
-```
+---
 
 ## Roadmap
 
-- Custom domains for users
-- Analytics dashboard with charts
-- Link scheduling
+- Link scheduling — show and hide links on a date range
+- Custom domains
+- More layouts
 - Password-protected links
-- Avatar uploads via camera on mobile
-- Email template customization UI

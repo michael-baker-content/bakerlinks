@@ -67,10 +67,10 @@ export default function Home() {
             <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
             Your link in bio
           </div>
-          <h1 className="font-display text-5xl md:text-7xl font-bold leading-[1.0] tracking-tight mb-5 max-w-xl">
-            All your links.{' '}
+          <h1 className="font-serif-display text-5xl md:text-7xl font-bold leading-[1.1] tracking-tight mb-5 max-w-xl">
+            One link for everything — {' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400">
-              One beautiful page.
+              your portfolio, socials, blog, and more
             </span>
           </h1>
           <p className="text-white/50 text-lg max-w-xs mx-auto mb-10 leading-relaxed">
