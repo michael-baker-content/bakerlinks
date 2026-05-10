@@ -18,6 +18,12 @@ export const layouts: LayoutConfig[] = [
         description: 'Full-screen background image with content floating above.',
         supportsBackground: true,
     },
+    {
+        id: 'minimal',
+        name: 'Minimal',
+        description: 'Clean, centered content with no background image.',
+        supportsBackground: false,
+    },
 ]
 
 export function getLayout(id: string): LayoutConfig {

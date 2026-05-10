@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Space_Grotesk, Syne } from 'next/font/google'
+import { Space_Grotesk, Syne, Playfair_Display, Lora, JetBrains_Mono, Nunito } from 'next/font/google'
 import './globals.css'
 
 const spaceGrotesk = Space_Grotesk({
@@ -10,6 +10,26 @@ const spaceGrotesk = Space_Grotesk({
 const syne = Syne({
   subsets: ['latin'],
   variable: '--font-display',
+})
+
+const playfairDisplay = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-serif-display',
+})
+
+const lora = Lora({
+  subsets: ['latin'],
+  variable: '--font-serif-body',
+})
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono-display',
+})
+
+const nunito = Nunito({
+  subsets: ['latin'],
+  variable: '--font-rounded',
 })
 
 export const metadata: Metadata = {
@@ -39,15 +59,15 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${spaceGrotesk.variable} ${syne.variable} font-body antialiased`}>
-  
-    <a href="#main-content"
-    className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-purple-600 focus:text-white focus:rounded-xl focus:text-sm focus:font-semibold"
-  >
-    Skip to main content
-  </a>
-  {children}
-</body>
+      <body className={`${spaceGrotesk.variable} ${syne.variable} ${playfairDisplay.variable} ${lora.variable} ${jetbrainsMono.variable} ${nunito.variable} font-body antialiased`}>
+        
+        <a  href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-purple-600 focus:text-white focus:rounded-xl focus:text-sm focus:font-semibold"
+        >
+          Skip to main content
+        </a>
+        {children}
+      </body>
     </html>
   )
 }

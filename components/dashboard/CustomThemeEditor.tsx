@@ -129,7 +129,7 @@ export default function CustomThemeEditor({ value, onChange, layout }: Props) {
   value={theme[key] || '#000000'}
   onChange={e => handleChange(key, e.target.value)}
   maxLength={7}
-  className="w-24 px-2 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white text-xs font-mono focus:outline-none focus:border-purple-500/60"
+  className="w-20 px-2 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white text-xs font-mono focus:outline-none focus:border-purple-500/60 shrink-0"
 />
           </div>
         ))}

@@ -1,42 +1,6 @@
-<svg width="160" height="160" viewBox="0 0 160 160" role="img" xmlns="http://www.w3.org/2000/svg">
-  <title>BakerLinks logo - Option B</title>
-  <desc>Pixel art BL monogram on dark background with purple border</desc>
-  <style>.px { shape-rendering: crispEdges; }</style>
-
-  <rect x="0" y="0" width="160" height="160" rx="24" fill="#0a0a0f" class="px"/>
-  <rect x="1" y="1" width="158" height="158" rx="23" fill="none" stroke="#7c3aed" stroke-width="2" class="px"/>
-
-  <!-- B -->
-  <rect x="25" y="35" width="10" height="10" fill="#a78bfa" class="px"/>
-  <rect x="25" y="45" width="10" height="10" fill="#a78bfa" class="px"/>
-  <rect x="25" y="55" width="10" height="10" fill="#a78bfa" class="px"/>
-  <rect x="25" y="65" width="10" height="10" fill="#a78bfa" class="px"/>
-  <rect x="25" y="75" width="10" height="10" fill="#a78bfa" class="px"/>
-  <rect x="25" y="85" width="10" height="10" fill="#a78bfa" class="px"/>
-  <rect x="25" y="95" width="10" height="10" fill="#a78bfa" class="px"/>
-  <rect x="35" y="35" width="10" height="10" fill="#a78bfa" class="px"/>
-  <rect x="45" y="35" width="10" height="10" fill="#a78bfa" class="px"/>
-  <rect x="55" y="35" width="10" height="10" fill="#a78bfa" class="px"/>
-  <rect x="35" y="65" width="10" height="10" fill="#a78bfa" class="px"/>
-  <rect x="45" y="65" width="10" height="10" fill="#a78bfa" class="px"/>
-  <rect x="55" y="65" width="10" height="10" fill="#a78bfa" class="px"/>
-  <rect x="35" y="95" width="10" height="10" fill="#a78bfa" class="px"/>
-  <rect x="45" y="95" width="10" height="10" fill="#a78bfa" class="px"/>
-  <rect x="55" y="95" width="10" height="10" fill="#a78bfa" class="px"/>
-  <rect x="65" y="45" width="10" height="10" fill="#a78bfa" class="px"/>
-  <rect x="65" y="55" width="10" height="10" fill="#a78bfa" class="px"/>
-  <rect x="65" y="75" width="10" height="10" fill="#a78bfa" class="px"/>
-  <rect x="65" y="85" width="10" height="10" fill="#a78bfa" class="px"/>
-
-  <!-- L -->
-  <rect x="85" y="35" width="10" height="10" fill="#fff" class="px"/>
-  <rect x="85" y="45" width="10" height="10" fill="#fff" class="px"/>
-  <rect x="85" y="55" width="10" height="10" fill="#fff" class="px"/>
-  <rect x="85" y="65" width="10" height="10" fill="#fff" class="px"/>
-  <rect x="85" y="75" width="10" height="10" fill="#fff" class="px"/>
-  <rect x="85" y="85" width="10" height="10" fill="#fff" class="px"/>
-  <rect x="85" y="95" width="10" height="10" fill="#fff" class="px"/>
-  <rect x="95" y="95" width="10" height="10" fill="#fff" class="px"/>
-  <rect x="105" y="95" width="10" height="10" fill="#fff" class="px"/>
-  <rect x="115" y="95" width="10" height="10" fill="#fff" class="px"/>
+<svg width="994" height="994" viewBox="0 0 994 994" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="994" height="994" fill="black"/>
+<rect width="497" height="994" fill="#7C3AED"/>
+<path d="M198.6 713V647H310.2C330.2 647 345.2 641.6 355.2 630.8C365.6 619.6 370.8 604.2 370.8 584.6C370.8 564.6 365.2 548.8 354 537.2C343.2 525.6 327.6 519.8 307.2 519.8H198.6V453.8H302.4C321.2 453.8 335.4 449.4 345 440.6C355 431.4 360 418 360 400.4C360 382.8 355.2 369.6 345.6 360.8C336.4 351.6 322.6 347 304.2 347H198.6V281H324C362.4 281 393.4 290.8 417 310.4C440.6 330 452.4 356.6 452.4 390.2C452.4 411.4 447.4 429.6 437.4 444.8C427.4 460 414 471.6 397.2 479.6C380.4 487.6 361.6 491.6 340.8 491.6L343.8 479C366.2 479 386.4 483.8 404.4 493.4C422.8 503 437.4 516.6 448.2 534.2C459 551.4 464.4 571.8 464.4 595.4C464.4 619 458.8 639.8 447.6 657.8C436.8 675.4 421.4 689 401.4 698.6C381.8 708.2 358.6 713 331.8 713H198.6ZM123 713V281H215.4V713H123Z" fill="black"/>
+<path d="M536.648 713V281H629.048V713H536.648ZM579.848 713V642.2H836.648V713H579.848Z" fill="#7C3AED"/>
 </svg>

@@ -11,6 +11,7 @@ export interface CustomTheme {
   avatarRing: string
   buttonBg: string
   buttonText: string
+
 }
 
 export interface Profile {
@@ -37,6 +38,7 @@ export interface Profile {
   about_markdown: string | null
   created_at: string
   updated_at: string
+  font: string
 }
 
 export interface Link {

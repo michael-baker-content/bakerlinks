@@ -11,6 +11,10 @@ const config: Config = {
       fontFamily: {
         body: ['var(--font-body)', 'sans-serif'],
         display: ['var(--font-display)', 'sans-serif'],
+        'serif-display': ['var(--font-serif-display)', 'serif'],
+        'serif-body': ['var(--font-serif-body)', 'serif'],
+        'mono-display': ['var(--font-mono-display)', 'monospace'],
+        rounded: ['var(--font-rounded)', 'sans-serif'],
       },
     },
   },
