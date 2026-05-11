@@ -7,7 +7,7 @@ import ImmersiveLayout from '@/components/layouts/ImmersiveLayout'
 import MinimalLayout from '@/components/layouts/MinimalLayout'
 import { themes, buildCustomTheme } from '@/lib/themes'
 import { getLayout } from '@/lib/layouts'
-import { isColorDark } from '@/components/layouts/shared'
+import { isColorDark } from '@/lib/color-utils'
 
 export default function PublicProfile({
   profile,
