@@ -74,7 +74,23 @@ Enable Google or GitHub in Supabase if you want OAuth, and configure custom SMTP
 npm run dev
 ```
 
-Open [localhost:3000](http://localhost:3000). To enable the dashboard’s **Validation** tab, copy the intended account’s **User UID** from Supabase **Authentication → Users**, set it in `BAKERLINKS_ADMIN_USER_IDS`, and restart the dev server. Separate multiple UIDs with commas. An admin can approve their own profile or search for another profile and verify or revoke it.
+Open [localhost:3000](http://localhost:3000).
+
+## Grant admin access
+
+Copy the intended account’s **User UID** from Supabase **Authentication → Users**. In the SQL Editor, replace the placeholder with that UID:
+
+```sql
+update auth.users
+set raw_app_meta_data = coalesce(raw_app_meta_data, '{}'::jsonb)
+  || '{"bakerlinks_admin": true}'::jsonb
+where id = 'paste-the-user-uid-here'::uuid
+returning id, raw_app_meta_data -> 'bakerlinks_admin' as bakerlinks_admin;
+```
+
+The account sees **Validation** in its dashboard. An admin can approve their own profile or search for another profile and verify or revoke it. Set the flag to `false` to revoke admin access, even if the UID is also in an environment allowlist.
+
+Accounts without a flag can still use `BAKERLINKS_ADMIN_USER_IDS`. Set it to one or more comma-separated User UIDs in the server environment for each deployment that should recognize them.
 
 ## Deploy
 

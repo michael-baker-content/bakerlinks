@@ -34,7 +34,7 @@ export default async function DashboardPage({
       userId={user.id}
       provider={user.app_metadata.provider ?? 'email'}
       showWelcome={welcome === 'true'}
-      isAdmin={isAdmin(user.id)}
+      isAdmin={isAdmin(user)}
     />
   )
 }
