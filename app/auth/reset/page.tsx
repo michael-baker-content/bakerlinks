@@ -13,7 +13,7 @@ function ResetPageInner() {
   const [success, setSuccess] = useState(false)
   const [ready, setReady] = useState(false)
   const router = useRouter()
-  const supabase = createClient()
+  const { auth } = createClient()
 
   useEffect(() => {
     // Handle hash fragment from Supabase reset email
@@ -24,12 +24,14 @@ function ResetPageInner() {
     const errorDescription = hashParams.get('error_description')
 
     if (errorCode) {
-      setError(errorDescription?.replace(/\+/g, ' ') ?? 'Link is invalid or has expired.')
-      return
+      const timer = window.setTimeout(() => {
+        setError(errorDescription?.replace(/\+/g, ' ') ?? 'Link is invalid or has expired.')
+      }, 0)
+      return () => window.clearTimeout(timer)
     }
 
     if (accessToken && type === 'recovery') {
-      supabase.auth.setSession({
+      auth.setSession({
         access_token: accessToken,
         refresh_token: hashParams.get('refresh_token') ?? '',
       }).then(({ error }) => {
@@ -40,14 +42,14 @@ function ResetPageInner() {
     }
 
     // Fall back to auth state change for PKCE flow
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    const { data: { subscription } } = auth.onAuthStateChange((event) => {
       if (event === 'PASSWORD_RECOVERY') {
         setReady(true)
       }
     })
 
     return () => subscription.unsubscribe()
-  }, [])
+  }, [auth])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -58,7 +60,7 @@ function ResetPageInner() {
     setLoading(true)
     setError('')
 
-    const { error } = await supabase.auth.updateUser({ password })
+    const { error } = await auth.updateUser({ password })
     if (error) setError(error.message)
     else {
       setSuccess(true)

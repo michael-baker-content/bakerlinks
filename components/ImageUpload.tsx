@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Upload, X, Loader2 } from 'lucide-react'
 import UnsplashPicker from '@/components/UnsplashPicker'
@@ -27,12 +27,9 @@ export default function ImageUpload({ bucket, userId, currentUrl, onUpload, labe
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
   const [showUnsplash, setShowUnsplash] = useState(false)
-  const [preview, setPreview] = useState<string | null>(currentUrl)
+  const preview = currentUrl
   const inputRef = useRef<HTMLInputElement>(null)
   const supabase = createClient()
-  useEffect(() => {
-  setPreview(currentUrl)
-}, [currentUrl])
 
   const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
   const MAX_SIZE = bucket === 'avatars' ? 2 * 1024 * 1024 : 5 * 1024 * 1024
@@ -71,7 +68,6 @@ export default function ImageUpload({ bucket, userId, currentUrl, onUpload, labe
     const { data } = supabase.storage.from(bucket).getPublicUrl(path)
     const url = `${data.publicUrl}?t=${Date.now()}`
 
-    setPreview(url)
     onUpload(url)
     setUploading(false)
   }
@@ -87,8 +83,7 @@ export default function ImageUpload({ bucket, userId, currentUrl, onUpload, labe
         await supabase.storage.from(bucket).remove([path])
     }
 
-  setPreview(null)
-  onUpload('', null)
+    onUpload('', null)
     setUploading(false)
   }
 
@@ -159,7 +154,6 @@ export default function ImageUpload({ bucket, userId, currentUrl, onUpload, labe
         {showUnsplash && (
         <UnsplashPicker
             onSelect={(url, attribution) => {
-            setPreview(url)
             onUpload(url, attribution)
             }}
             onClose={() => setShowUnsplash(false)}

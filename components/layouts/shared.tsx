@@ -6,6 +6,7 @@ import { ExternalLink } from 'lucide-react'
 import SocialLinksDisplay from '@/components/SocialLinksDisplay'
 import { createClient } from '@/lib/supabase/client'
 import { isColorDark, adjustColor } from '@/lib/color-utils'
+import Link from 'next/link'
 
 // ── Helpers ────────────────────────────────────────────────────
 
@@ -20,10 +21,10 @@ function getInitials(profile: Profile): string {
 
 export function getFontClasses(font: string): { heading: string; body: string } {
   switch (font) {
-    case 'serif':   return { heading: 'font-serif-display', body: 'font-serif-body' }
-    case 'mono':    return { heading: 'font-mono-display',  body: 'font-mono-display' }
-    case 'rounded': return { heading: 'font-rounded',       body: 'font-rounded' }
-    default:        return { heading: 'font-display',       body: 'font-body' }
+    case 'serif': return { heading: 'font-serif-display', body: 'font-serif-body' }
+    case 'mono': return { heading: 'font-mono-display', body: 'font-mono-display' }
+    case 'rounded': return { heading: 'font-rounded', body: 'font-rounded' }
+    default: return { heading: 'font-display', body: 'font-body' }
   }
 }
 
@@ -127,11 +128,10 @@ export function TabBar({ profile, theme, activeTab, onTabChange, hoveredTab, onH
   function tabClass(tab: 'links' | 'about', extra: string) {
     if (c) return `${extra} rounded-lg font-medium transition-all ${isPreview ? 'text-xs' : 'text-sm'}`
     const isActive = activeTab === tab
-    return `${extra} rounded-lg font-medium transition-all ${isPreview ? 'text-xs' : 'text-sm'} ${
-      isActive
+    return `${extra} rounded-lg font-medium transition-all ${isPreview ? 'text-xs' : 'text-sm'} ${isActive
         ? theme.buttonPrimary
         : `${theme.textMuted} hover:${theme.text} ${theme.isDark ? 'hover:bg-white/10' : 'hover:bg-black/10'}`
-    }`
+      }`
   }
 
   return (
@@ -211,9 +211,8 @@ export function LinksList({ profile, links, theme, linkCardClass, linkCardStyle,
               supabase.from('link_click_events').insert({ link_id: linkId, user_id: userId })
             }, 0)
           }}
-          className={`block w-full text-left px-5 py-4 rounded-2xl border link-card transition-all group ${
-            c ? '' : (linkCardClass ?? theme.card)
-          }`}
+          className={`block w-full text-left px-5 py-4 rounded-2xl border link-card transition-all group ${c ? '' : (linkCardClass ?? theme.card)
+            }`}
           style={linkCardStyle ? linkCardStyle(link, i) : defaultCardStyle(link, i)}
         >
           <div className="flex items-center justify-between">
@@ -294,13 +293,13 @@ export function ProfileFooter({ theme }: FooterProps) {
   const c = theme.customColors
   return (
     <div className="pb-8 text-center mt-4">
-      <a
+      <Link
         href="/"
         className={`text-xs transition-colors ${c ? '' : theme.footerText}`}
         style={c ? { color: c.textMuted } : {}}
       >
         Powered by <span className="font-display font-semibold">BakerLinks</span>
-      </a>
+      </Link>
     </div>
   )
 }

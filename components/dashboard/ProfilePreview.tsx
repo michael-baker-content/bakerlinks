@@ -33,7 +33,7 @@ export default function ProfilePreview({ profile }: Props) {
   const [hoveredLink, setHoveredLink] = useState<string | null>(null)
   const [hoveredAbout, setHoveredAbout] = useState(false)
 
-  const SocialIcons = () => socialLinks.length > 0 ? (
+  const socialIcons = socialLinks.length > 0 ? (
     <div className="flex justify-center gap-2 my-2">
       {socialLinks.map(link => {
         const platform = getPlatform(link.platform)
@@ -54,7 +54,7 @@ export default function ProfilePreview({ profile }: Props) {
     </div>
   ) : null
 
-  const LinkCards = () => (
+  const linkCards = (
     <div className="space-y-1.5">
       {placeholderLinks.map(link => {
         const isHovered = hoveredLink === link.id
@@ -88,7 +88,7 @@ export default function ProfilePreview({ profile }: Props) {
     </div>
   )
 
-  const AboutPlaceholder = () => (
+  const aboutPlaceholder = (
     <div
       className={`px-3 py-3 rounded-xl border mb-2 ${c ? '' : theme.card}`}
       onMouseEnter={() => c && setHoveredAbout(true)}
@@ -116,9 +116,9 @@ export default function ProfilePreview({ profile }: Props) {
     </div>
   )
 
-  const Content = () => (
+  const content = (
     <>
-      {socialPosition === 'top' && <SocialIcons />}
+      {socialPosition === 'top' && socialIcons}
       {profile.about_enabled && (
         <TabBar
           profile={profile}
@@ -130,8 +130,8 @@ export default function ProfilePreview({ profile }: Props) {
           size="preview"
         />
       )}
-      {previewTab === 'links' ? <LinkCards /> : <AboutPlaceholder />}
-      {socialPosition === 'bottom' && <SocialIcons />}
+      {previewTab === 'links' ? linkCards : aboutPlaceholder}
+      {socialPosition === 'bottom' && socialIcons}
       <p className={`text-center text-xs mt-3 ${c ? '' : theme.footerText}`} style={c ? { color: c.textMuted } : {}}>
         Powered by <span className="font-display font-semibold">BakerLinks</span>
       </p>
@@ -165,7 +165,7 @@ export default function ProfilePreview({ profile }: Props) {
               style={c ? { backgroundColor: `${c.contentBg || c.cardBg}99` } : { backgroundColor: `${theme.bgHex}99` }}
             >
               <ProfileHeader profile={profile} theme={theme} fontClasses={fontClasses} size="preview" />
-              <Content />
+              {content}
             </div>
           </div>
 
@@ -178,7 +178,7 @@ export default function ProfilePreview({ profile }: Props) {
               <div className="w-16 h-1.5 rounded-full bg-white/20" />
             </div>
             <ProfileHeader profile={profile} theme={theme} fontClasses={fontClasses} size="preview" />
-            <Content />
+            {content}
           </div>
 
         ) : (
@@ -200,7 +200,7 @@ export default function ProfilePreview({ profile }: Props) {
               <div className="-mt-7 relative z-10">
                 <ProfileHeader profile={profile} theme={theme} fontClasses={fontClasses} size="preview" />
               </div>
-              <Content />
+              {content}
             </div>
           </>
         )}

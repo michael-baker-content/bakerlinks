@@ -41,22 +41,22 @@ export default function AboutEditor({ userId, initialEnabled, initialTitle, init
     const html = content ? parseMarkdown(content) : null
 
     await supabase
-  .from('profiles')
-  .update({
-    about_enabled: enabled,
-    about_title: title || null,
-    about_content: html,
-    about_markdown: content,
-    updated_at: new Date().toISOString(),
-  })
-  .eq('id', userId)
+      .from('profiles')
+      .update({
+        about_enabled: enabled,
+        about_title: title || null,
+        about_content: html,
+        about_markdown: content,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', userId)
 
     onChange({
-  about_enabled: enabled,
-  about_title: title || null,
-  about_content: html,
-  about_markdown: content,
-})
+      about_enabled: enabled,
+      about_title: title || null,
+      about_content: html,
+      about_markdown: content,
+    })
 
     setSaving(false)
     setSuccess(true)
@@ -73,11 +73,11 @@ export default function AboutEditor({ userId, initialEnabled, initialTitle, init
       .eq('id', userId)
 
     onChange({
-  about_enabled: newEnabled,
-  about_title: title || null,
-  about_content: content ? parseMarkdown(content) : null,
-  about_markdown: content || null,
-})
+      about_enabled: newEnabled,
+      about_title: title || null,
+      about_content: content ? parseMarkdown(content) : null,
+      about_markdown: content || null,
+    })
   }
 
   return (
@@ -119,14 +119,14 @@ export default function AboutEditor({ userId, initialEnabled, initialTitle, init
             <p className="text-white/40 text-xs mt-0.5">Add a second tab to your profile with info about you.</p>
           </div>
           <button
-  onClick={handleToggle}
-  className={`relative inline-flex items-center w-11 h-6 rounded-full transition-colors flex-shrink-0 ${enabled ? 'bg-purple-600' : 'bg-white/10'}`}
-  aria-label={enabled ? 'Disable About Page' : 'Enable About Page'}
->
-  <span
-    className={`inline-block w-4 h-4 rounded-full bg-white transition-transform ml-1 ${enabled ? 'translate-x-5' : 'translate-x-0'}`}
-  />
-</button>
+            onClick={handleToggle}
+            className={`relative inline-flex items-center w-11 h-6 rounded-full transition-colors flex-shrink-0 ${enabled ? 'bg-purple-600' : 'bg-white/10'}`}
+            aria-label={enabled ? 'Disable About Page' : 'Enable About Page'}
+          >
+            <span
+              className={`inline-block w-4 h-4 rounded-full bg-white transition-transform ml-1 ${enabled ? 'translate-x-5' : 'translate-x-0'}`}
+            />
+          </button>
         </div>
 
         {enabled && (
@@ -145,7 +145,7 @@ export default function AboutEditor({ userId, initialEnabled, initialTitle, init
                   {title.length}/12
                 </span>
               </div>
-              <p className="text-white/30 text-xs mt-1">Max 12 characters. Defaults to "About" if left blank.</p>
+              <p className="text-white/30 text-xs mt-1">Max 12 characters. Defaults to &quot;About&quot; if left blank.</p>
             </div>
 
             <div>

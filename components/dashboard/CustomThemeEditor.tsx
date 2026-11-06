@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { CustomTheme } from '@/lib/types'
 
 interface Props {
@@ -69,12 +69,14 @@ function ContrastBadge({ ratio }: { ratio: number }) {
 }
 
 export default function CustomThemeEditor({ value, onChange, layout }: Props) {
-  const [theme, setTheme] = useState<CustomTheme>(value ?? defaultCustomTheme)
+  const [theme, setTheme] = useState<CustomTheme>({ ...defaultCustomTheme, ...value })
+  const [previousValue, setPreviousValue] = useState(value)
   const visibleFields = fields.filter(f => f.key !== 'contentBg' || layout === 'immersive')
 
- useEffect(() => {
-  if (value) setTheme({ ...defaultCustomTheme, ...value })
-}, [value])
+  if (value !== previousValue) {
+    setPreviousValue(value)
+    if (value) setTheme({ ...defaultCustomTheme, ...value })
+  }
 
   function handleChange(key: keyof CustomTheme, color: string) {
     const updated = { ...theme, [key]: color }
