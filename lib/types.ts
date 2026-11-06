@@ -39,6 +39,7 @@ export interface Profile {
   created_at: string
   updated_at: string
   font: string
+  directory_opt_in?: boolean
 }
 
 export interface Link {

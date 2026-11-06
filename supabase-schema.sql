@@ -1,5 +1,5 @@
 -- ============================================================
--- LinkForge – Supabase Schema
+-- BakerLinks base schema
 -- Run this in the Supabase SQL editor (Database > SQL Editor)
 -- ============================================================
 
@@ -33,6 +33,12 @@ create table public.links (
 -- 3. Row Level Security
 alter table public.profiles enable row level security;
 alter table public.links enable row level security;
+
+-- New Supabase projects require explicit Data API grants.
+revoke all on public.profiles, public.links from public, anon, authenticated;
+grant select on public.profiles, public.links to anon, authenticated, service_role;
+grant insert, update on public.profiles to authenticated;
+grant insert, update, delete on public.links to authenticated;
 
 -- Profiles: anyone can read, only owner can write
 create policy "Public profiles are viewable by everyone"

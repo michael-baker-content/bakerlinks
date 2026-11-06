@@ -41,7 +41,7 @@ export default function MinimalLayout({ profile, links, theme, activeTab, onTabC
         )}
 
         {activeTab === 'links' && (
-          <LinksList profile={profile} links={links} theme={theme} />
+          <LinksList links={links} theme={theme} />
         )}
 
         {activeTab === 'about' && profile.about_enabled && (

@@ -31,33 +31,46 @@ export default function AnalyticsTab({ userId }: Props) {
   const [dailyClicks, setDailyClicks] = useState<DailyClick[]>([])
   const [totalClicks, setTotalClicks] = useState(0)
   const [loading, setLoading] = useState(true)
-  const supabase = createClient()
+  const [failed, setFailed] = useState(false)
 
   useEffect(() => {
+    let cancelled = false
+    const supabase = createClient()
+
     async function fetchData() {
       setLoading(true)
+      setFailed(false)
 
       // Fetch link totals
-      const { data: links } = await supabase
+      const { data: links, error: linksError } = await supabase
         .from('links')
         .select('id, title, clicks')
         .eq('user_id', userId)
         .order('clicks', { ascending: false })
 
-      if (links) {
-        setLinkStats(links)
-        setTotalClicks(links.reduce((sum, l) => sum + l.clicks, 0))
-      }
-
       // Fetch daily click events for selected range
       const since = new Date()
       since.setDate(since.getDate() - parseInt(range))
 
-      const { data: events } = await supabase
+      const { data: events, error: eventsError } = await supabase
         .from('link_click_events')
         .select('clicked_at')
         .eq('user_id', userId)
         .gte('clicked_at', since.toISOString())
+
+      if (cancelled) return
+
+      if (linksError || eventsError) {
+        setFailed(true)
+        setLoading(false)
+        return
+      }
+
+      if (links) {
+        const stats = links.map(link => ({ ...link, clicks: link.clicks ?? 0 }))
+        setLinkStats(stats)
+        setTotalClicks(stats.reduce((sum, link) => sum + link.clicks, 0))
+      }
 
       if (events) {
         // Group by date
@@ -83,7 +96,8 @@ export default function AnalyticsTab({ userId }: Props) {
       setLoading(false)
     }
 
-    fetchData()
+    void fetchData()
+    return () => { cancelled = true }
   }, [userId, range])
 
   const topLink = linkStats[0]
@@ -93,6 +107,15 @@ export default function AnalyticsTab({ userId }: Props) {
     return (
       <div className="flex items-center justify-center py-24">
         <div className="text-white/30 text-sm">Loading analytics…</div>
+      </div>
+    )
+  }
+
+  if (failed) {
+    return (
+      <div className="space-y-3">
+        <h2 className="font-display text-lg font-bold text-white">Analytics</h2>
+        <p role="alert" className="text-sm text-white/70">Could not load analytics. Reopen this tab to try again.</p>
       </div>
     )
   }

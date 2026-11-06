@@ -1,10 +1,14 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Profile, Link as LinkType } from '@/lib/types'
 import { X, ExternalLink } from 'lucide-react'
 import DashboardHeader from '@/components/dashboard/DashboardHeader'
+import DashboardFooter from '@/components/dashboard/DashboardFooter'
+import styles from '@/app/dashboard/dashboard.module.css'
 import ContentTab from '@/components/dashboard/ContentTab'
 import ProfileTab from '@/components/dashboard/ProfileTab'
 import StyleTab from '@/components/dashboard/StyleTab'
@@ -17,9 +21,17 @@ interface Props {
   userId: string
   provider: string
   showWelcome?: boolean
+  isAdmin: boolean
 }
 
-type Tab = 'content' | 'profile' | 'style' | 'analytics'
+const tabs = [
+  { id: 'content', label: 'Content' },
+  { id: 'profile', label: 'Profile' },
+  { id: 'style', label: 'Style' },
+  { id: 'analytics', label: 'Analytics' },
+] as const
+
+type Tab = (typeof tabs)[number]['id']
 
 export default function DashboardClient({
   initialProfile,
@@ -27,11 +39,14 @@ export default function DashboardClient({
   userId,
   provider,
   showWelcome,
+  isAdmin,
 }: Props) {
-  const [tab, setTab] = useState<Tab>('content')
+  const selectedTab = useSearchParams().get('tab')
+  const tab = tabs.find(option => option.id === selectedTab)?.id ?? 'content'
   const [copied, setCopied] = useState(false)
   const [welcomeVisible, setWelcomeVisible] = useState(showWelcome ?? false)
   const [profile, setProfile] = useState(initialProfile)
+  const [directoryOptIn, setDirectoryOptIn] = useState(initialProfile.directory_opt_in)
   const [showPreviewModal, setShowPreviewModal] = useState(false)
   const supabase = createClient()
 
@@ -47,17 +62,19 @@ export default function DashboardClient({
     window.location.href = '/'
   }
 
-  const tabs: { id: Tab; label: string }[] = [
-    { id: 'content', label: 'Content' },
-    { id: 'profile', label: 'Profile' },
-    { id: 'style', label: 'Style' },
-    { id: 'analytics', label: 'Analytics' },
-  ]
+  function selectTab(nextTab: Tab) {
+    if (nextTab === tab) return
+
+    const url = new URL(window.location.href)
+    if (nextTab === 'content') url.searchParams.delete('tab')
+    else url.searchParams.set('tab', nextTab)
+    window.history.pushState(null, '', url)
+  }
 
   const showPreview = tab === 'profile' || tab === 'style'
 
   return (
-    <div id="main-content" className="min-h-screen bg-[#0a0a0f] noise flex flex-col">
+    <div className={styles.admin}>
       {welcomeVisible && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-5 py-3 rounded-2xl bg-purple-600 text-white shadow-2xl shadow-purple-500/30">
           <span className="text-lg">🎉</span>
@@ -78,21 +95,20 @@ export default function DashboardClient({
         copied={copied}
       />
 
-      <div className={`flex-1 mx-auto w-full px-4 py-8 ${showPreview ? 'max-w-5xl' : 'max-w-2xl'}`}>
+      <main id="main-content" tabIndex={-1} className={`flex-1 mx-auto w-full px-4 py-8 ${showPreview ? 'max-w-5xl' : 'max-w-2xl'}`}>
         {/* Tabs */}
         <div className="overflow-x-auto mb-8">
-          <div className="flex gap-1 rounded-xl bg-white/5 p-1 w-fit mx-auto">
+          <div className={styles.dashboardTabs}>
             {tabs.map(t => (
               <button
                 key={t.id}
-                onClick={() => setTab(t.id)}
-                className={`px-5 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
-                  tab === t.id ? 'bg-purple-600 text-white' : 'text-white/40 hover:text-white'
-                }`}
+                onClick={() => selectTab(t.id)}
+                aria-pressed={tab === t.id}
               >
                 {t.label}
               </button>
             ))}
+            {isAdmin && <Link href="/dashboard/admin">Validation</Link>}
           </div>
         </div>
 
@@ -143,6 +159,8 @@ export default function DashboardClient({
                     onProfileChange={setProfile}
                     userId={userId}
                     provider={provider}
+                    directoryOptIn={directoryOptIn}
+                    onDirectoryOptInChange={setDirectoryOptIn}
                   />
                 )}
 
@@ -168,7 +186,8 @@ export default function DashboardClient({
         {tab === 'analytics' && (
           <AnalyticsTab userId={userId} />
         )}
-      </div>
+      </main>
+      <DashboardFooter label="BakerLinks dashboard" />
     </div>
   )
 }

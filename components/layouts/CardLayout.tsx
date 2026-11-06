@@ -69,7 +69,7 @@ export default function CardLayout({ profile, links, theme, activeTab, onTabChan
         )}
 
         {activeTab === 'links' && (
-          <LinksList profile={profile} links={links} theme={theme} />
+          <LinksList links={links} theme={theme} />
         )}
 
         {activeTab === 'about' && profile.about_enabled && (

@@ -8,6 +8,7 @@ import SocialLinksEditor from '@/components/SocialLinksEditor'
 import EmailSection from '@/components/dashboard/EmailSection'
 import PasswordSection from '@/components/dashboard/PasswordSection'
 import DeleteAccountSection from '@/components/dashboard/DeleteAccountSection'
+import DirectoryPreference from '@/components/dashboard/DirectoryPreference'
 
 interface Attribution {
   photographer_name: string
@@ -22,9 +23,11 @@ interface Props {
   onProfileChange: (profile: Profile) => void
   userId: string
   provider: string
+  directoryOptIn?: boolean
+  onDirectoryOptInChange: (optedIn: boolean) => void
 }
 
-export default function ProfileTab({ initialProfile, profile, onProfileChange, userId, provider }: Props) {
+export default function ProfileTab({ initialProfile, profile, onProfileChange, userId, provider, directoryOptIn, onDirectoryOptInChange }: Props) {
   const [saving, setSaving] = useState(false)
   const supabase = createClient()
 
@@ -150,6 +153,9 @@ export default function ProfileTab({ initialProfile, profile, onProfileChange, u
         {saving ? 'Saving…' : 'Save profile'}
       </button>
 
+      {typeof directoryOptIn === 'boolean' && (
+        <DirectoryPreference userId={userId} optedIn={directoryOptIn} onChange={onDirectoryOptInChange} />
+      )}
       <EmailSection provider={provider} />
       <PasswordSection provider={provider} />
       <DeleteAccountSection username={profile.username} />
