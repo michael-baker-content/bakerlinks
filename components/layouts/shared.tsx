@@ -6,18 +6,10 @@ import { ExternalLink } from 'lucide-react'
 import SocialLinksDisplay from '@/components/SocialLinksDisplay'
 import { createClient } from '@/lib/supabase/client'
 import { isColorDark, adjustColor } from '@/lib/color-utils'
+import { getProfileInitials } from '@/lib/profile-initials'
 import Link from 'next/link'
 
 // ── Helpers ────────────────────────────────────────────────────
-
-function getInitials(profile: Profile): string {
-  return (profile.display_name || profile.username)
-    .split(' ')
-    .map(w => w[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
-}
 
 export function getFontClasses(font: string): { heading: string; body: string } {
   switch (font) {
@@ -39,7 +31,7 @@ interface HeaderProps {
 
 export function ProfileHeader({ profile, theme, fontClasses, size = 'full' }: HeaderProps) {
   const c = theme.customColors
-  const initials = getInitials(profile)
+  const initials = getProfileInitials(profile.display_name || profile.username)
   const isPreview = size === 'preview'
 
   const avatarSize = isPreview ? 'w-14 h-14' : 'w-24 h-24'
@@ -164,7 +156,6 @@ export function TabBar({ profile, theme, activeTab, onTabChange, hoveredTab, onH
 // ── Links List ─────────────────────────────────────────────────
 
 interface LinksListProps {
-  profile: Profile
   links: LinkType[]
   theme: ThemeConfig
   linkCardClass?: string
@@ -172,10 +163,15 @@ interface LinksListProps {
   immersive?: boolean
 }
 
-export function LinksList({ profile, links, theme, linkCardClass, linkCardStyle, immersive }: LinksListProps) {
+export function LinksList({ links, theme, linkCardClass, linkCardStyle, immersive }: LinksListProps) {
   const supabase = createClient()
   const c = theme.customColors
   const [hoveredLink, setHoveredLink] = React.useState<string | null>(null)
+
+  async function trackClick(linkId: string) {
+    const { error } = await supabase.rpc('increment_link_clicks', { link_id: linkId })
+    if (error) console.error('Could not record BakerLinks click:', error.code)
+  }
 
   const defaultCardStyle = (link: LinkType, i: number): React.CSSProperties => {
     if (!c) return { animationDelay: `${i * 60}ms` }
@@ -203,13 +199,9 @@ export function LinksList({ profile, links, theme, linkCardClass, linkCardStyle,
           rel="noopener noreferrer"
           onMouseEnter={() => setHoveredLink(link.id)}
           onMouseLeave={() => setHoveredLink(null)}
-          onClick={() => {
-            const linkId = link.id
-            const userId = profile.id
-            setTimeout(() => {
-              supabase.rpc('increment_link_clicks', { link_id: linkId })
-              supabase.from('link_click_events').insert({ link_id: linkId, user_id: userId })
-            }, 0)
+          onClick={() => void trackClick(link.id)}
+          onAuxClick={event => {
+            if (event.button === 1) void trackClick(link.id)
           }}
           className={`block w-full text-left px-5 py-4 rounded-2xl border link-card transition-all group ${c ? '' : (linkCardClass ?? theme.card)
             }`}

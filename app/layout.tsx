@@ -1,33 +1,29 @@
 import type { Metadata } from 'next'
-import { Space_Grotesk, Syne, Playfair_Display, Lora, JetBrains_Mono, Nunito } from 'next/font/google'
+import { IBM_Plex_Mono, Jost, Libre_Baskerville, Public_Sans, Quicksand } from 'next/font/google'
 import './globals.css'
 
-const spaceGrotesk = Space_Grotesk({
+const publicSans = Public_Sans({
   subsets: ['latin'],
   variable: '--font-body',
 })
 
-const syne = Syne({
+const jost = Jost({
   subsets: ['latin'],
   variable: '--font-display',
 })
 
-const playfairDisplay = Playfair_Display({
+const libreBaskerville = Libre_Baskerville({
   subsets: ['latin'],
-  variable: '--font-serif-display',
+  variable: '--font-serif',
 })
 
-const lora = Lora({
+const plexMono = IBM_Plex_Mono({
   subsets: ['latin'],
-  variable: '--font-serif-body',
-})
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
+  weight: ['400', '600', '700'],
   variable: '--font-mono-display',
 })
 
-const nunito = Nunito({
+const quicksand = Quicksand({
   subsets: ['latin'],
   variable: '--font-rounded',
 })
@@ -59,7 +55,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${spaceGrotesk.variable} ${syne.variable} ${playfairDisplay.variable} ${lora.variable} ${jetbrainsMono.variable} ${nunito.variable} font-body antialiased`}>
+      <body className={`${publicSans.variable} ${jost.variable} ${libreBaskerville.variable} ${plexMono.variable} ${quicksand.variable} font-body antialiased`}>
         
         <a  href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-purple-600 focus:text-white focus:rounded-xl focus:text-sm focus:font-semibold"

@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { Copy, Check, ExternalLink, LogOut } from 'lucide-react'
+import Wordmark from '@/components/Wordmark'
+import styles from '@/app/dashboard/dashboard.module.css'
 
 interface Props {
   username: string
@@ -14,11 +16,9 @@ export default function DashboardHeader({ username, onCopy, onSignOut, copied }:
   const [showMenu, setShowMenu] = useState(false)
 
   return (
-    <header className="border-b border-white/5 px-6 py-4">
-  <div className="max-w-2xl mx-auto flex items-center justify-between">
-    <span className="font-display text-xl font-bold text-white">
-      Baker<span className="text-purple-400">Links</span>
-    </span>
+    <header className={styles.header}>
+      <div className={styles.shell + ' ' + styles.headerRow}>
+        <Wordmark />
 
       {/* Desktop buttons */}
       <div className="hidden sm:flex items-center gap-3">

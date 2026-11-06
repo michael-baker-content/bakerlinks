@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import PublicProfile from '@/components/PublicProfile'
+import { sanitizeAbout } from '@/lib/sanitize-about'
 
 interface Props {
   params: Promise<{ username: string }>
@@ -61,5 +62,10 @@ export default async function ProfilePage({ params }: Props) {
     .eq('active', true)
     .order('position', { ascending: true })
 
-  return <PublicProfile profile={profile} links={links ?? []} />
+  return (
+    <PublicProfile
+      profile={{ ...profile, about_content: sanitizeAbout(profile.about_content) }}
+      links={links ?? []}
+    />
+  )
 }

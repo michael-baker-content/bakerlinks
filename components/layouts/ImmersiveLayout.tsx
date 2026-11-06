@@ -78,7 +78,6 @@ export default function ImmersiveLayout({ profile, links, theme, activeTab, onTa
 
             {activeTab === 'links' && (
               <LinksList
-                profile={profile}
                 links={links}
                 theme={theme}
                 immersive

@@ -1,9 +1,11 @@
 import { test, expect } from '@playwright/test'
 
-const EMAIL = 'test@bakerlinks.com'
-const PASSWORD = 'suukr@F)6)orT%R-kqp*'
+const EMAIL = process.env.TEST_USER_EMAIL ?? ''
+const PASSWORD = process.env.TEST_USER_PASSWORD ?? ''
 
 test.describe('Auth', () => {
+    test.skip(!EMAIL || !PASSWORD, 'Set TEST_USER_EMAIL and TEST_USER_PASSWORD for a test account.')
+
     test('signs in with email and password', async ({ page }) => {
         await page.goto('/auth')
         await page.getByPlaceholder('you@example.com').fill(EMAIL)

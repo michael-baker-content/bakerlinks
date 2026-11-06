@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import DashboardClient from '@/components/DashboardClient'
+import { isAdmin } from '@/lib/supabase/admin'
 
 export default async function DashboardPage({
   searchParams,
@@ -8,7 +9,7 @@ export default async function DashboardPage({
   searchParams: Promise<{ welcome?: string }>
 }) {
   const supabase = await createClient()
-  const { data: { user }, error } = await supabase.auth.getUser()
+  const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) redirect('/auth')
 
@@ -33,6 +34,7 @@ export default async function DashboardPage({
       userId={user.id}
       provider={user.app_metadata.provider ?? 'email'}
       showWelcome={welcome === 'true'}
+      isAdmin={isAdmin(user.id)}
     />
   )
 }

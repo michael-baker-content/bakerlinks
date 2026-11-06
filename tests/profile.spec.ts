@@ -1,15 +1,16 @@
 import { test, expect } from '@playwright/test'
 
-const USERNAME = 'testuser'
+const USERNAME = process.env.TEST_USERNAME ?? ''
 
 test.describe('Public profile', () => {
     test('loads public profile page', async ({ page }) => {
+        test.skip(!USERNAME, 'Set TEST_USERNAME to a seeded public profile.')
         await page.goto(`/${USERNAME}`)
-        await expect(page.getByText('testuser', { exact: false })).toBeVisible()
         await expect(page.getByText(`@${USERNAME}`)).toBeVisible()
     })
 
     test('shows powered by footer', async ({ page }) => {
+        test.skip(!USERNAME, 'Set TEST_USERNAME to a seeded public profile.')
         await page.goto(`/${USERNAME}`)
         await expect(page.getByText('BakerLinks').last()).toBeVisible()
     })

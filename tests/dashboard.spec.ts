@@ -1,9 +1,11 @@
 import { test, expect } from '@playwright/test'
 
-const EMAIL = 'test@bakerlinks.com'
-const PASSWORD = 'suukr@F)6)orT%R-kqp*'
+const EMAIL = process.env.TEST_USER_EMAIL ?? ''
+const PASSWORD = process.env.TEST_USER_PASSWORD ?? ''
 
 test.describe('Dashboard', () => {
+    test.skip(!EMAIL || !PASSWORD, 'Set TEST_USER_EMAIL and TEST_USER_PASSWORD for a test account.')
+
     test.beforeEach(async ({ page }) => {
         await page.goto('/auth')
         await page.getByPlaceholder('you@example.com').fill(EMAIL)
@@ -36,5 +38,16 @@ test.describe('Dashboard', () => {
         await page.getByRole('button', { name: 'Analytics' }).first().click({ force: true })
         await page.waitForTimeout(1000)
         await expect(page.getByText('Last 30 days')).toBeVisible({ timeout: 10000 })
+    })
+
+    test('keeps the selected tab after a refresh', async ({ page }) => {
+        const style = page.getByRole('button', { name: 'Style', exact: true })
+        await style.click()
+        await expect(page).toHaveURL(/\/dashboard\?tab=style$/)
+
+        await page.reload()
+
+        await expect(style).toHaveAttribute('aria-pressed', 'true')
+        await expect(page.getByText('Font', { exact: true })).toBeVisible()
     })
 })
