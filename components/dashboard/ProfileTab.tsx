@@ -9,6 +9,8 @@ import EmailSection from '@/components/dashboard/EmailSection'
 import PasswordSection from '@/components/dashboard/PasswordSection'
 import DeleteAccountSection from '@/components/dashboard/DeleteAccountSection'
 import DirectoryPreference from '@/components/dashboard/DirectoryPreference'
+import FittedTextField from './FittedTextField'
+import { useProfileTextFit } from './useProfileTextFit'
 
 interface Attribution {
   photographer_name: string
@@ -29,11 +31,16 @@ interface Props {
 
 export default function ProfileTab({ initialProfile, profile, onProfileChange, userId, provider, directoryOptIn, onDirectoryOptInChange }: Props) {
   const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+  const fit = useProfileTextFit(profile)
+  const invalid = fit.ready && (!fit.fits(profile.display_name || profile.username, 'displayName') || !fit.fits(profile.bio ?? '', 'bio'))
   const supabase = createClient()
 
   async function saveProfile() {
+    if (!fit.ready || invalid) return
     setSaving(true)
-    const { data: updated } = await supabase
+    setError('')
+    const { data: updated, error: saveError } = await supabase
       .from('profiles')
       .update({
         username: profile.username,
@@ -42,6 +49,7 @@ export default function ProfileTab({ initialProfile, profile, onProfileChange, u
         avatar_url: profile.avatar_url,
         background_url: profile.background_url,
         background_attribution: profile.background_attribution,
+        animated_background: profile.animated_background ?? null,
         social_links: profile.social_links,
         social_links_position: profile.social_links_position,
         updated_at: new Date().toISOString(),
@@ -49,7 +57,8 @@ export default function ProfileTab({ initialProfile, profile, onProfileChange, u
       .eq('id', userId)
       .select()
       .single()
-    if (updated) onProfileChange(updated)
+    if (updated) onProfileChange({ ...updated, font: profile.font, layout: profile.layout, theme: profile.theme, custom_theme: profile.custom_theme })
+    if (saveError) setError('Could not save your profile. Please try again.')
     setSaving(false)
   }
 
@@ -62,6 +71,7 @@ export default function ProfileTab({ initialProfile, profile, onProfileChange, u
       ...profile,
       background_url: url || null,
       background_attribution: attribution ?? null,
+      animated_background: null,
     })
   }
 
@@ -94,27 +104,18 @@ export default function ProfileTab({ initialProfile, profile, onProfileChange, u
         </div>
 
         {/* Display name */}
-        <div>
-          <label className="text-white/50 text-xs uppercase tracking-wider mb-1.5 block">Display name</label>
-          <input
+          <FittedTextField label="Display name" field="displayName" profile={profile}
             value={profile.display_name ?? ''}
-            onChange={e => onProfileChange({ ...profile, display_name: e.target.value })}
+            onChange={value => onProfileChange({ ...profile, display_name: value })}
             placeholder="Your Name"
-            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/60 text-sm"
           />
-        </div>
 
         {/* Bio */}
-        <div>
-          <label className="text-white/50 text-xs uppercase tracking-wider mb-1.5 block">Bio</label>
-          <textarea
+          <FittedTextField label="Bio" field="bio" profile={profile} multiline
             value={profile.bio ?? ''}
-            onChange={e => onProfileChange({ ...profile, bio: e.target.value })}
+            onChange={value => onProfileChange({ ...profile, bio: value })}
             placeholder="A short bio…"
-            rows={3}
-            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/60 text-sm resize-none"
           />
-        </div>
 
         {/* Images */}
         <div className="grid grid-cols-1 gap-4">
@@ -134,6 +135,7 @@ export default function ProfileTab({ initialProfile, profile, onProfileChange, u
             label="Background image"
             aspectHint="Wide image recommended (1500×500px). Max 5MB."
           />
+          <p className="text-white/40 text-xs">Choose animated backgrounds in the Style tab. Saving a new background photo switches animation off. Video uploads are not supported.</p>
         </div>
 
         {/* Social links */}
@@ -147,11 +149,12 @@ export default function ProfileTab({ initialProfile, profile, onProfileChange, u
       {/* Save profile */}
       <button
         onClick={saveProfile}
-        disabled={saving}
+        disabled={saving || !fit.ready || invalid}
         className="w-full py-3 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white rounded-xl font-semibold transition-all"
       >
         {saving ? 'Saving…' : 'Save profile'}
       </button>
+      {error && <p role="alert" className="text-red-300 text-sm">{error}</p>}
 
       {typeof directoryOptIn === 'boolean' && (
         <DirectoryPreference userId={userId} optedIn={directoryOptIn} onChange={onDirectoryOptInChange} />

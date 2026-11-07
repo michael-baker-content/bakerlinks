@@ -21,6 +21,7 @@ export interface Profile {
   bio: string | null
   avatar_url: string | null
   background_url: string | null
+  animated_background?: string | null
   background_attribution: {
     photographer_name: string
     photographer_url: string

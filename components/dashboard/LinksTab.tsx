@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, type Dispatch, type SetStateAction } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import dynamic from 'next/dynamic'
-import { Link as LinkType } from '@/lib/types'
+import { Link as LinkType, Profile } from '@/lib/types'
+import FittedTextField from './FittedTextField'
+import { useProfileTextFit } from './useProfileTextFit'
 import {
   DndContext,
   closestCenter,
@@ -132,21 +133,18 @@ function SortableLink({
 // ── Link Form Modal ────────────────────────────────────────────
 function LinkModal({
   link,
+  profile,
   onSave,
   onClose,
 }: {
   link: Partial<LinkType> | null
+  profile: Profile
   onSave: (data: { title: string; url: string; description: string; icon: string | null }) => void
   onClose: () => void
 }) {
   const [title, setTitle] = useState(link?.title ?? '')
   const [url, setUrl] = useState(link?.url ?? '')
   const [description, setDescription] = useState(link?.description ?? '')
-  const titleInputRef = useRef<HTMLInputElement>(null)
-
-useEffect(() => {
-  titleInputRef.current?.focus()
-}, [])
 useEffect(() => {
   const modal = document.querySelector('[role="dialog"]') as HTMLElement
   if (!modal) return
@@ -186,6 +184,9 @@ useEffect(() => {
     }
     return null
   })
+  const textProfile = { ...profile, linkIcon: !!favicon }
+  const fit = useProfileTextFit(textProfile)
+  const invalid = !fit.ready || !fit.fits(title, 'linkTitle') || !fit.fits(description, 'linkDescription')
 
   function handleUrlChange(val: string) {
     setUrl(val)
@@ -199,6 +200,7 @@ useEffect(() => {
 
   function handleSubmit(e: React.FormEvent) {
   e.preventDefault()
+  if (invalid) return
   onSave({ title, url, description, icon: favicon })
 }
 
@@ -220,23 +222,12 @@ useEffect(() => {
         </button>
       </div>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-  <label className="text-white/50 text-xs uppercase tracking-wider mb-1.5 block">Title</label>
-  <div className="relative">
-    <input
-      ref={titleInputRef}
+    <FittedTextField label="Title" field="linkTitle" profile={textProfile}
       value={title}
-      onChange={e => setTitle(e.target.value)}
+      onChange={setTitle}
       required
-      maxLength={34}
       placeholder="My Portfolio"
-      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/60 text-sm pr-16"
     />
-    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 text-xs">
-      {title.length}/34
-    </span>
-  </div>
-</div>
           <div>
             <label className="text-white/50 text-xs uppercase tracking-wider mb-1.5 block">URL</label>
             <div className="flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 focus-within:border-purple-500/60 transition-colors overflow-hidden">
@@ -258,22 +249,11 @@ useEffect(() => {
               />
             </div>
           </div>
-          <div>
-  <label className="text-white/50 text-xs uppercase tracking-wider mb-1.5 block">Description (optional)</label>
-  <div className="relative">
-    <textarea
+    <FittedTextField label="Description (optional)" field="linkDescription" profile={textProfile} multiline
       value={description}
-      onChange={e => setDescription(e.target.value)}
+      onChange={setDescription}
       placeholder="A short description"
-      maxLength={96}
-      rows={2}
-      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/60 text-sm resize-none"
     />
-    <span className="absolute right-3 bottom-3 text-white/20 text-xs">
-      {description.length}/96
-    </span>
-  </div>
-</div>
           <div className="flex gap-3 pt-2">
             <button
               type="button"
@@ -284,7 +264,8 @@ useEffect(() => {
             </button>
             <button
               type="submit"
-              className="flex-1 py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-sm font-semibold transition-all"
+              disabled={invalid}
+              className="flex-1 py-3 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white rounded-xl text-sm font-semibold transition-all"
             >
               {link?.id ? 'Save changes' : 'Add link'}
             </button>
@@ -297,12 +278,13 @@ useEffect(() => {
 
 // ── Links Tab ──────────────────────────────────────────────────
 interface Props {
-  initialLinks: LinkType[]
+  links: LinkType[]
+  onLinksChange: Dispatch<SetStateAction<LinkType[]>>
   userId: string
+  profile: Profile
 }
 
-export default function LinksTab({ initialLinks, userId }: Props) {
-  const [links, setLinks] = useState(initialLinks)
+export default function LinksTab({ links, onLinksChange: setLinks, userId, profile }: Props) {
   const [editingLink, setEditingLink] = useState<Partial<LinkType> | null | false>(false)
   const addLinkButtonRef = useRef<HTMLButtonElement>(null)
   const supabase = createClient()
@@ -376,6 +358,7 @@ async function saveLink(data: { title: string; url: string; description: string;
     <div>
       {editingLink !== false && (
         <LinkModal
+          profile={profile}
           link={editingLink}
           onSave={async (data) => {
   await saveLink(data)

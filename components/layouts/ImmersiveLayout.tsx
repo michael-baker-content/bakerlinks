@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { Profile, Link as LinkType } from '@/lib/types'
 import { ThemeConfig } from '@/lib/themes'
 import SocialLinksDisplay from '@/components/SocialLinksDisplay'
+import ProfileMotionBackground from '@/components/ProfileMotionBackground'
+import { getProfileBackground } from '@/lib/profile-backgrounds'
 import { ProfileHeader, TabBar, LinksList, AboutContent, ProfileFooter, getFontClasses } from './shared'
 
 interface Props {
@@ -12,26 +14,28 @@ interface Props {
   theme: ThemeConfig
   activeTab: 'links' | 'about'
   onTabChange: (tab: 'links' | 'about') => void
+  preview?: boolean
 }
 
-export default function ImmersiveLayout({ profile, links, theme, activeTab, onTabChange }: Props) {
+export default function ImmersiveLayout({ profile, links, theme, activeTab, onTabChange, preview }: Props) {
   const c = theme.customColors
   const [hoveredTab, setHoveredTab] = useState<'links' | 'about' | null>(null)
   const fontClasses = getFontClasses(profile.font ?? 'default')
-  const hasBg = !!profile.background_url
+  const animated = getProfileBackground(profile.animated_background)
+  const hasBg = !!animated || !!profile.background_url
   const contentBgHex = c?.contentBg || c?.cardBg
 
   return (
-    <div className="relative min-h-screen flex flex-col">
+    <div className={`${fontClasses.body} relative ${preview ? 'min-h-[520px]' : 'min-h-screen'} flex flex-col`}>
       {/* Full screen background */}
       {hasBg ? (
         <>
-          <div className="fixed inset-0 z-0">
-            <img src={profile.background_url!} alt="Profile background" className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-black/50" />
+          <div className={`${preview ? 'absolute' : 'fixed'} inset-0 z-0`}>
+            {animated ? <ProfileMotionBackground backgroundId={animated.id} /> : <img src={profile.background_url!} alt="Profile background" className="w-full h-full object-cover" />}
+            <div className="absolute inset-0 pointer-events-none bg-black/50" />
           </div>
-          {profile.background_attribution && (
-            <div className="fixed top-3 right-3 z-10 text-white/40 text-xs">
+          {!animated && profile.background_attribution && (
+            <div className={`${preview ? 'absolute' : 'fixed'} top-3 right-3 z-10 text-white/40 text-xs`}>
               Photo by{' '}
               <a href={profile.background_attribution.photographer_url} target="_blank" rel="noopener noreferrer" className="underline hover:text-white/70">
                 {profile.background_attribution.photographer_name}
@@ -44,12 +48,12 @@ export default function ImmersiveLayout({ profile, links, theme, activeTab, onTa
           )}
         </>
       ) : (
-        <div className={`fixed inset-0 z-0 ${c ? '' : theme.bg}`} style={c ? { backgroundColor: c.bg } : {}} />
+        <div className={`${preview ? 'absolute' : 'fixed'} inset-0 z-0 ${c ? '' : theme.bg}`} style={c ? { backgroundColor: c.bg } : {}} />
       )}
 
       {/* Content layer */}
-      <div className="relative z-10 flex flex-col items-center justify-start min-h-screen px-4 py-16">
-        <div className="w-full max-w-sm">
+      <div className={`relative z-10 pointer-events-none flex flex-col items-center justify-start ${preview ? 'min-h-[520px]' : 'min-h-screen'} px-4 py-16`}>
+        <div className="w-full max-w-sm pointer-events-auto">
           <div
             className="backdrop-blur-md rounded-3xl p-6 mb-4"
             style={{

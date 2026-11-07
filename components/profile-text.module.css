@@ -1,0 +1,8 @@
+/* Shared by public profiles and the editor's offscreen measuring element. */
+.displayName { font-size: 1.5rem; line-height: 2rem; font-weight: 700; }
+.bio { font-size: .875rem; line-height: 1.625; font-weight: 400; white-space: pre-wrap; }
+.linkTitle { font-size: .875rem; line-height: 1.25rem; font-weight: 600; }
+.linkDescription { font-size: .75rem; line-height: 1rem; font-weight: 400; white-space: pre-wrap; }
+.aboutTitle { font-size: .875rem; line-height: 1.25rem; font-weight: 500; }
+.displayName, .bio, .linkTitle, .linkDescription, .aboutTitle { overflow-wrap: anywhere; word-break: normal; letter-spacing: normal; }
+.measure { position: fixed; top: 0; left: -10000px; visibility: hidden; pointer-events: none; box-sizing: content-box; padding: 0; border: 0; margin: 0; height: auto; min-height: 0; max-height: none; text-transform: none; }
