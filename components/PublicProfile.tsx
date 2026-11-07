@@ -12,9 +12,11 @@ import { isColorDark } from '@/lib/color-utils'
 export default function PublicProfile({
   profile,
   links,
+  preview = false,
 }: {
   profile: Profile
   links: LinkType[]
+  preview?: boolean
 }) {
   const theme = profile.theme === 'custom' && profile.custom_theme
     ? buildCustomTheme(profile.custom_theme)
@@ -25,6 +27,7 @@ export default function PublicProfile({
   const layout = layoutConfig.id
 
   useEffect(() => {
+    if (preview) return
     const themeMap: Record<string, { bg: string; scheme: string; scrollClass: string }> = {
       electric: { bg: '#0a0a0f', scheme: 'dark',  scrollClass: '' },
       neon:     { bg: '#050510', scheme: 'dark',  scrollClass: '' },
@@ -48,7 +51,7 @@ export default function PublicProfile({
       document.documentElement.style.colorScheme = ''
       document.documentElement.classList.remove('light-scrollbar')
     }
-  }, [profile.theme, c?.bg])
+  }, [profile.theme, c?.bg, preview])
 
   const layoutProps = {
     profile,
@@ -56,11 +59,12 @@ export default function PublicProfile({
     theme,
     activeTab,
     onTabChange: setActiveTab,
+    preview,
   }
 
   return (
     <main
-      className={`min-h-screen ${layout === 'immersive' ? '' : `${c ? '' : theme.bg} ${theme.isDark ? 'noise' : ''}`}`}
+      className={`${preview ? 'min-h-[520px]' : 'min-h-screen'} ${layout === 'immersive' ? '' : `${c ? '' : theme.bg} ${theme.isDark ? 'noise' : ''}`}`}
       style={c ? { backgroundColor: c.bg } : {}}
     >
       {layout === 'immersive' ? (

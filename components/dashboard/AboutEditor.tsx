@@ -5,10 +5,14 @@ import { createClient } from '@/lib/supabase/client'
 import { marked } from 'marked'
 import { X } from 'lucide-react'
 import dynamic from 'next/dynamic'
+import type { Profile } from '@/lib/types'
+import FittedTextField from './FittedTextField'
+import { useProfileTextFit } from './useProfileTextFit'
 
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false })
 
 interface Props {
+  profile: Profile
   userId: string
   initialEnabled: boolean
   initialTitle: string | null
@@ -27,20 +31,24 @@ function parseMarkdown(md: string): string {
   return marked.parse(md) as string
 }
 
-export default function AboutEditor({ userId, initialEnabled, initialTitle, initialMarkdown, onChange }: Props) {
+export default function AboutEditor({ profile, userId, initialEnabled, initialTitle, initialMarkdown, onChange }: Props) {
   const [enabled, setEnabled] = useState(initialEnabled)
   const [title, setTitle] = useState(initialTitle ?? '')
   const [content, setContent] = useState(initialMarkdown ?? '')
   const [saving, setSaving] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [error, setError] = useState('')
   const [showMarkdownHelp, setShowMarkdownHelp] = useState(false)
   const supabase = createClient()
+  const fit = useProfileTextFit(profile)
 
   async function save() {
+    if (!fit.ready || !fit.fits(title, 'aboutTitle')) return
     setSaving(true)
+    setError('')
     const html = content ? parseMarkdown(content) : null
 
-    await supabase
+    const { error: saveError } = await supabase
       .from('profiles')
       .update({
         about_enabled: enabled,
@@ -50,6 +58,12 @@ export default function AboutEditor({ userId, initialEnabled, initialTitle, init
         updated_at: new Date().toISOString(),
       })
       .eq('id', userId)
+
+    if (saveError) {
+      setSaving(false)
+      setError('Could not save your About page. Please try again.')
+      return
+    }
 
     onChange({
       about_enabled: enabled,
@@ -131,22 +145,11 @@ export default function AboutEditor({ userId, initialEnabled, initialTitle, init
 
         {enabled && (
           <>
-            <div>
-              <label className="text-white/50 text-xs uppercase tracking-wider mb-1.5 block">Tab Title</label>
-              <div className="relative">
-                <input
+                <FittedTextField label="Tab Title" field="aboutTitle" profile={profile}
                   value={title}
-                  onChange={e => setTitle(e.target.value)}
+                  onChange={setTitle}
                   placeholder="About"
-                  maxLength={12}
-                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-purple-500/60 text-sm"
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 text-xs">
-                  {title.length}/12
-                </span>
-              </div>
-              <p className="text-white/30 text-xs mt-1">Max 12 characters. Defaults to &quot;About&quot; if left blank.</p>
-            </div>
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
@@ -184,12 +187,13 @@ export default function AboutEditor({ userId, initialEnabled, initialTitle, init
               </div>
               <button
                 onClick={save}
-                disabled={saving}
+                disabled={saving || !fit.ready || !fit.fits(title, 'aboutTitle')}
                 className="px-6 py-2.5 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white rounded-xl text-sm font-semibold transition-all"
               >
                 {saving ? 'Saving…' : 'Save About Page'}
               </button>
             </div>
+            {error && <p role="alert" className="text-red-300 text-sm">{error}</p>}
           </>
         )}
       </div>

@@ -32,6 +32,7 @@ const tabs = [
 ] as const
 
 type Tab = (typeof tabs)[number]['id']
+const styleKey = (profile: Profile) => JSON.stringify([profile.font, profile.layout, profile.theme, profile.custom_theme, profile.animated_background])
 
 export default function DashboardClient({
   initialProfile,
@@ -46,6 +47,8 @@ export default function DashboardClient({
   const [copied, setCopied] = useState(false)
   const [welcomeVisible, setWelcomeVisible] = useState(showWelcome ?? false)
   const [profile, setProfile] = useState(initialProfile)
+  const [links, setLinks] = useState(initialLinks)
+  const [savedStyle, setSavedStyle] = useState(() => styleKey(initialProfile))
   const [directoryOptIn, setDirectoryOptIn] = useState(initialProfile.directory_opt_in)
   const [showPreviewModal, setShowPreviewModal] = useState(false)
   const supabase = createClient()
@@ -113,9 +116,15 @@ export default function DashboardClient({
         </div>
 
         {/* Content */}
+        {savedStyle !== styleKey(profile) && (
+          <p role="status" className="mb-6 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white/70 text-sm">
+            You have unpublished style changes. Use Save style in the Style tab when you are ready.
+          </p>
+        )}
         {tab === 'content' && (
           <ContentTab
-            initialLinks={initialLinks}
+            links={links}
+            onLinksChange={setLinks}
             userId={userId}
             profile={profile}
             onProfileChange={setProfile}
@@ -127,14 +136,14 @@ export default function DashboardClient({
             {/* Mobile preview modal */}
             {showPreviewModal && (
               <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                <div className="w-full max-w-sm">
+                <div className="w-full max-w-sm max-h-[calc(100dvh-2rem)] overflow-y-auto">
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-white font-semibold">Profile preview</span>
                     <button onClick={() => setShowPreviewModal(false)} className="text-white/40 hover:text-white">
                       <X size={20} />
                     </button>
                   </div>
-                  <ProfilePreview profile={profile} />
+                  <ProfilePreview profile={profile} links={links} />
                 </div>
               </div>
             )}
@@ -166,6 +175,8 @@ export default function DashboardClient({
 
                 {tab === 'style' && (
                   <StyleTab
+                    onStyleSaved={() => setSavedStyle(styleKey(profile))}
+                    links={links}
                     profile={profile}
                     onProfileChange={setProfile}
                     userId={userId}
@@ -174,9 +185,9 @@ export default function DashboardClient({
               </div>
 
               {/* Desktop preview */}
-              <div className="hidden lg:block w-72 flex-shrink-0 relative">
-                <div className="fixed" style={{ width: '288px' }}>
-                  <ProfilePreview profile={profile} />
+              <div className="hidden lg:block w-72 flex-shrink-0 relative self-stretch">
+                <div className="sticky top-8 max-h-[calc(100vh-4rem)] overflow-y-auto">
+                  <ProfilePreview profile={profile} links={links} />
                 </div>
               </div>
             </div>

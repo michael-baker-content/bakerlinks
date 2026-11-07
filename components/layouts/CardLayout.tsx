@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { Profile, Link as LinkType } from '@/lib/types'
 import { ThemeConfig } from '@/lib/themes'
 import SocialLinksDisplay from '@/components/SocialLinksDisplay'
+import ProfileMotionBackground from '@/components/ProfileMotionBackground'
+import { getProfileBackground } from '@/lib/profile-backgrounds'
 import { ProfileHeader, TabBar, LinksList, AboutContent, ProfileFooter, getFontClasses } from './shared'
 
 interface Props {
@@ -12,26 +14,31 @@ interface Props {
   theme: ThemeConfig
   activeTab: 'links' | 'about'
   onTabChange: (tab: 'links' | 'about') => void
+  preview?: boolean
 }
 
-export default function CardLayout({ profile, links, theme, activeTab, onTabChange }: Props) {
+export default function CardLayout({ profile, links, theme, activeTab, onTabChange, preview }: Props) {
   const c = theme.customColors
   const [hoveredTab, setHoveredTab] = useState<'links' | 'about' | null>(null)
   const fontClasses = getFontClasses(profile.font ?? 'default')
+  const animated = getProfileBackground(profile.animated_background)
+  const hasBackground = !!animated || !!profile.background_url
 
   return (
     <div className={`${fontClasses.body} ${c ? '' : theme.bg}`} style={c ? { backgroundColor: c.bg } : {}}>
 
       {/* Background image or spacer */}
-      {profile.background_url ? (
-        <div className="relative w-full h-48 sm:h-64 overflow-hidden">
+      {hasBackground ? (
+        <div className={`relative w-full h-48 ${preview ? '' : 'sm:h-64'} overflow-hidden`}>
+          {animated ? <ProfileMotionBackground backgroundId={animated.id} /> : (
           <img
-            src={profile.background_url}
+            src={profile.background_url!}
             alt="Profile background"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60" />
-          {profile.background_attribution && (
+          )}
+          <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent to-black/60" />
+          {!animated && profile.background_attribution && (
             <div className="absolute top-2 right-3 text-white/40 text-xs">
               Photo by{' '}
               <a href={profile.background_attribution.photographer_url} target="_blank" rel="noopener noreferrer" className="underline hover:text-white/70">
@@ -49,7 +56,7 @@ export default function CardLayout({ profile, links, theme, activeTab, onTabChan
       )}
 
       <div className="relative max-w-sm mx-auto px-4">
-        <div className={`${profile.background_url ? '-mt-12' : 'mt-8'}`}>
+        <div className={`${hasBackground ? '-mt-12' : 'mt-8'}`}>
           <ProfileHeader profile={profile} theme={theme} fontClasses={fontClasses} />
         </div>
 

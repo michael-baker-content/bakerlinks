@@ -8,17 +8,10 @@ import { createClient } from '@/lib/supabase/client'
 import { isColorDark, adjustColor } from '@/lib/color-utils'
 import { getProfileInitials } from '@/lib/profile-initials'
 import Link from 'next/link'
+import textStyles from '@/components/profile-text.module.css'
+export { getFontClasses } from '@/lib/fonts'
 
 // ── Helpers ────────────────────────────────────────────────────
-
-export function getFontClasses(font: string): { heading: string; body: string } {
-  switch (font) {
-    case 'serif': return { heading: 'font-serif-display', body: 'font-serif-body' }
-    case 'mono': return { heading: 'font-mono-display', body: 'font-mono-display' }
-    case 'rounded': return { heading: 'font-rounded', body: 'font-rounded' }
-    default: return { heading: 'font-display', body: 'font-body' }
-  }
-}
 
 // ── Profile Header ─────────────────────────────────────────────
 
@@ -38,9 +31,9 @@ export function ProfileHeader({ profile, theme, fontClasses, size = 'full' }: He
   const avatarText = isPreview ? 'text-lg' : 'text-2xl'
   const avatarRing = isPreview ? 'ring-2' : 'ring-4'
   const avatarMb = isPreview ? 'mb-2' : 'mb-4'
-  const nameSize = isPreview ? 'text-sm' : 'text-2xl'
+  const nameSize = isPreview ? 'text-sm' : textStyles.displayName
   const handleSize = isPreview ? 'text-xs' : 'text-sm'
-  const bioSize = isPreview ? 'text-xs mt-1 line-clamp-2' : 'text-sm mt-3'
+  const bioSize = isPreview ? 'text-xs mt-1' : `${textStyles.bio} mt-3`
   const wrapperMb = isPreview ? 'mb-3' : 'mb-6'
 
   return (
@@ -61,7 +54,7 @@ export function ProfileHeader({ profile, theme, fontClasses, size = 'full' }: He
         </div>
       )}
       <p
-        className={`${fontClasses.heading} ${nameSize} font-bold text-center ${isPreview ? '' : 'mb-1'} ${c ? '' : theme.textHeading}`}
+        className={`${fontClasses.heading} ${nameSize} w-full font-bold text-center ${isPreview ? '' : 'mb-1'} ${c ? '' : theme.textHeading}`}
         style={c ? { color: c.textHeading } : {}}
       >
         {profile.display_name || profile.username || 'Your name'}
@@ -74,7 +67,7 @@ export function ProfileHeader({ profile, theme, fontClasses, size = 'full' }: He
       </p>
       {profile.bio && (
         <p
-          className={`${bioSize} text-center max-w-xs leading-relaxed ${c ? '' : theme.textMuted}`}
+          className={`${bioSize} w-full text-center max-w-xs ${c ? '' : theme.textMuted}`}
           style={c ? { color: c.textMuted } : {}}
         >
           {profile.bio}
@@ -144,7 +137,7 @@ export function TabBar({ profile, theme, activeTab, onTabChange, hoveredTab, onH
         onClick={() => onTabChange('about')}
         onMouseEnter={() => onHover('about')}
         onMouseLeave={() => onHover(null)}
-        className={tabClass('about', `w-1/2 ${isPreview ? 'py-1' : 'py-2'} px-2 truncate min-w-0 text-center`)}
+        className={tabClass('about', `w-1/2 ${isPreview ? 'py-1' : 'py-2'} px-2 min-w-0 text-center ${textStyles.aboutTitle}`)}
         style={tabStyle('about')}
       >
         {profile.about_title || 'About'}
@@ -213,9 +206,9 @@ export function LinksList({ links, theme, linkCardClass, linkCardStyle, immersiv
                 <img src={link.icon} alt="" className="w-4 h-4 rounded-sm flex-shrink-0" onError={e => (e.currentTarget.style.display = 'none')} />
               )}
               <div className="flex-1 min-w-0">
-                <p className={`font-semibold text-sm truncate ${c ? '' : theme.text}`} style={c ? { color: c.text } : {}}>{link.title}</p>
+                <p className={`${textStyles.linkTitle} ${c ? '' : theme.text}`} style={c ? { color: c.text } : {}}>{link.title}</p>
                 {link.description && (
-                  <p className={`text-xs mt-0.5 ${c ? '' : theme.textMuted}`} style={c ? { color: c.textMuted } : {}}>{link.description}</p>
+                  <p className={`${textStyles.linkDescription} mt-0.5 ${c ? '' : theme.textMuted}`} style={c ? { color: c.textMuted } : {}}>{link.description}</p>
                 )}
               </div>
             </div>

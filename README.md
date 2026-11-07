@@ -8,6 +8,8 @@ Make a personal page for your projects, social links, and story. Share it at one
 
 - **Build your page.** Add and reorder links, write descriptions, and hide links you want to keep for later. Choose a Card, Immersive, or Minimal layout, then customize the theme, font, and images.
 - **Tell your story.** Add a Markdown About tab and give people ways to find you on social platforms.
+- **Find your type.** Pick from 15 sans-serif, readable serif, and mono options in **Style**. The preview uses the actual profile at a 320px mobile width. Style changes are drafts until you choose **Save style**.
+- **Set the mood.** Choose one of 10 curated animated backgrounds in **Style**: five abstract designs and five scenery loops. Card shows a banner; Immersive fills the screen. Minimal stays plain. Visitors can pause motion, and reduced-motion or data-saving preferences use a still. Photos remain available, but users cannot upload videos.
 - **Discover people.** Browse photo cards in the directory at `/site/directory`, search by name, username, or bio, and filter for About tabs or social links. A profile appears when an admin verifies it and its owner opts in from the dashboard’s **Profile** tab. Owners can opt out without changing their public profile URL.
 - **See what people click.** The dashboard shows per-link totals and trends over 7, 30, or 90 days. Opening a profile or directory card does not add an outbound link click.
 
@@ -33,6 +35,7 @@ In a **new Supabase project**, run these files in order in the SQL Editor:
 2. [supabase-profile-customization.sql](supabase-profile-customization.sql) adds fields for styling, social links, and About, plus policies for profile images.
 3. [supabase-link-analytics.sql](supabase-link-analytics.sql) adds click history and records an event and total together.
 4. [supabase-profile-directory.sql](supabase-profile-directory.sql) adds verification and owner opt-in.
+5. [supabase-profile-backgrounds.sql](supabase-profile-backgrounds.sql) adds the curated background selection and enforces image-only uploads in both Storage buckets. Apply this migration to existing installations before using the updated dashboard.
 
 If your project already has the base tables, skip the base script and apply any missing follow-up scripts. These preserve existing profile values, click totals, and verification records.
 
@@ -44,6 +47,18 @@ In **Storage**, create two **public** buckets named `avatars` and `backgrounds`.
 | `backgrounds` | 5 MB | `image/jpeg`, `image/png`, `image/webp` |
 
 The upload policy limits image changes to the signed-in user’s folder. [Supabase Storage access control](https://supabase.com/docs/guides/storage/security/access-control)
+
+### Background collection
+
+The catalog lives in `lib/profile-backgrounds.ts`. Abstract backgrounds use CSS; scenery is served locally from `public/backgrounds`, with no video-provider key or browser requests to the provider. Only the selected scenery video plays; picker tiles use stills. Sources, licenses, and encoding details are documented in [background credits](public/backgrounds/CREDITS.md). Keep the catalog and SQL allowlist in sync when changing the collection.
+
+### Fonts and text fit
+
+Profile font choices are defined in `lib/fonts.ts` and self-hosted with `next/font`. Added alternatives are not preloaded across the site; selecting or previewing them loads the font. Existing font IDs remain compatible.
+
+Display names, bios, link titles, and link descriptions allow up to two lines; the About tab label allows one. Editors measure the selected font with the same CSS as the public page, using the layout’s available space at a 320px viewport and reserving room for link icons. Extra input is rejected and overlong pastes keep the fitting portion without splitting grapheme clusters. Existing overlong text is preserved and can be shortened. A font or layout change cannot be saved until affected text is fixed; save those edits in Profile or Content, then return to Style. URLs, usernames, account fields, and long-form About content use their own rules.
+
+These are browser layout checks, not database character constraints. Public pages wrap existing or externally edited text rather than hiding it. Wrapping can vary with browser font rendering, visitor text settings, and viewports below 320px. Keep `components/profile-text.module.css` and `lib/profile-text-fit.ts` aligned when changing typography, card spacing, or layout widths.
 
 ### 3. Configure the environment
 
