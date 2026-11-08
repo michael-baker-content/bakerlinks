@@ -10,4 +10,5 @@ node_modules/
 /playwright/.cache/
 /playwright/.auth/
 *.png
+!/app/apple-icon.png
 
